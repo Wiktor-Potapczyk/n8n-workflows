@@ -1,0 +1,922 @@
+{
+  "updatedAt": "2026-01-25T20:37:42.559Z",
+  "createdAt": "2026-01-25T20:35:39.347Z",
+  "id": "RTfNI9dsszsNhiQc",
+  "name": "Influencer monitoring",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "username",
+              "value": "andrew-huberman",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        688
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        32,
+        688
+      ],
+      "id": "REDACTED-UUID",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "={{$json.username}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-key",
+              "value": "REDACTED-API-KEY"
+            },
+            {
+              "name": "x-rapidapi-host",
+              "value": "REDACTED-API-KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        688
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Settings\nconst daysToLookBack = 60;\nconst cutoffDate = new Date();\ncutoffDate.setDate(cutoffDate.getDate() - daysToLookBack);\n\n// 2. Get Data\n// We access the first item's JSON data, specifically the 'data' property\nconst posts = items[0].json.data;\n\n// Safety check: if 'data' is missing or empty, return an empty list wrapper\nif (!posts || !Array.isArray(posts)) {\n  return {\n    json: {\n      posts_for_analysis: []\n    }\n  };\n}\n\n// 3. Filter & Map into a Single List\nconst simplifiedList = posts.reduce((acc, post) => {\n  const postDate = new Date(post.created_at);\n\n  // Filter by date\n  if (postDate >= cutoffDate) {\n    acc.push({\n       // We map specific fields here to save tokens\n       post_url: post.url,\n       text: post.text\n    });\n  }\n  return acc;\n}, []);\n\n// 4. Return ONE item containing the array\n// This prevents the next node from running 50 times\nreturn {\n  json: {\n    posts_for_analysis: simplifiedList\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        688
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Role\nYou are a Lead Gen Analyst for **Modhealth**, a company focused on health, high performance, supplements, employee benefits, and corporate wellbeing.\n\n# Objective\nYour goal is to analyze a list of social media posts (provided in JSON format) and score them based on **Narrative Alignment**.\n\nWe are looking for posts where the *audience reacting to the post* is likely interested in buying Modhealth products. We treat the post topic as a proxy for audience interest.\n\n# Modhealth Core Interests (Themes)\n1. **Employee Wellbeing & Benefits:** Corporate health packages, gym memberships, perks, HR strategies for retention via health.\n2. **High Performance:** Biohacking, productivity hacks, sleep optimization, mental clarity, avoiding burnout.\n3. **Health & Nutrition:** Supplements, diet, physical fitness, preventative health.\n4. **Work Culture:** Creating healthy work environments, leadership focus on staff health.\n\n# Scoring Rubric (1-10 Scale)\n\n**High Alignment (Score 8-10):**\nThe post explicitly discusses core themes.\n* *Examples:* \"Why we started offering supplements to our employees,\" \"My top 5 biohacks for deep work,\" \"The ROI of corporate wellness programs,\" \"Review of a new health benefit.\"\n* *Logic:* People reacting to this are actively interested in health/performance solutions.\n\n**Moderate Alignment (Score 5-7):**\nThe post touches on adjacent themes or broad leadership topics that imply wellbeing.\n* *Examples:* \"How to manage a remote team effectively,\" \"Stop overworking your staff,\" General productivity tips, Work-life balance discussions without specific health details.\n* *Logic:* The audience cares about work culture/efficiency, but might not be looking for health products specifically.\n\n**Low Alignment (Score 1-4):**\nThe post is unrelated to Modhealth's niche.\n* *Examples:* Technical coding tutorials, generic sales/marketing advice, political news, personal life updates unrelated to health (e.g., \"I bought a new car\"), memes about unrelated industries.\n* *Logic:* Reacting to this indicates no specific interest in health or benefits.\n\n# Input Format\nYou will receive a JSON list of objects. Each object contains:\n* `post_url`: String\n* `text`: String (The content of the post)\n\n# Output Format\nReturn **ONLY** a raw JSON object containing a list called `scored_posts`. Do not include markdown formatting (like ```json).\nEach object in the list must contain:\n* `post_url`: (from input)\n* `alignment_score`: Integer (1-10)\n* `reasoning`: A concise sentence explaining why the score was given.\n* `is_high_potential`: Boolean (True if score is >= 7, else False)\n\n# Task\nAnalyze the provided JSON input and generate the JSON output based on the criteria above.\n\n#INPUT\n{{ JSON.stringify($json.posts_for_analysis) }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.8,
+      "position": [
+        48,
+        928
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        48,
+        1088
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"scored_posts\": [\n    {\n      \"post_url\": \"https://linkedin.com/posts/example-url-123\",\n      \"alignment_score\": 9,\n      \"reasoning\": \"The post explicitly discusses biohacking and employee energy levels, which matches the High Performance theme.\",\n      \"is_high_potential\": true\n    },\n    {\n      \"post_url\": \"https://linkedin.com/posts/example-url-456\",\n      \"alignment_score\": 3,\n      \"reasoning\": \"The content is about generic software development updates and is unrelated to health or wellbeing.\",\n      \"is_high_potential\": false\n    }\n  ]\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        1088
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the list of scored posts from the previous node's output\n// We look safely inside items[0] based on your input structure\nconst inputData = items[0].json.output;\n\n// Safety check: if no posts exist, return an empty list\nif (!inputData || !inputData.scored_posts) {\n  return [];\n}\n\nconst allPosts = inputData.scored_posts;\n\n// 2. Filter & Map\n// We keep only posts where is_high_potential is true\n// We discard the reasoning/score now, as we only need the URL for the scraper\nconst viableLinks = allPosts\n  .filter(post => post.is_high_potential === true)\n  .map(post => {\n    return {\n      json: {\n        url: post.post_url\n      }\n    };\n  });\n\n// 3. Return the clean list\n// n8n will now run the NEXT node once for every URL in this list\nreturn viableLinks;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        928
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "agentId": "={{ $json.id }}",
+        "jsonParameters": true,
+        "additionalFields": {
+          "argumentsJson": "={\n\t\"csvName\": \"result\",\n\t\"sessionCookie\": \"{{ JSON.parse($json.argument).sessionCookie }}\",\n\t\"userAgent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36\",\n\t\"postUrl\": \"{{ $json.url }}\",\n\t\"numberOfPostsPerLaunch\": 1\n}"
+        }
+      },
+      "type": "n8n-nodes-base.phantombuster",
+      "typeVersion": 1,
+      "position": [
+        272,
+        1408
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Add an agent to the launch queue",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        48,
+        1264
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "getOutput",
+        "agentId": "={{ $('HTTP Request2').item.json.id }}",
+        "resolveData": false,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.phantombuster",
+      "typeVersion": 1,
+      "position": [
+        688,
+        1408
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get the output of an agent",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "finished",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        1408
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        1408
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Wait",
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        1424
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Wait1",
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://phantombuster.s3.amazonaws.com/{{ $('HTTP Request2').item.json.orgS3Folder }}/{{ $('HTTP Request2').item.json.s3Folder }}/result.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1536,
+        1248
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request3",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll"
+      },
+      "type": "n8n-nodes-base.phantombuster",
+      "typeVersion": 1,
+      "position": [
+        592,
+        912
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get many agents",
+      "executeOnce": true,
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.manifest.slug }}",
+              "rightValue": "=linkedin-post-likers-export",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        800,
+        912
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Phantombuster-Key",
+              "value": "REDACTED-POSSIBLE-SECRET"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1024,
+        896
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1488,
+        912
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "argument",
+              "value": "={{ $json.argument }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1232,
+        896
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the raw CSV string from the previous node\nconst csvString = items[0].json.data;\n\n// Safety check\nif (!csvString) return [];\n\n// 2. Helper function to safely parse a CSV line (handling quotes)\nfunction parseCSVLine(line) {\n  const result = [];\n  let start = 0;\n  let inQuotes = false;\n\n  for (let i = 0; i < line.length; i++) {\n    if (line[i] === '\"') {\n      inQuotes = !inQuotes; // Toggle quote state\n    } else if (line[i] === ',' && !inQuotes) {\n      // Found a separator\n      let field = line.substring(start, i);\n      // Remove surrounding quotes if present\n      field = field.replace(/^\"|\"$/g, '').replace(/\"\"/g, '\"');\n      result.push(field);\n      start = i + 1;\n    }\n  }\n  // Push the last field\n  let lastField = line.substring(start);\n  lastField = lastField.replace(/^\"|\"$/g, '').replace(/\"\"/g, '\"');\n  result.push(lastField);\n\n  return result;\n}\n\n// 3. Process the Data\nconst lines = csvString.trim().split('\\n');\nconst headers = parseCSVLine(lines[0]); // Extract headers from first line\n\nconst jsonData = lines.slice(1).map(line => {\n  const values = parseCSVLine(line);\n  const obj = {};\n\n  headers.forEach((header, index) => {\n    // Map headers to values, handling missing trailing columns\n    obj[header] = values[index] || \"\";\n  });\n\n  return { json: obj };\n});\n\nreturn jsonData;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        1248
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "profileLink",
+              "value": "={{ $json.profileLink }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "memberId",
+              "value": "={{ $json.memberId }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "occupation",
+              "value": "={{ $json.occupation }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "vmid",
+              "value": "={{ $json.profileLink.split(\"/in/\").pop().split(\"/\")[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2160,
+        1248
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        1248
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "={{ $json.vmid }}"
+            },
+            {
+              "name": "include_bio",
+              "value": "true"
+            },
+            {
+              "name": "include_experiences",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-key",
+              "value": "REDACTED-API-KEY"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2384,
+        1248
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.data.id }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "vmid",
+              "value": "={{ $json.data.urn }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "first_name",
+              "value": "={{ $json.data.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "last_name",
+              "value": "={{ $json.data.last_name }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "bio",
+              "value": "={{ $json.data.bio }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "title",
+              "value": "={{ $json.data.experiences[0].title }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "company.name",
+              "value": "={{ $json.data.experiences[0].company.name }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "company.url",
+              "value": "={{ $json.data.experiences[0].company.url }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "company.id",
+              "value": "={{ $json.data.experiences[0].company.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2592,
+        1248
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields3"
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Get many agents",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Add an agent to the launch queue": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add an agent to the launch queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the output of an agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get the output of an agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get the output of an agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many agents": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-25T20:35:57.372Z",
+      "createdAt": "2026-01-25T20:35:57.372Z",
+      "role": "workflow:owner",
+      "workflowId": "RTfNI9dsszsNhiQc",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized automatically",
+    "timestamp": "2026-01-25T22:00:39.623Z"
+  }
+}
