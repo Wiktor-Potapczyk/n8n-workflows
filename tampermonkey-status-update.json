@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-24T22:43:20.516Z",
+  "updatedAt": "2026-01-25T23:39:35.656Z",
   "createdAt": "2026-01-24T22:34:15.872Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "TamperMonkey status update",
@@ -68,7 +68,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "ID": "={{ $json.body.job_id }}",
-            "Status": "Applied"
+            "Status": "={{ $json.body.status }}"
           },
           "matchingColumns": [
             "ID"
@@ -324,8 +324,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-24T23:04:00.000Z",
-    "createdAt": "2026-01-24T22:43:20.517Z",
+    "updatedAt": "2026-01-25T23:39:37.000Z",
+    "createdAt": "2026-01-25T23:39:35.657Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
@@ -391,7 +391,7 @@
             "mappingMode": "defineBelow",
             "value": {
               "ID": "={{ $json.body.job_id }}",
-              "Status": "Applied"
+              "Status": "={{ $json.body.status }}"
             },
             "matchingColumns": [
               "ID"
@@ -622,13 +622,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": "Version af5d598e",
+    "name": "Version 79cb324d",
     "description": "",
     "autosaved": false
   },
   "tags": [],
   "_sanitized": {
-    "note": "Sanitized automatically",
-    "timestamp": "2026-01-25T23:03:39.723Z"
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-01-25T23:46:05.704Z"
   }
 }
