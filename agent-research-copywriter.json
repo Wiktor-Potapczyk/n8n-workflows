@@ -1,0 +1,625 @@
+{
+  "updatedAt": "2026-01-25T20:37:52.221Z",
+  "createdAt": "2026-01-25T20:36:16.328Z",
+  "id": "5JeqoUoczo9ZjIkl",
+  "name": "Agent - Research + Copywriter",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.propertyName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Already Researched?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        9408,
+        3088
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to search the web for detailed, up-to-date information about companies. Provide specific research questions or topics to investigate.",
+        "messages": {
+          "message": [
+            {
+              "content": "={{ $fromAI('search_query', 'The search query or research question to send to Perplexity', 'string') }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Perplexity Search",
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [
+        9552,
+        3488
+      ],
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Current Date: {{ $now.toFormat('MMMM dd, yyyy') }}\nCompany to research:\n\nCompany Name: {{ $('Webhook').item.json.body.companyName }}",
+        "options": {
+          "systemMessage": "You are an expert Sales Research Agent. Your goal is to generate a comprehensive research report on a company that will be used to generate a campaign.\n\nYou have access to three critical tools:\n1. \"Perplexity Search\": Your primary source of information.\n2. \"Verification Agent Tool\": Your quality control checker.\n3. \"Think\": A scratchpad to plan your actions.\n\n**Step-by-Step Execution Protocol:**\n\n1. **PLAN:** First, ALWAYS use the \"Think\" tool to outline exactly what you need to find. \n2. **RESEARCH:** Use \"Perplexity Search\" to execute your plan. You may need to run the tool multiple times with different queries to gather all the data.\n3. **COMPILE & VERIFY:** Once you have gathered the data, send it to the \"Verification Agent Tool\" to check for completeness.\n4. **ITERATE:** If the Verification Agent says data is missing, you can use \"Perplexity Search\" again to find *only* the missing pieces.\n5. **FINALIZE:** Return the final structured JSON only when verification passes.\n\n**Research Requirements:**\n- Recent news (last 6 months, min 3 items)\n- Buying signals (last 6 months, funding, expansion, hiring)\n- Value proposition & Target market\n- Tech stack\n- Key leadership\n\n...\n**CRITICAL SEARCH RULES:**\n1. **Batch Your Queries:** Do NOT run separate searches for overlapping topics. Combine them.\n   - BAD: Search 1: \"Company Tech Stack\", Search 2: \"Company News\"\n   - GOOD: Search 1: \"Company detailed tech stack, recent news last 6 months, and key buying signals\"\n2. **Maximum 2 Searches:** You should aim to get ALL information in maximum 3 robust Perplexity calls.\n3. **Trust the Tool:** If Perplexity returns a tech stack in the first result, do not search for it again.\n...\n\nStart by planning your approach now.",
+          "maxIterations": 10
+        }
+      },
+      "id": "REDACTED-UUID",
+      "name": "Orchestrator Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        9584,
+        3264
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Verify that research data is sufficient for sales message generation. Checks for recent signals (last 6 months), buying signals, and completeness. Returns verification status and missing information.",
+        "text": "={{ $fromAI(\"research_data\", \"The research data to verify\", \"string\") }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Verification Agent Tool",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        9680,
+        3488
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "REDACTED-POSSIBLE-SECRET",
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Orchestrator Model",
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        9424,
+        3488
+      ],
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-preview",
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Verification Model",
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        9664,
+        3696
+      ],
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"passed\": true,\n\t\"score\": 85,\n\t\"missingAreas\": [\n\t\t\"Target market details\",\n\t\t\"Competitor pricing\"\n\t],\n\t\"buyingSignals\": [\n\t\t\"Recent funding\",\n\t\t\"Product expansion\"\n\t],\n\t\"recentNewsCount\": 4,\n\t\"recommendation\": \"Research is sufficient for sales message generation\"\n}"
+      },
+      "id": "REDACTED-UUID",
+      "name": "Verification Output Parser",
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        9840,
+        3696
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        9968,
+        3488
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert B2B Copywriter. \n\n**CONTEXT:**\nWe need to write a hyper-personalized linked in message to a prospect based on the research provided below.\n\n**INPUT DATA:**\nCompany research: {{ $if($('Orchestrator Agent').isExecuted, $('Orchestrator Agent').item.json.output, JSON.parse($json.propertyName).research) }}\nProspect name: {{ $('Webhook').item.json.body.name }}\nProspect title: {{ $('Webhook').item.json.body.title }}\nProspect summary: {{ $('Webhook').item.json.body.summary }}\nProspect title description: {{ $('Webhook').item.json.body.titleDescription }}\n\n**YOUR TASK:**\n1. **THINK**: Use your think tool to plan actions.\n2. **DRAFT**: Write a linked in message draft. Focus on a \"Trigger Event\" (from the news/signals) to make it relevant.\n3. **REVIEW**: Use the \"Editor_Bot\" tool to critique your draft.\n4. **REFINE**: If the Editor returns \"FAIL\", read the critique, fix the specific issues, and submit for review again.\n5. **FINALIZE**: Once the Editor returns \"PASS\", output the final linked in message body as JSON.\n\n**STRICT RULES:**\n- Keep it under 150 words.\n- No fluff.\n- End with a low-friction question (e.g., \"Worth a chat?\").",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a specialized Copywriting Agent.\n\n**CRITICAL PROTOCOL:**\n1. **MANDATORY FIRST STEP:** You MUST use the \"Think\" tool to analyze the \"Buying Signals\" and psychological angle before writing a single word.\n2. **RESTRICTION:** You are FORBIDDEN from generating the draft until the \"Think\" tool has been used.\n3. **QUALITY CONTROL:** You never output the final result until you have received a \"PASS\" status from the Editor_Bot tool."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        10304,
+        3088
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Copywriter Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        10224,
+        3312
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Writer Model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "A strict copy editor that reviews email drafts for tone, length, and persuasion.",
+        "text": "={{ $fromAI(\"draft_text\", \"The email draft to review\", \"string\") }}",
+        "options": {
+          "systemMessage": "You are a ruthless Senior Copy Editor. \n\nAnalyze the submitted email draft based on these criteria:\n1. **Brevity:** Is it under 150 words?\n2. **Relevance:** Does it explicitly mention a specific news item or signal (not generic)?\n3. **Tone:** Is it human and conversational (no corporate jargon)?\n4. **CTA:** Is the ask soft and low pressure?\n\nReturn a JSON object with:\n- \"status\": \"PASS\" or \"FAIL\"\n- \"score\": Number 0-100\n- \"critique\": A list of specific things to fix (if FAIL).\n- \"suggestion\": A rewrite of the subject line."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        10336,
+        3296
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Editor Tool"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        10336,
+        3472
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Editor Model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        10624,
+        3296
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Think1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"linkedin_message\": \"Hi [Name],\\n\\nSaw your company just announced X. This usually means Y challenge.\\n\\nWe help companies like yours with Z.\\n\\nWorth a quick chat?\\n\\nBest,\\n[Your Name]\"\n}"
+      },
+      "id": "REDACTED-UUID",
+      "name": "Copywriter Output Parser",
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        10736,
+        3296
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-4",
+              "name": "message",
+              "value": "={{ $json.output.linkedin_message }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "body.vmid",
+              "value": "={{ $('Webhook').item.json.body.vmid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Format Final Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        10832,
+        3088
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "=company:{{ $json.body.companyName.toLowerCase().replace(/\\s+/g, '-') }}",
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Check Database",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        9248,
+        3088
+      ],
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=company:{{ $('Webhook').item.json.body.companyName.toLowerCase().replace(/\\s+/g, '-') }}",
+        "value": "={{ JSON.stringify({\n  companyName: $('Webhook').item.json.body.companyName,\n  research: $json.output, \n  researchedAt: $now.toISO() \n}) }}"
+      },
+      "id": "REDACTED-UUID",
+      "name": "Save to Database",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        9968,
+        3264
+      ],
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "REDACTED-UUID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        9088,
+        3088
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Webhook",
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {},
+      "id": "REDACTED-UUID",
+      "name": "Merge Research Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        10144,
+        3088
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.clay.com/v3/sources/webhook/pull-in-data-from-a-webhook-REDACTED-UUID",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "vmid",
+              "value": "={{ $json.body.vmid }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        11088,
+        3088
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "Already Researched?": {
+      "main": [
+        [
+          {
+            "node": "Merge Research Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orchestrator Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verification Agent Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verification Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Verification Agent Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verification Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Verification Agent Tool",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orchestrator Agent": {
+      "main": [
+        [
+          {
+            "node": "Save to Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Copywriter Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Copywriter Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Editor Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Copywriter Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copywriter Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copywriter Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Copywriter Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Database": {
+      "main": [
+        [
+          {
+            "node": "Already Researched?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Database": {
+      "main": [
+        [
+          {
+            "node": "Merge Research Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Research Data": {
+      "main": [
+        [
+          {
+            "node": "Copywriter Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Output": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-25T20:36:40.594Z",
+      "createdAt": "2026-01-25T20:36:40.594Z",
+      "role": "workflow:owner",
+      "workflowId": "5JeqoUoczo9ZjIkl",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized automatically",
+    "timestamp": "2026-01-25T21:59:58.630Z"
+  }
+}
