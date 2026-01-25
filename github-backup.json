@@ -1,0 +1,975 @@
+{
+  "updatedAt": "2026-01-25T21:57:15.170Z",
+  "createdAt": "2026-01-25T21:17:23.654Z",
+  "id": "7CYMwhpzDbdxJsTc",
+  "name": "GitHub Backup",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Set date",
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        48,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.currentDate }}",
+        "format": "custom",
+        "customFormat": "dd-MM-yyyy/H:mm",
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Format date",
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        272,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "commitDate",
+              "value": "={{ $json.formattedDate }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Set commit date",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        496,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "REDACTED",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "Wiktor-Potapczyk",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflows-new",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "filePath": "="
+      },
+      "id": "REDACTED-UUID",
+      "name": "List files from repository [GITHUB]",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        720,
+        16
+      ],
+      "alwaysOutputData": true,
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "aggregateItems",
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Combine file names [GITHUB]",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "filters": {
+          "projectId": {
+            "_redacted": true
+          }
+        },
+        "requestOptions": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Retrieve workflows [N8N]",
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        16
+      ],
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Split to single items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $node['Combine file names [GITHUB]'].json.name }}",
+              "operation": "contains",
+              "value2": "={{ $json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json"
+            }
+          ]
+        }
+      },
+      "id": "REDACTED-UUID",
+      "name": "Check if file exists in repository",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "REDACTED",
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "Wiktor-Potapczyk",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflows-new",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "filePath": "={{ $json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
+        "fileContent": "={{ JSON.stringify($json, null, 2) }}",
+        "commitMessage": "={{ $('Basic LLM Chain').item.json.text }}"
+      },
+      "id": "REDACTED-UUID",
+      "name": "Update file [GITHUB]",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        4192,
+        352
+      ],
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "REDACTED",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "Wiktor-Potapczyk",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflows-new",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "filePath": "={{ $json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
+        "fileContent": "={{ JSON.stringify($json, null, 2) }}",
+        "commitMessage": "=created {{ $json.name }} ({{ $node['Set commit date'].json.commitDate }})"
+      },
+      "id": "REDACTED-UUID",
+      "name": "Upload file [GITHUB]",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        2656,
+        192
+      ],
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -176,
+        16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "authentication": "REDACTED",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "Wiktor-Potapczyk",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflows-new",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "filePath": "={{ $json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        2048,
+        -96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get a file",
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.1,
+      "position": [
+        2256,
+        -96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "repo",
+              "value": "={{ $json.data }}",
+              "type": "object"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "new",
+              "value": "={{ $('Split to single items').item.json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2448,
+        -96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a semantic commit message for these workflow changes.\n\nFormat: type(scope): description\n- Types: feat (new feature), fix (bug fix), refactor (code improvement), chore (maintenance)\n- Scope: node name or \"workflow\" (use short form, e.g. \"code\" not \"Code in JavaScript\")\n- Max 60 characters total\n- Output ONLY the commit message, nothing else\n- No quotes, no markdown, no explanation\n\nExamples:\n- feat(code): add CV type detection based on job title\n- fix(sheets): correct column mapping for job data\n- feat(workflow): add response timestamp node\n- refactor(code): simplify row matching logic\n\n### WORKFLOW: {{ $json.workflowName }}\n\n### CHANGES:\n{{ $json.summary }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        3168,
+        -96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        3168,
+        64
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const workflow = $('Edit Fields').first().json.new;\nconst paths = $input.first().json.output.paths;\n\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// Funkcja do ustawienia wartości po ścieżce\nfunction setByPath(obj, path, value) {\n  const parts = path.replace(/\\[(\\d+)\\]/g, '.$1').split('.');\n  let current = obj;\n  for (let i = 0; i < parts.length - 1; i++) {\n    current = current[parts[i]];\n    if (!current) return;\n  }\n  current[parts[parts.length - 1]] = value;\n}\n\n// Redaguj każdą ścieżkę\nfor (const path of paths) {\n  setByPath(sanitized, path, 'REDACTED');\n}\n\n// Zawsze usuń te sekcje (backup)\nsanitized.pinData = { \"_note\": \"removed\" };\nsanitized.meta = { \"_note\": \"removed\" };\n\nreturn [{ json: sanitized }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3856,
+        -96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Scan this n8n workflow for sensitive data. Return a JSON object with two arrays: \"paths\" and \"reasons\".\n\n### RULES FOR SCANNIG:\n1. **Header Values:** Check 'x-rapidapi-key', 'authorization', 'api-key'.\n2. **Credentials:** Check any 'credentials' object.\n3. **Meta:** Check 'meta.instanceId'.\n4. **URL Parameters:** Check for query parameters that look like secrets.\n5. **PinData (CRITICAL):** If 'pinData' exists and contains data, **DO NOT scan its contents**. Just add \"pinData\" to the paths list immediately. We want to remove the whole pinData object, not individual fields inside it.\n\n### RETURN FORMAT:\n{\n  \"paths\": [\"nodes[0].parameters.headerParameters.parameters[0].value\", \"pinData\", \"meta.instanceId\"],\n  \"reasons\": [\"RapidAPI Key\", \"User execution data (entire object)\", \"Instance ID\"]\n}\n\nWORKFLOW:\n{{ JSON.stringify($('Edit Fields').item.json.new) }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        3520,
+        -96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        64
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"paths\": {\n      \"type\": \"array\",\n      \"description\": \"List of JSON paths to redact. If a whole object (like 'pinData') is sensitive, list only the root key, do not list children.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"reasons\": {\n      \"type\": \"array\",\n      \"description\": \"Short explanation for each path.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"paths\",\n    \"reasons\"\n  ]\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        3664,
+        64
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Scan this n8n workflow for sensitive data. Return a JSON object with two arrays: \"paths\" and \"reasons\".\n\n### RULES FOR SCANNIG:\n1. **Header Values:** Check 'x-rapidapi-key', 'authorization', 'api-key'.\n2. **Credentials:** Check any 'credentials' object.\n3. **Meta:** Check 'meta.instanceId'.\n4. **URL Parameters:** Check for query parameters that look like secrets.\n5. **PinData (CRITICAL):** If 'pinData' exists and contains data, **DO NOT scan its contents**. Just add \"pinData\" to the paths list immediately. We want to remove the whole pinData object, not individual fields inside it.\n\n### RETURN FORMAT:\n{\n  \"paths\": [\"nodes[0].parameters.headerParameters.parameters[0].value\", \"pinData\", \"meta.instanceId\"],\n  \"reasons\": [\"RapidAPI Key\", \"User execution data (entire object)\", \"Instance ID\"]\n}\n\nWORKFLOW:\n{{ JSON.stringify($json) }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2080,
+        192
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        352
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model2",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"paths\": {\n      \"type\": \"array\",\n      \"description\": \"List of JSON paths to redact. If a whole object (like 'pinData') is sensitive, list only the root key, do not list children.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"reasons\": {\n      \"type\": \"array\",\n      \"description\": \"Short explanation for each path.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"paths\",\n    \"reasons\"\n  ]\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        2224,
+        352
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.hasChanges }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2864,
+        -96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "authentication": "REDACTED",
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "Wiktor-Potapczyk",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflows-new",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "filePath": "={{ $('New file anonymizer').item.json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
+        "fileContent": "={{ JSON.stringify($('New file anonymizer').item.json, null, 2) }}",
+        "commitMessage": "=edited {{ $('New file anonymizer').item.json.name }} ({{ $node['Set commit date'].json.commitDate }})"
+      },
+      "id": "REDACTED-UUID",
+      "name": "Upload file [GITHUB]1",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        2944,
+        208
+      ],
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. POBIERANIE DANYCH (Ścieżka UPDATE)\n// Bierzemy \"new\" z aktualnego inputu pętli\nconst workflow = $input.first().json.new;\n\n// Jeśli z jakiegoś powodu jest pusto, fallback do czystego jsona\n// const workflow = inputData.new || inputData;\n\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// ==========================================\\n// 🔒 CONFIGURATION\\n// ==========================================\\n\n// Nazwy kluczy które ZAWSZE redagujemy (case-insensitive)\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\n// Wzorce wartości które ZAWSZE redagujemy\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/, name: 'OpenAI' },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/, name: 'Anthropic' },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/, name: 'xAI' },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/, name: 'Google' },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/, name: 'GitHub PAT' },\n  { regex: /^gho_[a-zA-Z0-9]{36}/, name: 'GitHub OAuth' },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/, name: 'Slack Bot' },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/, name: 'Slack User' },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/, name: 'DB Connection' },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/, name: 'Basic Auth' },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/, name: 'Bearer Token' },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/, name: 'URL with credentials' },\n];\n\n// Klucze do całkowitego usunięcia\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\n// ==========================================\\n// 🔧 ENTROPY DETECTION\\n// ==========================================\\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  const hasNumbers = /\\d/.test(value);\n  const hasLetters = /[a-zA-Z]/.test(value);\n  const noSpaces = !/\\s/.test(value);\n  const longEnough = value.length >= 20;\n  if (entropy > 4.0 && hasNumbers && hasLetters && noSpaces && longEnough) {\n    return true;\n  }\n  return false;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\n// ==========================================\\n// 🔧 SANITIZATION\\n// ==========================================\\n\nconst redactedLog = [];\n\nfunction sanitizeValue(value, keyPath) {\n  if (typeof value !== 'string') return value;\n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\nfunction sanitizeObject(obj, path = '') {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj, path);\n  if (Array.isArray(obj)) return obj.map((item, i) => sanitizeObject(item, `${path}[${i}]`));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    const keyField = obj.key || obj.header || obj.param;\n    const valueField = obj.value || obj.content || obj.val;\n    if (keyField && valueField) {\n      if (isSensitiveKeyName(keyField) || looksLikeSecret(valueField)) {\n        return { ...obj, [Object.keys(obj).find(k => ['value', 'content', 'val'].includes(k))]: 'REDACTED' };\n      }\n    }\n    for (const [key, value] of Object.entries(obj)) {\n      const currentPath = path ? `${path}.${key}` : key;\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value, currentPath);\n    }\n    return result;\n  }\n  return obj;\n}\n\nconst anonymized = sanitizeObject(sanitized);\n\n// Dodajemy metadane, żeby wiedzieć że zadziałało\nanonymized._sanitized = {\n  note: \"Sanitized automatically\",\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: anonymized }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2656,
+        -96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Existing file anonymizer"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. POBIERANIE DANYCH (Ścieżka CREATE)\n// Bierzemy główny obiekt z inputu pętli\nconst workflow = $('Split to single items').first().json;\n\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// ==========================================\\n// 🔒 CONFIGURATION\\n// ==========================================\\n\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/, name: 'OpenAI' },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/, name: 'Anthropic' },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/, name: 'xAI' },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/, name: 'Google' },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/, name: 'GitHub PAT' },\n  { regex: /^gho_[a-zA-Z0-9]{36}/, name: 'GitHub OAuth' },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/, name: 'Slack Bot' },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/, name: 'Slack User' },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/, name: 'DB Connection' },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/, name: 'Basic Auth' },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/, name: 'Bearer Token' },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/, name: 'URL with credentials' },\n];\n\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\n// ==========================================\\n// 🔧 ENTROPY DETECTION\\n// ==========================================\\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  const hasNumbers = /\\d/.test(value);\n  const hasLetters = /[a-zA-Z]/.test(value);\n  const noSpaces = !/\\s/.test(value);\n  const longEnough = value.length >= 20;\n  if (entropy > 4.0 && hasNumbers && hasLetters && noSpaces && longEnough) {\n    return true;\n  }\n  return false;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\n// ==========================================\\n// 🔧 SANITIZATION\\n// ==========================================\\n\nfunction sanitizeValue(value, keyPath) {\n  if (typeof value !== 'string') return value;\n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\nfunction sanitizeObject(obj, path = '') {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj, path);\n  if (Array.isArray(obj)) return obj.map((item, i) => sanitizeObject(item, `${path}[${i}]`));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    const keyField = obj.key || obj.header || obj.param;\n    const valueField = obj.value || obj.content || obj.val;\n    if (keyField && valueField) {\n      if (isSensitiveKeyName(keyField) || looksLikeSecret(valueField)) {\n        return { ...obj, [Object.keys(obj).find(k => ['value', 'content', 'val'].includes(k))]: 'REDACTED' };\n      }\n    }\n    for (const [key, value] of Object.entries(obj)) {\n      const currentPath = path ? `${path}.${key}` : key;\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value, currentPath);\n    }\n    return result;\n  }\n  return obj;\n}\n\nconst anonymized = sanitizeObject(sanitized);\n\nanonymized._sanitized = {\n  note: \"Sanitized automatically\",\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: anonymized }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        192
+      ],
+      "id": "REDACTED-UUID",
+      "name": "New file anonymizer"
+    }
+  ],
+  "connections": {
+    "Set date": {
+      "main": [
+        [
+          {
+            "node": "Format date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format date": {
+      "main": [
+        [
+          {
+            "node": "Set commit date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set commit date": {
+      "main": [
+        [
+          {
+            "node": "List files from repository [GITHUB]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List files from repository [GITHUB]": {
+      "main": [
+        [
+          {
+            "node": "Combine file names [GITHUB]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine file names [GITHUB]": {
+      "main": [
+        [
+          {
+            "node": "Retrieve workflows [N8N]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve workflows [N8N]": {
+      "main": [
+        [
+          {
+            "node": "Split to single items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split to single items": {
+      "main": [
+        [
+          {
+            "node": "Check if file exists in repository",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if file exists in repository": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update file [GITHUB]": {
+      "main": [
+        [
+          {
+            "node": "Split to single items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file [GITHUB]": {
+      "main": [
+        [
+          {
+            "node": "Split to single items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload file [GITHUB]1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Existing file anonymizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Update file [GITHUB]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain2": {
+      "main": [
+        [
+          {
+            "node": "New file anonymizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split to single items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file [GITHUB]1": {
+      "main": [
+        [
+          {
+            "node": "Split to single items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Existing file anonymizer": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New file anonymizer": {
+      "main": [
+        [
+          {
+            "node": "Upload file [GITHUB]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-25T21:17:23.656Z",
+      "createdAt": "2026-01-25T21:17:23.656Z",
+      "role": "workflow:owner",
+      "workflowId": "7CYMwhpzDbdxJsTc",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized automatically",
+    "timestamp": "2026-01-25T22:00:07.914Z"
+  }
+}
