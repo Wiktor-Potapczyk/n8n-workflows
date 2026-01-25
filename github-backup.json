@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-25T22:58:34.397Z",
+  "updatedAt": "2026-01-25T23:19:25.063Z",
   "createdAt": "2026-01-25T21:17:23.654Z",
   "id": "7CYMwhpzDbdxJsTc",
   "name": "GitHub Backup",
@@ -15,7 +15,7 @@
       "type": "n8n-nodes-base.dateTime",
       "typeVersion": 2,
       "position": [
-        48,
+        240,
         16
       ]
     },
@@ -32,7 +32,7 @@
       "type": "n8n-nodes-base.dateTime",
       "typeVersion": 2,
       "position": [
-        272,
+        464,
         16
       ]
     },
@@ -54,7 +54,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        496,
+        688,
         16
       ]
     },
@@ -92,7 +92,7 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1,
       "position": [
-        720,
+        912,
         16
       ],
       "alwaysOutputData": true,
@@ -120,7 +120,7 @@
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 2.1,
       "position": [
-        944,
+        1136,
         16
       ]
     },
@@ -138,7 +138,7 @@
       "type": "n8n-nodes-base.n8n",
       "typeVersion": 1,
       "position": [
-        1168,
+        1360,
         16
       ],
       "credentials": {
@@ -207,8 +207,8 @@
             "_redacted": true
           }
         },
-        "filePath": "={{ $json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
-        "fileContent": "={{ JSON.stringify($json, null, 2) }}",
+        "filePath": "={{ $('Diff').item.json.anonymizedWorkflow.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
+        "fileContent": "={{ JSON.stringify($('Diff').item.json.anonymizedWorkflow, null, 2) }}",
         "commitMessage": "={{ $('Basic LLM Chain').item.json.text }}"
       },
       "id": "REDACTED-UUID",
@@ -216,8 +216,8 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1,
       "position": [
-        4192,
-        352
+        3520,
+        240
       ],
       "webhookId": {
         "_redacted": true
@@ -261,16 +261,15 @@
       "type": "n8n-nodes-base.github",
       "typeVersion": 1,
       "position": [
-        2656,
-        192
+        2352,
+        144
       ],
       "webhookId": {
         "_redacted": true
       },
       "credentials": {
         "_redacted": true
-      },
-      "onError": "continueErrorOutput"
+      }
     },
     {
       "parameters": {
@@ -285,7 +284,7 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        -176,
+        16,
         16
       ],
       "id": "REDACTED-UUID",
@@ -388,8 +387,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        3168,
-        -96
+        3104,
+        -112
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain"
@@ -401,7 +400,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        3168,
+        3104,
         64
       ],
       "id": "REDACTED-UUID",
@@ -409,100 +408,6 @@
       "credentials": {
         "_redacted": true
       }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Scan this n8n workflow for sensitive data. Return a JSON object with two arrays: \"paths\" and \"reasons\".\n\n### RULES FOR SCANNIG:\n1. **Header Values:** Check 'x-rapidapi-key', 'authorization', 'api-key'.\n2. **Credentials:** Check any 'credentials' object.\n3. **Meta:** Check 'meta.instanceId'.\n4. **URL Parameters:** Check for query parameters that look like secrets.\n5. **PinData (CRITICAL):** If 'pinData' exists and contains data, **DO NOT scan its contents**. Just add \"pinData\" to the paths list immediately. We want to remove the whole pinData object, not individual fields inside it.\n\n### RETURN FORMAT:\n{\n  \"paths\": [\"nodes[0].parameters.headerParameters.parameters[0].value\", \"pinData\", \"meta.instanceId\"],\n  \"reasons\": [\"RapidAPI Key\", \"User execution data (entire object)\", \"Instance ID\"]\n}\n\nWORKFLOW:\n{{ JSON.stringify($('Edit Fields').item.json.new) }}",
-        "hasOutputParser": true,
-        "batching": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        3520,
-        -96
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Basic LLM Chain1",
-      "retryOnFail": true,
-      "maxTries": 5
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "REDACTED-POSSIBLE-SECRET",
-      "typeVersion": 1,
-      "position": [
-        3520,
-        64
-      ],
-      "id": "REDACTED-UUID",
-      "name": "DeepSeek Chat Model1",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"paths\": {\n      \"type\": \"array\",\n      \"description\": \"List of JSON paths to redact. If a whole object (like 'pinData') is sensitive, list only the root key, do not list children.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"reasons\": {\n      \"type\": \"array\",\n      \"description\": \"Short explanation for each path.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"paths\",\n    \"reasons\"\n  ]\n}"
-      },
-      "type": "REDACTED-POSSIBLE-SECRET",
-      "typeVersion": 1.3,
-      "position": [
-        3664,
-        64
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Structured Output Parser"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Scan this n8n workflow for sensitive data. Return a JSON object with two arrays: \"paths\" and \"reasons\".\n\n### RULES FOR SCANNIG:\n1. **Header Values:** Check 'x-rapidapi-key', 'authorization', 'api-key'.\n2. **Credentials:** Check any 'credentials' object.\n3. **Meta:** Check 'meta.instanceId'.\n4. **URL Parameters:** Check for query parameters that look like secrets.\n5. **PinData (CRITICAL):** If 'pinData' exists and contains data, **DO NOT scan its contents**. Just add \"pinData\" to the paths list immediately. We want to remove the whole pinData object, not individual fields inside it.\n\n### RETURN FORMAT:\n{\n  \"paths\": [\"nodes[0].parameters.headerParameters.parameters[0].value\", \"pinData\", \"meta.instanceId\"],\n  \"reasons\": [\"RapidAPI Key\", \"User execution data (entire object)\", \"Instance ID\"]\n}\n\nWORKFLOW:\n{{ JSON.stringify($json) }}",
-        "hasOutputParser": true,
-        "batching": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        2080,
-        192
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Basic LLM Chain2"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "REDACTED-POSSIBLE-SECRET",
-      "typeVersion": 1,
-      "position": [
-        2080,
-        352
-      ],
-      "id": "REDACTED-UUID",
-      "name": "DeepSeek Chat Model2",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"paths\": {\n      \"type\": \"array\",\n      \"description\": \"List of JSON paths to redact. If a whole object (like 'pinData') is sensitive, list only the root key, do not list children.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"reasons\": {\n      \"type\": \"array\",\n      \"description\": \"Short explanation for each path.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"paths\",\n    \"reasons\"\n  ]\n}"
-      },
-      "type": "REDACTED-POSSIBLE-SECRET",
-      "typeVersion": 1.3,
-      "position": [
-        2224,
-        352
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Structured Output Parser1"
     },
     {
       "parameters": {
@@ -539,66 +444,20 @@
     },
     {
       "parameters": {
-        "authentication": "REDACTED",
-        "resource": "file",
-        "operation": "edit",
-        "owner": {
-          "__rl": true,
-          "value": "Wiktor-Potapczyk",
-          "mode": "list",
-          "cachedResultName": {
-            "_redacted": true
-          },
-          "cachedResultUrl": {
-            "_redacted": true
-          }
-        },
-        "repository": {
-          "__rl": true,
-          "value": "n8n-workflows",
-          "mode": "list",
-          "cachedResultName": {
-            "_redacted": true
-          },
-          "cachedResultUrl": {
-            "_redacted": true
-          }
-        },
-        "filePath": "={{ $('New file anonymizer').item.json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
-        "fileContent": "={{ JSON.stringify($('New file anonymizer').item.json, null, 2) }}",
-        "commitMessage": "=edited {{ $('New file anonymizer').item.json.name }} ({{ $node['Set commit date'].json.commitDate }})"
-      },
-      "id": "REDACTED-UUID",
-      "name": "Upload file [GITHUB]1",
-      "type": "n8n-nodes-base.github",
-      "typeVersion": 1,
-      "position": [
-        2944,
-        208
-      ],
-      "webhookId": {
-        "_redacted": true
-      },
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// 1. POBIERANIE DANYCH (Ścieżka CREATE)\n// Bierzemy główny obiekt z inputu pętli\nconst workflow = $('Split to single items').first().json;\n\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// ==========================================\\n// 🔒 CONFIGURATION\\n// ==========================================\\n\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/, name: 'OpenAI' },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/, name: 'Anthropic' },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/, name: 'xAI' },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/, name: 'Google' },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/, name: 'GitHub PAT' },\n  { regex: /^gho_[a-zA-Z0-9]{36}/, name: 'GitHub OAuth' },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/, name: 'Slack Bot' },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/, name: 'Slack User' },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/, name: 'DB Connection' },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/, name: 'Basic Auth' },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/, name: 'Bearer Token' },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/, name: 'URL with credentials' },\n];\n\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\n// ==========================================\\n// 🔧 ENTROPY DETECTION\\n// ==========================================\\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  const hasNumbers = /\\d/.test(value);\n  const hasLetters = /[a-zA-Z]/.test(value);\n  const noSpaces = !/\\s/.test(value);\n  const longEnough = value.length >= 20;\n  if (entropy > 4.0 && hasNumbers && hasLetters && noSpaces && longEnough) {\n    return true;\n  }\n  return false;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\n// ==========================================\\n// 🔧 SANITIZATION\\n// ==========================================\\n\nfunction sanitizeValue(value, keyPath) {\n  if (typeof value !== 'string') return value;\n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\nfunction sanitizeObject(obj, path = '') {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj, path);\n  if (Array.isArray(obj)) return obj.map((item, i) => sanitizeObject(item, `${path}[${i}]`));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    const keyField = obj.key || obj.header || obj.param;\n    const valueField = obj.value || obj.content || obj.val;\n    if (keyField && valueField) {\n      if (isSensitiveKeyName(keyField) || looksLikeSecret(valueField)) {\n        return { ...obj, [Object.keys(obj).find(k => ['value', 'content', 'val'].includes(k))]: 'REDACTED' };\n      }\n    }\n    for (const [key, value] of Object.entries(obj)) {\n      const currentPath = path ? `${path}.${key}` : key;\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value, currentPath);\n    }\n    return result;\n  }\n  return obj;\n}\n\nconst anonymized = sanitizeObject(sanitized);\n\nanonymized._sanitized = {\n  note: \"Sanitized automatically\",\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: anonymized }];"
+        "jsCode": "const workflow = $('Split to single items').first().json;\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// ==========================================\n// 🔒 CONFIGURATION\n// ==========================================\n\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/ },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/ },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/ },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/ },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/ },\n  { regex: /^gho_[a-zA-Z0-9]{36}/ },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/ },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/ },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/ },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/ },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/ },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/ },\n];\n\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\n// ==========================================\n// 🔧 HELPERS\n// ==========================================\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  const hasNumbers = /\\d/.test(value);\n  const hasLetters = /[a-zA-Z]/.test(value);\n  const noSpaces = !/\\s/.test(value);\n  const longEnough = value.length >= 20;\n  return entropy > 4.0 && hasNumbers && hasLetters && noSpaces && longEnough;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\nfunction sanitizeValue(value) {\n  if (typeof value !== 'string') return value;\n  \n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\n// ==========================================\n// 🔧 SANITIZATION\n// ==========================================\n\nfunction sanitizeObject(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj);\n  if (Array.isArray(obj)) return obj.map(item => sanitizeObject(item));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    \n    // Struktura {name, value}\n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    \n    for (const [key, value] of Object.entries(obj)) {\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value);\n    }\n    return result;\n  }\n  return obj;\n}\n\n// ==========================================\n// 🚀 MAIN\n// ==========================================\n\nconst anonymized = sanitizeObject(sanitized);\n\nanonymized._sanitized = {\n  note: \"Sanitized for public sharing\",\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: anonymized }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2416,
-        192
+        2112,
+        144
       ],
       "id": "REDACTED-UUID",
       "name": "New file anonymizer"
     },
     {
       "parameters": {
-        "jsCode": "const oldVersion = $json.repo;\nconst newVersion = $json.new;\n\n// 1. Klucze, które ZAWSZE ignorujemy przy porównywaniu\nconst IGNORE_KEYS = [\n  'position', 'id', 'webhookId', 'uuid', \n  'updatedAt', 'createdAt', 'activeVersionId',\n  'versionId', 'meta', 'credentials', 'pinData', 'settings',\n  'instanceId', 'notes' // visual notes\n];\n\n// Truncate helper\nfunction truncate(str, len) {\n  if (!str) return '';\n  str = String(str);\n  return str.length > len ? str.slice(0, len) + '...' : str;\n}\n\n// 2. Funkcja sprawdzająca, czy wartość w repozytorium jest zredagowana\n// Jeśli tak -> uznajemy to za zgodne z nową wersją (nie zgłaszamy zmiany)\nfunction isRedacted(value) {\n    if (typeof value === 'string' && value.includes('REDACTED')) return true;\n    if (value && typeof value === 'object' && value._redacted === true) return true;\n    return false;\n}\n\n// 3. Rekurencyjne czyszczenie obiektu\nfunction cleanObject(obj) {\n  if (obj === null || typeof obj !== 'object') return obj;\n  \n  if (Array.isArray(obj)) {\n    return obj.map(item => cleanObject(item));\n  }\n  \n  const cleaned = {};\n  for (const [key, value] of Object.entries(obj)) {\n    if (IGNORE_KEYS.includes(key)) continue;\n    \n    // Jeśli stara wartość (z repo) wygląda na zredagowaną, nie przepisujemy jej do porównania\n    // Uwaga: To zadziała w kontekście struktury, ale dla pewności ignorujemy klucze globalnie\n    cleaned[key] = cleanObject(value);\n  }\n  return cleaned;\n}\n\n// 4. Zaawansowane porównywanie parametrów (uwzględnia REDACTED)\nfunction areParametersEqual(oldParams, newParams) {\n    const cleanOld = cleanObject(oldParams || {});\n    const cleanNew = cleanObject(newParams || {});\n\n    // Prosta serializacja najpierw\n    const strOld = JSON.stringify(cleanOld);\n    const strNew = JSON.stringify(cleanNew);\n    \n    if (strOld === strNew) return true;\n\n    // Jeśli się różnią, sprawdzamy głębiej czy różnica nie wynika z redakcji\n    // Iterujemy po kluczach nowego obiektu\n    for (const key in cleanNew) {\n        const oldVal = cleanOld[key];\n        const newVal = cleanNew[key];\n\n        // Jeśli stara wartość była zredagowana, ignorujemy różnicę\n        if (isRedacted(oldVal)) continue;\n\n        // Jeśli wartości są różne i stara nie jest zredagowana -> to jest zmiana\n        if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {\n            return false; // Znalazł prawdziwą różnicę\n        }\n    }\n    \n    return true; // Nie znaleziono istotnych różnic\n}\n\nfunction diffCode(oldCode, newCode) {\n  if (!oldCode && !newCode) return { added: [], removed: [] };\n  if (!oldCode) return { added: newCode.split('\\n').slice(0, 5), removed: [] };\n  if (!newCode) return { added: [], removed: oldCode.split('\\n').slice(0, 5) };\n  \n  const oldLines = oldCode.split('\\n').map(l => l.trim()).filter(l => l.length > 0);\n  const newLines = newCode.split('\\n').map(l => l.trim()).filter(l => l.length > 0);\n  \n  const added = newLines.filter(l => !oldLines.includes(l)).slice(0, 5);\n  const removed = oldLines.filter(l => !newLines.includes(l)).slice(0, 5);\n  \n  return { added, removed };\n}\n\nfunction compareNodes(oldNodes, newNodes) {\n  const changes = [];\n  \n  if (!oldNodes || !newNodes) {\n    return [{ type: 'error', detail: `Missing nodes data` }];\n  }\n  \n  const oldByName = Object.fromEntries(oldNodes.map(n => [n.name, n]));\n  const newByName = Object.fromEntries(newNodes.map(n => [n.name, n]));\n  \n  const allNames = new Set([...Object.keys(oldByName), ...Object.keys(newByName)]);\n  \n  for (const name of allNames) {\n    if (!(name in oldByName)) {\n      const node = newByName[name];\n      changes.push({ \n        type: 'node_added', \n        node: name, \n        nodeType: node.type?.split('.').pop() || 'unknown'\n      });\n    } else if (!(name in newByName)) {\n      changes.push({ type: 'node_removed', node: name });\n    } else {\n      const oldNode = oldByName[name];\n      const newNode = newByName[name];\n      \n      const oldCode = oldNode.parameters?.jsCode;\n      const newCode = newNode.parameters?.jsCode;\n      \n      // 1. Sprawdź kod JS (Code Node)\n      if ((oldCode || newCode) && oldCode !== newCode) {\n        // Ignoruj jeśli stary kod to tylko marker\n        if (!isRedacted(oldCode)) {\n             const codeDiff = diffCode(oldCode, newCode);\n             // Tylko jeśli faktycznie są różnice w liniach (ignoruj białe znaki)\n             if (codeDiff.added.length > 0 || codeDiff.removed.length > 0) {\n                 changes.push({ \n                   type: 'node_modified', \n                   node: name,\n                   nodeType: newNode.type?.split('.').pop() || 'unknown',\n                   field: 'jsCode',\n                   diff: codeDiff\n                 });\n                 continue; // Jeśli kod się zmienił, nie sprawdzaj reszty parametrów tego węzła\n             }\n        }\n      }\n      \n      // 2. Sprawdź inne parametry (używając inteligentnego porównania)\n      if (!areParametersEqual(oldNode.parameters, newNode.parameters)) {\n        changes.push({ \n          type: 'node_modified', \n          node: name,\n          nodeType: newNode.type?.split('.').pop() || 'unknown',\n          field: 'parameters',\n          detail: 'Config changed'\n        });\n      }\n    }\n  }\n  \n  return changes;\n}\n\nfunction generateSummary(changes) {\n  return changes.map(c => {\n    switch(c.type) {\n      case 'node_added': \n        return `+ ADDED \"${c.node}\" (${c.nodeType})`;\n      case 'node_removed': \n        return `- REMOVED \"${c.node}\"`;\n      case 'node_modified': \n        let desc = `~ MODIFIED \"${c.node}\" [${c.field}]`;\n        if (c.diff) {\n          if (c.diff.added.length > 0) {\n            desc += '\\n  ADDED LINES:';\n            c.diff.added.forEach(l => desc += `\\n    + ${truncate(l, 100)}`);\n          }\n          if (c.diff.removed.length > 0) {\n            desc += '\\n  REMOVED LINES:';\n            c.diff.removed.forEach(l => desc += `\\n    - ${truncate(l, 100)}`);\n          }\n        }\n        return desc;\n      case 'error':\n        return `ERROR: ${c.detail}`;\n      default: \n        return `? ${c.type}`;\n    }\n  }).join('\\n\\n');\n}\n\n// === MAIN ===\nconst nodeChanges = compareNodes(oldVersion.nodes, newVersion.nodes);\n\nif (nodeChanges.length === 0) {\n  return [{ json: { \n    hasChanges: false,\n    summary: 'No significant changes detected',\n    workflowName: newVersion.name || 'unknown'\n  }}];\n}\n\nconst summary = generateSummary(nodeChanges);\n\nreturn [{ json: { \n  hasChanges: true,\n  changeCount: nodeChanges.length,\n  summary: summary,\n  workflowName: newVersion.name || 'unknown'\n}}];"
+        "jsCode": "const oldVersion = $json.repo;\nconst newVersion = $json.new;\n\n// ==========================================\n// 🔒 ANONYMIZER\n// ==========================================\n\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/ },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/ },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/ },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/ },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/ },\n  { regex: /^gho_[a-zA-Z0-9]{36}/ },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/ },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/ },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/ },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/ },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/ },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/ },\n];\n\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  return entropy > 4.0 && /\\d/.test(value) && /[a-zA-Z]/.test(value) && !/\\s/.test(value) && value.length >= 20;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\nfunction sanitizeValue(value) {\n  if (typeof value !== 'string') return value;\n  \n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\nfunction sanitizeObject(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj);\n  if (Array.isArray(obj)) return obj.map(item => sanitizeObject(item));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    \n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    \n    for (const [key, value] of Object.entries(obj)) {\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value);\n    }\n    return result;\n  }\n  return obj;\n}\n\n// ==========================================\n// 🔄 DIFF LOGIC\n// ==========================================\n\nconst IGNORE_KEYS = [\n  'position', 'id', 'webhookId', 'uuid', \n  'updatedAt', 'createdAt', 'activeVersionId',\n  'versionId', 'meta', 'credentials', 'pinData', 'settings',\n  'instanceId', 'notes', '_sanitized'\n];\n\nfunction truncate(str, len) {\n  if (!str) return '';\n  str = String(str);\n  return str.length > len ? str.slice(0, len) + '...' : str;\n}\n\nfunction cleanObject(obj) {\n  if (obj === null || typeof obj !== 'object') return obj;\n  if (Array.isArray(obj)) return obj.map(item => cleanObject(item));\n  \n  const cleaned = {};\n  for (const [key, value] of Object.entries(obj)) {\n    if (IGNORE_KEYS.includes(key)) continue;\n    cleaned[key] = cleanObject(value);\n  }\n  return cleaned;\n}\n\nfunction diffCode(oldCode, newCode) {\n  if (!oldCode && !newCode) return { added: [], removed: [] };\n  if (!oldCode) return { added: newCode.split('\\n').slice(0, 5), removed: [] };\n  if (!newCode) return { added: [], removed: oldCode.split('\\n').slice(0, 5) };\n  \n  const oldLines = oldCode.split('\\n').map(l => l.trim()).filter(l => l.length > 0);\n  const newLines = newCode.split('\\n').map(l => l.trim()).filter(l => l.length > 0);\n  \n  return {\n    added: newLines.filter(l => !oldLines.includes(l)).slice(0, 5),\n    removed: oldLines.filter(l => !newLines.includes(l)).slice(0, 5)\n  };\n}\n\nfunction compareNodes(oldNodes, newNodes) {\n  const changes = [];\n  \n  if (!oldNodes || !newNodes) {\n    return [{ type: 'error', detail: 'Missing nodes data' }];\n  }\n  \n  const oldByName = Object.fromEntries(oldNodes.map(n => [n.name, n]));\n  const newByName = Object.fromEntries(newNodes.map(n => [n.name, n]));\n  const allNames = new Set([...Object.keys(oldByName), ...Object.keys(newByName)]);\n  \n  for (const name of allNames) {\n    if (!(name in oldByName)) {\n      changes.push({ type: 'node_added', node: name, nodeType: newByName[name].type?.split('.').pop() || 'unknown' });\n    } else if (!(name in newByName)) {\n      changes.push({ type: 'node_removed', node: name });\n    } else {\n      const oldNode = oldByName[name];\n      const newNode = newByName[name];\n      \n      const oldCode = oldNode.parameters?.jsCode;\n      const newCode = newNode.parameters?.jsCode;\n      \n      if ((oldCode || newCode) && oldCode !== newCode) {\n        const codeDiff = diffCode(oldCode, newCode);\n        if (codeDiff.added.length > 0 || codeDiff.removed.length > 0) {\n          changes.push({ type: 'node_modified', node: name, nodeType: newNode.type?.split('.').pop() || 'unknown', field: 'jsCode', diff: codeDiff });\n          continue;\n        }\n      }\n      \n      const oldParams = cleanObject(oldNode.parameters);\n      const newParams = cleanObject(newNode.parameters);\n      \n      if (JSON.stringify(oldParams) !== JSON.stringify(newParams)) {\n        changes.push({ type: 'node_modified', node: name, nodeType: newNode.type?.split('.').pop() || 'unknown', field: 'parameters', detail: 'Config changed' });\n      }\n    }\n  }\n  \n  return changes;\n}\n\nfunction generateSummary(changes) {\n  return changes.map(c => {\n    switch(c.type) {\n      case 'node_added': return `+ ADDED \"${c.node}\" (${c.nodeType})`;\n      case 'node_removed': return `- REMOVED \"${c.node}\"`;\n      case 'node_modified':\n        let desc = `~ MODIFIED \"${c.node}\" [${c.field}]`;\n        if (c.diff) {\n          if (c.diff.added.length) desc += '\\n  ADDED:\\n    + ' + c.diff.added.map(l => truncate(l, 80)).join('\\n    + ');\n          if (c.diff.removed.length) desc += '\\n  REMOVED:\\n    - ' + c.diff.removed.map(l => truncate(l, 80)).join('\\n    - ');\n        }\n        return desc;\n      default: return `? ${c.type}`;\n    }\n  }).join('\\n\\n');\n}\n\n// ==========================================\n// 🚀 MAIN\n// ==========================================\n\n// 1. Anonimizuj NOWĄ wersję\nconst anonymizedNew = sanitizeObject(JSON.parse(JSON.stringify(newVersion)));\nanonymizedNew._sanitized = { note: \"Sanitized for public sharing\", timestamp: new Date().toISOString() };\n\n// 2. Porównaj repo (już zanonimizowane) z anonymizedNew\nconst nodeChanges = compareNodes(oldVersion.nodes, anonymizedNew.nodes);\n\nif (nodeChanges.length === 0) {\n  return [{ json: { \n    hasChanges: false,\n    summary: 'No significant changes detected',\n    workflowName: newVersion.name || 'unknown',\n    anonymizedWorkflow: anonymizedNew\n  }}];\n}\n\nreturn [{ json: { \n  hasChanges: true,\n  changeCount: nodeChanges.length,\n  summary: generateSummary(nodeChanges),\n  workflowName: newVersion.name || 'unknown',\n  anonymizedWorkflow: anonymizedNew\n}}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -608,19 +467,6 @@
       ],
       "id": "REDACTED-UUID",
       "name": "Diff"
-    },
-    {
-      "parameters": {
-        "jsCode": "// 1. POBIERANIE DANYCH (Ścieżka UPDATE)\n// Bierzemy \"new\" z aktualnego inputu pętli\nconst workflow = $('Edit Fields').first().json.new;\n\n// Jeśli z jakiegoś powodu jest pusto, fallback do czystego jsona\n// const workflow = inputData.new || inputData;\n\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// ==========================================\\n// 🔒 CONFIGURATION\\n// ==========================================\\n\n// Nazwy kluczy które ZAWSZE redagujemy (case-insensitive)\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\n// Wzorce wartości które ZAWSZE redagujemy\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/, name: 'OpenAI' },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/, name: 'Anthropic' },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/, name: 'xAI' },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/, name: 'Google' },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/, name: 'GitHub PAT' },\n  { regex: /^gho_[a-zA-Z0-9]{36}/, name: 'GitHub OAuth' },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/, name: 'Slack Bot' },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/, name: 'Slack User' },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/, name: 'DB Connection' },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/, name: 'Basic Auth' },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/, name: 'Bearer Token' },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/, name: 'URL with credentials' },\n];\n\n// Klucze do całkowitego usunięcia\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\n// ==========================================\\n// 🔧 ENTROPY DETECTION\\n// ==========================================\\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  const hasNumbers = /\\d/.test(value);\n  const hasLetters = /[a-zA-Z]/.test(value);\n  const noSpaces = !/\\s/.test(value);\n  const longEnough = value.length >= 20;\n  if (entropy > 4.0 && hasNumbers && hasLetters && noSpaces && longEnough) {\n    return true;\n  }\n  return false;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\n// ==========================================\\n// 🔧 SANITIZATION\\n// ==========================================\\n\nconst redactedLog = [];\n\nfunction sanitizeValue(value, keyPath) {\n  if (typeof value !== 'string') return value;\n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\nfunction sanitizeObject(obj, path = '') {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj, path);\n  if (Array.isArray(obj)) return obj.map((item, i) => sanitizeObject(item, `${path}[${i}]`));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    const keyField = obj.key || obj.header || obj.param;\n    const valueField = obj.value || obj.content || obj.val;\n    if (keyField && valueField) {\n      if (isSensitiveKeyName(keyField) || looksLikeSecret(valueField)) {\n        return { ...obj, [Object.keys(obj).find(k => ['value', 'content', 'val'].includes(k))]: 'REDACTED' };\n      }\n    }\n    for (const [key, value] of Object.entries(obj)) {\n      const currentPath = path ? `${path}.${key}` : key;\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value, currentPath);\n    }\n    return result;\n  }\n  return obj;\n}\n\nconst anonymized = sanitizeObject(sanitized);\n\n// Dodajemy metadane, żeby wiedzieć że zadziałało\nanonymized._sanitized = {\n  note: \"Sanitized automatically\",\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: anonymized }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3856,
-        -96
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Existing file anonymizer"
     }
   ],
   "connections": {
@@ -712,7 +558,7 @@
         ],
         [
           {
-            "node": "Basic LLM Chain2",
+            "node": "New file anonymizer",
             "type": "main",
             "index": 0
           }
@@ -739,13 +585,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Upload file [GITHUB]1",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Schedule Trigger": {
@@ -796,7 +636,7 @@
       "main": [
         [
           {
-            "node": "Basic LLM Chain1",
+            "node": "Update file [GITHUB]",
             "type": "main",
             "index": 0
           }
@@ -814,72 +654,6 @@
         ]
       ]
     },
-    "Basic LLM Chain1": {
-      "main": [
-        [
-          {
-            "node": "Existing file anonymizer",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DeepSeek Chat Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain1",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Structured Output Parser": {
-      "ai_outputParser": [
-        [
-          {
-            "node": "Basic LLM Chain1",
-            "type": "ai_outputParser",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Basic LLM Chain2": {
-      "main": [
-        [
-          {
-            "node": "New file anonymizer",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DeepSeek Chat Model2": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain2",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Structured Output Parser1": {
-      "ai_outputParser": [
-        [
-          {
-            "node": "Basic LLM Chain2",
-            "type": "ai_outputParser",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If": {
       "main": [
         [
@@ -889,17 +663,6 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Split to single items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Upload file [GITHUB]1": {
-      "main": [
         [
           {
             "node": "Split to single items",
@@ -925,17 +688,6 @@
         [
           {
             "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Existing file anonymizer": {
-      "main": [
-        [
-          {
-            "node": "Update file [GITHUB]",
             "type": "main",
             "index": 0
           }
@@ -973,8 +725,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-25T22:58:45.000Z",
-    "createdAt": "2026-01-25T22:58:34.398Z",
+    "updatedAt": "2026-01-25T23:19:27.000Z",
+    "createdAt": "2026-01-25T23:19:25.066Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "7CYMwhpzDbdxJsTc",
     "nodes": [
@@ -987,7 +739,7 @@
         "type": "n8n-nodes-base.dateTime",
         "typeVersion": 2,
         "position": [
-          48,
+          240,
           16
         ]
       },
@@ -1004,7 +756,7 @@
         "type": "n8n-nodes-base.dateTime",
         "typeVersion": 2,
         "position": [
-          272,
+          464,
           16
         ]
       },
@@ -1026,7 +778,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 2,
         "position": [
-          496,
+          688,
           16
         ]
       },
@@ -1064,7 +816,7 @@
         "type": "n8n-nodes-base.github",
         "typeVersion": 1,
         "position": [
-          720,
+          912,
           16
         ],
         "alwaysOutputData": true,
@@ -1092,7 +844,7 @@
         "type": "n8n-nodes-base.itemLists",
         "typeVersion": 2.1,
         "position": [
-          944,
+          1136,
           16
         ]
       },
@@ -1110,7 +862,7 @@
         "type": "n8n-nodes-base.n8n",
         "typeVersion": 1,
         "position": [
-          1168,
+          1360,
           16
         ],
         "credentials": {
@@ -1179,8 +931,8 @@
               "_redacted": true
             }
           },
-          "filePath": "={{ $json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
-          "fileContent": "={{ JSON.stringify($json, null, 2) }}",
+          "filePath": "={{ $('Diff').item.json.anonymizedWorkflow.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
+          "fileContent": "={{ JSON.stringify($('Diff').item.json.anonymizedWorkflow, null, 2) }}",
           "commitMessage": "={{ $('Basic LLM Chain').item.json.text }}"
         },
         "id": "REDACTED-UUID",
@@ -1188,8 +940,8 @@
         "type": "n8n-nodes-base.github",
         "typeVersion": 1,
         "position": [
-          4192,
-          352
+          3520,
+          240
         ],
         "webhookId": {
           "_redacted": true
@@ -1233,16 +985,15 @@
         "type": "n8n-nodes-base.github",
         "typeVersion": 1,
         "position": [
-          2656,
-          192
+          2352,
+          144
         ],
         "webhookId": {
           "_redacted": true
         },
         "credentials": {
           "_redacted": true
-        },
-        "onError": "continueErrorOutput"
+        }
       },
       {
         "parameters": {
@@ -1257,7 +1008,7 @@
         "type": "n8n-nodes-base.scheduleTrigger",
         "typeVersion": 1.3,
         "position": [
-          -176,
+          16,
           16
         ],
         "id": "REDACTED-UUID",
@@ -1360,8 +1111,8 @@
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.9,
         "position": [
-          3168,
-          -96
+          3104,
+          -112
         ],
         "id": "REDACTED-UUID",
         "name": "Basic LLM Chain"
@@ -1373,7 +1124,7 @@
         "type": "REDACTED-POSSIBLE-SECRET",
         "typeVersion": 1,
         "position": [
-          3168,
+          3104,
           64
         ],
         "id": "REDACTED-UUID",
@@ -1381,100 +1132,6 @@
         "credentials": {
           "_redacted": true
         }
-      },
-      {
-        "parameters": {
-          "promptType": "define",
-          "text": "=Scan this n8n workflow for sensitive data. Return a JSON object with two arrays: \"paths\" and \"reasons\".\n\n### RULES FOR SCANNIG:\n1. **Header Values:** Check 'x-rapidapi-key', 'authorization', 'api-key'.\n2. **Credentials:** Check any 'credentials' object.\n3. **Meta:** Check 'meta.instanceId'.\n4. **URL Parameters:** Check for query parameters that look like secrets.\n5. **PinData (CRITICAL):** If 'pinData' exists and contains data, **DO NOT scan its contents**. Just add \"pinData\" to the paths list immediately. We want to remove the whole pinData object, not individual fields inside it.\n\n### RETURN FORMAT:\n{\n  \"paths\": [\"nodes[0].parameters.headerParameters.parameters[0].value\", \"pinData\", \"meta.instanceId\"],\n  \"reasons\": [\"RapidAPI Key\", \"User execution data (entire object)\", \"Instance ID\"]\n}\n\nWORKFLOW:\n{{ JSON.stringify($('Edit Fields').item.json.new) }}",
-          "hasOutputParser": true,
-          "batching": {}
-        },
-        "type": "@n8n/n8n-nodes-langchain.chainLlm",
-        "typeVersion": 1.9,
-        "position": [
-          3520,
-          -96
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Basic LLM Chain1",
-        "retryOnFail": true,
-        "maxTries": 5
-      },
-      {
-        "parameters": {
-          "options": {}
-        },
-        "type": "REDACTED-POSSIBLE-SECRET",
-        "typeVersion": 1,
-        "position": [
-          3520,
-          64
-        ],
-        "id": "REDACTED-UUID",
-        "name": "DeepSeek Chat Model1",
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "schemaType": "manual",
-          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"paths\": {\n      \"type\": \"array\",\n      \"description\": \"List of JSON paths to redact. If a whole object (like 'pinData') is sensitive, list only the root key, do not list children.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"reasons\": {\n      \"type\": \"array\",\n      \"description\": \"Short explanation for each path.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"paths\",\n    \"reasons\"\n  ]\n}"
-        },
-        "type": "REDACTED-POSSIBLE-SECRET",
-        "typeVersion": 1.3,
-        "position": [
-          3664,
-          64
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Structured Output Parser"
-      },
-      {
-        "parameters": {
-          "promptType": "define",
-          "text": "=Scan this n8n workflow for sensitive data. Return a JSON object with two arrays: \"paths\" and \"reasons\".\n\n### RULES FOR SCANNIG:\n1. **Header Values:** Check 'x-rapidapi-key', 'authorization', 'api-key'.\n2. **Credentials:** Check any 'credentials' object.\n3. **Meta:** Check 'meta.instanceId'.\n4. **URL Parameters:** Check for query parameters that look like secrets.\n5. **PinData (CRITICAL):** If 'pinData' exists and contains data, **DO NOT scan its contents**. Just add \"pinData\" to the paths list immediately. We want to remove the whole pinData object, not individual fields inside it.\n\n### RETURN FORMAT:\n{\n  \"paths\": [\"nodes[0].parameters.headerParameters.parameters[0].value\", \"pinData\", \"meta.instanceId\"],\n  \"reasons\": [\"RapidAPI Key\", \"User execution data (entire object)\", \"Instance ID\"]\n}\n\nWORKFLOW:\n{{ JSON.stringify($json) }}",
-          "hasOutputParser": true,
-          "batching": {}
-        },
-        "type": "@n8n/n8n-nodes-langchain.chainLlm",
-        "typeVersion": 1.9,
-        "position": [
-          2080,
-          192
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Basic LLM Chain2"
-      },
-      {
-        "parameters": {
-          "options": {}
-        },
-        "type": "REDACTED-POSSIBLE-SECRET",
-        "typeVersion": 1,
-        "position": [
-          2080,
-          352
-        ],
-        "id": "REDACTED-UUID",
-        "name": "DeepSeek Chat Model2",
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "schemaType": "manual",
-          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"paths\": {\n      \"type\": \"array\",\n      \"description\": \"List of JSON paths to redact. If a whole object (like 'pinData') is sensitive, list only the root key, do not list children.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"reasons\": {\n      \"type\": \"array\",\n      \"description\": \"Short explanation for each path.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"paths\",\n    \"reasons\"\n  ]\n}"
-        },
-        "type": "REDACTED-POSSIBLE-SECRET",
-        "typeVersion": 1.3,
-        "position": [
-          2224,
-          352
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Structured Output Parser1"
       },
       {
         "parameters": {
@@ -1511,66 +1168,20 @@
       },
       {
         "parameters": {
-          "authentication": "REDACTED",
-          "resource": "file",
-          "operation": "edit",
-          "owner": {
-            "__rl": true,
-            "value": "Wiktor-Potapczyk",
-            "mode": "list",
-            "cachedResultName": {
-              "_redacted": true
-            },
-            "cachedResultUrl": {
-              "_redacted": true
-            }
-          },
-          "repository": {
-            "__rl": true,
-            "value": "n8n-workflows",
-            "mode": "list",
-            "cachedResultName": {
-              "_redacted": true
-            },
-            "cachedResultUrl": {
-              "_redacted": true
-            }
-          },
-          "filePath": "={{ $('New file anonymizer').item.json.name.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase() }}.json",
-          "fileContent": "={{ JSON.stringify($('New file anonymizer').item.json, null, 2) }}",
-          "commitMessage": "=edited {{ $('New file anonymizer').item.json.name }} ({{ $node['Set commit date'].json.commitDate }})"
-        },
-        "id": "REDACTED-UUID",
-        "name": "Upload file [GITHUB]1",
-        "type": "n8n-nodes-base.github",
-        "typeVersion": 1,
-        "position": [
-          2944,
-          208
-        ],
-        "webhookId": {
-          "_redacted": true
-        },
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "jsCode": "// 1. POBIERANIE DANYCH (Ścieżka CREATE)\n// Bierzemy główny obiekt z inputu pętli\nconst workflow = $('Split to single items').first().json;\n\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// ==========================================\\n// 🔒 CONFIGURATION\\n// ==========================================\\n\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/, name: 'OpenAI' },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/, name: 'Anthropic' },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/, name: 'xAI' },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/, name: 'Google' },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/, name: 'GitHub PAT' },\n  { regex: /^gho_[a-zA-Z0-9]{36}/, name: 'GitHub OAuth' },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/, name: 'Slack Bot' },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/, name: 'Slack User' },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/, name: 'DB Connection' },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/, name: 'Basic Auth' },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/, name: 'Bearer Token' },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/, name: 'URL with credentials' },\n];\n\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\n// ==========================================\\n// 🔧 ENTROPY DETECTION\\n// ==========================================\\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  const hasNumbers = /\\d/.test(value);\n  const hasLetters = /[a-zA-Z]/.test(value);\n  const noSpaces = !/\\s/.test(value);\n  const longEnough = value.length >= 20;\n  if (entropy > 4.0 && hasNumbers && hasLetters && noSpaces && longEnough) {\n    return true;\n  }\n  return false;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\n// ==========================================\\n// 🔧 SANITIZATION\\n// ==========================================\\n\nfunction sanitizeValue(value, keyPath) {\n  if (typeof value !== 'string') return value;\n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\nfunction sanitizeObject(obj, path = '') {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj, path);\n  if (Array.isArray(obj)) return obj.map((item, i) => sanitizeObject(item, `${path}[${i}]`));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    const keyField = obj.key || obj.header || obj.param;\n    const valueField = obj.value || obj.content || obj.val;\n    if (keyField && valueField) {\n      if (isSensitiveKeyName(keyField) || looksLikeSecret(valueField)) {\n        return { ...obj, [Object.keys(obj).find(k => ['value', 'content', 'val'].includes(k))]: 'REDACTED' };\n      }\n    }\n    for (const [key, value] of Object.entries(obj)) {\n      const currentPath = path ? `${path}.${key}` : key;\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value, currentPath);\n    }\n    return result;\n  }\n  return obj;\n}\n\nconst anonymized = sanitizeObject(sanitized);\n\nanonymized._sanitized = {\n  note: \"Sanitized automatically\",\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: anonymized }];"
+          "jsCode": "const workflow = $('Split to single items').first().json;\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// ==========================================\n// 🔒 CONFIGURATION\n// ==========================================\n\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/ },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/ },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/ },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/ },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/ },\n  { regex: /^gho_[a-zA-Z0-9]{36}/ },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/ },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/ },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/ },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/ },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/ },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/ },\n];\n\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\n// ==========================================\n// 🔧 HELPERS\n// ==========================================\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  const hasNumbers = /\\d/.test(value);\n  const hasLetters = /[a-zA-Z]/.test(value);\n  const noSpaces = !/\\s/.test(value);\n  const longEnough = value.length >= 20;\n  return entropy > 4.0 && hasNumbers && hasLetters && noSpaces && longEnough;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\nfunction sanitizeValue(value) {\n  if (typeof value !== 'string') return value;\n  \n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\n// ==========================================\n// 🔧 SANITIZATION\n// ==========================================\n\nfunction sanitizeObject(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj);\n  if (Array.isArray(obj)) return obj.map(item => sanitizeObject(item));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    \n    // Struktura {name, value}\n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    \n    for (const [key, value] of Object.entries(obj)) {\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value);\n    }\n    return result;\n  }\n  return obj;\n}\n\n// ==========================================\n// 🚀 MAIN\n// ==========================================\n\nconst anonymized = sanitizeObject(sanitized);\n\nanonymized._sanitized = {\n  note: \"Sanitized for public sharing\",\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: anonymized }];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2416,
-          192
+          2112,
+          144
         ],
         "id": "REDACTED-UUID",
         "name": "New file anonymizer"
       },
       {
         "parameters": {
-          "jsCode": "const oldVersion = $json.repo;\nconst newVersion = $json.new;\n\n// 1. Klucze, które ZAWSZE ignorujemy przy porównywaniu\nconst IGNORE_KEYS = [\n  'position', 'id', 'webhookId', 'uuid', \n  'updatedAt', 'createdAt', 'activeVersionId',\n  'versionId', 'meta', 'credentials', 'pinData', 'settings',\n  'instanceId', 'notes' // visual notes\n];\n\n// Truncate helper\nfunction truncate(str, len) {\n  if (!str) return '';\n  str = String(str);\n  return str.length > len ? str.slice(0, len) + '...' : str;\n}\n\n// 2. Funkcja sprawdzająca, czy wartość w repozytorium jest zredagowana\n// Jeśli tak -> uznajemy to za zgodne z nową wersją (nie zgłaszamy zmiany)\nfunction isRedacted(value) {\n    if (typeof value === 'string' && value.includes('REDACTED')) return true;\n    if (value && typeof value === 'object' && value._redacted === true) return true;\n    return false;\n}\n\n// 3. Rekurencyjne czyszczenie obiektu\nfunction cleanObject(obj) {\n  if (obj === null || typeof obj !== 'object') return obj;\n  \n  if (Array.isArray(obj)) {\n    return obj.map(item => cleanObject(item));\n  }\n  \n  const cleaned = {};\n  for (const [key, value] of Object.entries(obj)) {\n    if (IGNORE_KEYS.includes(key)) continue;\n    \n    // Jeśli stara wartość (z repo) wygląda na zredagowaną, nie przepisujemy jej do porównania\n    // Uwaga: To zadziała w kontekście struktury, ale dla pewności ignorujemy klucze globalnie\n    cleaned[key] = cleanObject(value);\n  }\n  return cleaned;\n}\n\n// 4. Zaawansowane porównywanie parametrów (uwzględnia REDACTED)\nfunction areParametersEqual(oldParams, newParams) {\n    const cleanOld = cleanObject(oldParams || {});\n    const cleanNew = cleanObject(newParams || {});\n\n    // Prosta serializacja najpierw\n    const strOld = JSON.stringify(cleanOld);\n    const strNew = JSON.stringify(cleanNew);\n    \n    if (strOld === strNew) return true;\n\n    // Jeśli się różnią, sprawdzamy głębiej czy różnica nie wynika z redakcji\n    // Iterujemy po kluczach nowego obiektu\n    for (const key in cleanNew) {\n        const oldVal = cleanOld[key];\n        const newVal = cleanNew[key];\n\n        // Jeśli stara wartość była zredagowana, ignorujemy różnicę\n        if (isRedacted(oldVal)) continue;\n\n        // Jeśli wartości są różne i stara nie jest zredagowana -> to jest zmiana\n        if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {\n            return false; // Znalazł prawdziwą różnicę\n        }\n    }\n    \n    return true; // Nie znaleziono istotnych różnic\n}\n\nfunction diffCode(oldCode, newCode) {\n  if (!oldCode && !newCode) return { added: [], removed: [] };\n  if (!oldCode) return { added: newCode.split('\\n').slice(0, 5), removed: [] };\n  if (!newCode) return { added: [], removed: oldCode.split('\\n').slice(0, 5) };\n  \n  const oldLines = oldCode.split('\\n').map(l => l.trim()).filter(l => l.length > 0);\n  const newLines = newCode.split('\\n').map(l => l.trim()).filter(l => l.length > 0);\n  \n  const added = newLines.filter(l => !oldLines.includes(l)).slice(0, 5);\n  const removed = oldLines.filter(l => !newLines.includes(l)).slice(0, 5);\n  \n  return { added, removed };\n}\n\nfunction compareNodes(oldNodes, newNodes) {\n  const changes = [];\n  \n  if (!oldNodes || !newNodes) {\n    return [{ type: 'error', detail: `Missing nodes data` }];\n  }\n  \n  const oldByName = Object.fromEntries(oldNodes.map(n => [n.name, n]));\n  const newByName = Object.fromEntries(newNodes.map(n => [n.name, n]));\n  \n  const allNames = new Set([...Object.keys(oldByName), ...Object.keys(newByName)]);\n  \n  for (const name of allNames) {\n    if (!(name in oldByName)) {\n      const node = newByName[name];\n      changes.push({ \n        type: 'node_added', \n        node: name, \n        nodeType: node.type?.split('.').pop() || 'unknown'\n      });\n    } else if (!(name in newByName)) {\n      changes.push({ type: 'node_removed', node: name });\n    } else {\n      const oldNode = oldByName[name];\n      const newNode = newByName[name];\n      \n      const oldCode = oldNode.parameters?.jsCode;\n      const newCode = newNode.parameters?.jsCode;\n      \n      // 1. Sprawdź kod JS (Code Node)\n      if ((oldCode || newCode) && oldCode !== newCode) {\n        // Ignoruj jeśli stary kod to tylko marker\n        if (!isRedacted(oldCode)) {\n             const codeDiff = diffCode(oldCode, newCode);\n             // Tylko jeśli faktycznie są różnice w liniach (ignoruj białe znaki)\n             if (codeDiff.added.length > 0 || codeDiff.removed.length > 0) {\n                 changes.push({ \n                   type: 'node_modified', \n                   node: name,\n                   nodeType: newNode.type?.split('.').pop() || 'unknown',\n                   field: 'jsCode',\n                   diff: codeDiff\n                 });\n                 continue; // Jeśli kod się zmienił, nie sprawdzaj reszty parametrów tego węzła\n             }\n        }\n      }\n      \n      // 2. Sprawdź inne parametry (używając inteligentnego porównania)\n      if (!areParametersEqual(oldNode.parameters, newNode.parameters)) {\n        changes.push({ \n          type: 'node_modified', \n          node: name,\n          nodeType: newNode.type?.split('.').pop() || 'unknown',\n          field: 'parameters',\n          detail: 'Config changed'\n        });\n      }\n    }\n  }\n  \n  return changes;\n}\n\nfunction generateSummary(changes) {\n  return changes.map(c => {\n    switch(c.type) {\n      case 'node_added': \n        return `+ ADDED \"${c.node}\" (${c.nodeType})`;\n      case 'node_removed': \n        return `- REMOVED \"${c.node}\"`;\n      case 'node_modified': \n        let desc = `~ MODIFIED \"${c.node}\" [${c.field}]`;\n        if (c.diff) {\n          if (c.diff.added.length > 0) {\n            desc += '\\n  ADDED LINES:';\n            c.diff.added.forEach(l => desc += `\\n    + ${truncate(l, 100)}`);\n          }\n          if (c.diff.removed.length > 0) {\n            desc += '\\n  REMOVED LINES:';\n            c.diff.removed.forEach(l => desc += `\\n    - ${truncate(l, 100)}`);\n          }\n        }\n        return desc;\n      case 'error':\n        return `ERROR: ${c.detail}`;\n      default: \n        return `? ${c.type}`;\n    }\n  }).join('\\n\\n');\n}\n\n// === MAIN ===\nconst nodeChanges = compareNodes(oldVersion.nodes, newVersion.nodes);\n\nif (nodeChanges.length === 0) {\n  return [{ json: { \n    hasChanges: false,\n    summary: 'No significant changes detected',\n    workflowName: newVersion.name || 'unknown'\n  }}];\n}\n\nconst summary = generateSummary(nodeChanges);\n\nreturn [{ json: { \n  hasChanges: true,\n  changeCount: nodeChanges.length,\n  summary: summary,\n  workflowName: newVersion.name || 'unknown'\n}}];"
+          "jsCode": "const oldVersion = $json.repo;\nconst newVersion = $json.new;\n\n// ==========================================\n// 🔒 ANONYMIZER\n// ==========================================\n\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/ },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/ },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/ },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/ },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/ },\n  { regex: /^gho_[a-zA-Z0-9]{36}/ },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/ },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/ },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/ },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/ },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/ },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/ },\n];\n\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  return entropy > 4.0 && /\\d/.test(value) && /[a-zA-Z]/.test(value) && !/\\s/.test(value) && value.length >= 20;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\nfunction sanitizeValue(value) {\n  if (typeof value !== 'string') return value;\n  \n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\nfunction sanitizeObject(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj);\n  if (Array.isArray(obj)) return obj.map(item => sanitizeObject(item));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    \n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    \n    for (const [key, value] of Object.entries(obj)) {\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value);\n    }\n    return result;\n  }\n  return obj;\n}\n\n// ==========================================\n// 🔄 DIFF LOGIC\n// ==========================================\n\nconst IGNORE_KEYS = [\n  'position', 'id', 'webhookId', 'uuid', \n  'updatedAt', 'createdAt', 'activeVersionId',\n  'versionId', 'meta', 'credentials', 'pinData', 'settings',\n  'instanceId', 'notes', '_sanitized'\n];\n\nfunction truncate(str, len) {\n  if (!str) return '';\n  str = String(str);\n  return str.length > len ? str.slice(0, len) + '...' : str;\n}\n\nfunction cleanObject(obj) {\n  if (obj === null || typeof obj !== 'object') return obj;\n  if (Array.isArray(obj)) return obj.map(item => cleanObject(item));\n  \n  const cleaned = {};\n  for (const [key, value] of Object.entries(obj)) {\n    if (IGNORE_KEYS.includes(key)) continue;\n    cleaned[key] = cleanObject(value);\n  }\n  return cleaned;\n}\n\nfunction diffCode(oldCode, newCode) {\n  if (!oldCode && !newCode) return { added: [], removed: [] };\n  if (!oldCode) return { added: newCode.split('\\n').slice(0, 5), removed: [] };\n  if (!newCode) return { added: [], removed: oldCode.split('\\n').slice(0, 5) };\n  \n  const oldLines = oldCode.split('\\n').map(l => l.trim()).filter(l => l.length > 0);\n  const newLines = newCode.split('\\n').map(l => l.trim()).filter(l => l.length > 0);\n  \n  return {\n    added: newLines.filter(l => !oldLines.includes(l)).slice(0, 5),\n    removed: oldLines.filter(l => !newLines.includes(l)).slice(0, 5)\n  };\n}\n\nfunction compareNodes(oldNodes, newNodes) {\n  const changes = [];\n  \n  if (!oldNodes || !newNodes) {\n    return [{ type: 'error', detail: 'Missing nodes data' }];\n  }\n  \n  const oldByName = Object.fromEntries(oldNodes.map(n => [n.name, n]));\n  const newByName = Object.fromEntries(newNodes.map(n => [n.name, n]));\n  const allNames = new Set([...Object.keys(oldByName), ...Object.keys(newByName)]);\n  \n  for (const name of allNames) {\n    if (!(name in oldByName)) {\n      changes.push({ type: 'node_added', node: name, nodeType: newByName[name].type?.split('.').pop() || 'unknown' });\n    } else if (!(name in newByName)) {\n      changes.push({ type: 'node_removed', node: name });\n    } else {\n      const oldNode = oldByName[name];\n      const newNode = newByName[name];\n      \n      const oldCode = oldNode.parameters?.jsCode;\n      const newCode = newNode.parameters?.jsCode;\n      \n      if ((oldCode || newCode) && oldCode !== newCode) {\n        const codeDiff = diffCode(oldCode, newCode);\n        if (codeDiff.added.length > 0 || codeDiff.removed.length > 0) {\n          changes.push({ type: 'node_modified', node: name, nodeType: newNode.type?.split('.').pop() || 'unknown', field: 'jsCode', diff: codeDiff });\n          continue;\n        }\n      }\n      \n      const oldParams = cleanObject(oldNode.parameters);\n      const newParams = cleanObject(newNode.parameters);\n      \n      if (JSON.stringify(oldParams) !== JSON.stringify(newParams)) {\n        changes.push({ type: 'node_modified', node: name, nodeType: newNode.type?.split('.').pop() || 'unknown', field: 'parameters', detail: 'Config changed' });\n      }\n    }\n  }\n  \n  return changes;\n}\n\nfunction generateSummary(changes) {\n  return changes.map(c => {\n    switch(c.type) {\n      case 'node_added': return `+ ADDED \"${c.node}\" (${c.nodeType})`;\n      case 'node_removed': return `- REMOVED \"${c.node}\"`;\n      case 'node_modified':\n        let desc = `~ MODIFIED \"${c.node}\" [${c.field}]`;\n        if (c.diff) {\n          if (c.diff.added.length) desc += '\\n  ADDED:\\n    + ' + c.diff.added.map(l => truncate(l, 80)).join('\\n    + ');\n          if (c.diff.removed.length) desc += '\\n  REMOVED:\\n    - ' + c.diff.removed.map(l => truncate(l, 80)).join('\\n    - ');\n        }\n        return desc;\n      default: return `? ${c.type}`;\n    }\n  }).join('\\n\\n');\n}\n\n// ==========================================\n// 🚀 MAIN\n// ==========================================\n\n// 1. Anonimizuj NOWĄ wersję\nconst anonymizedNew = sanitizeObject(JSON.parse(JSON.stringify(newVersion)));\nanonymizedNew._sanitized = { note: \"Sanitized for public sharing\", timestamp: new Date().toISOString() };\n\n// 2. Porównaj repo (już zanonimizowane) z anonymizedNew\nconst nodeChanges = compareNodes(oldVersion.nodes, anonymizedNew.nodes);\n\nif (nodeChanges.length === 0) {\n  return [{ json: { \n    hasChanges: false,\n    summary: 'No significant changes detected',\n    workflowName: newVersion.name || 'unknown',\n    anonymizedWorkflow: anonymizedNew\n  }}];\n}\n\nreturn [{ json: { \n  hasChanges: true,\n  changeCount: nodeChanges.length,\n  summary: generateSummary(nodeChanges),\n  workflowName: newVersion.name || 'unknown',\n  anonymizedWorkflow: anonymizedNew\n}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1580,19 +1191,6 @@
         ],
         "id": "REDACTED-UUID",
         "name": "Diff"
-      },
-      {
-        "parameters": {
-          "jsCode": "// 1. POBIERANIE DANYCH (Ścieżka UPDATE)\n// Bierzemy \"new\" z aktualnego inputu pętli\nconst workflow = $('Edit Fields').first().json.new;\n\n// Jeśli z jakiegoś powodu jest pusto, fallback do czystego jsona\n// const workflow = inputData.new || inputData;\n\nconst sanitized = JSON.parse(JSON.stringify(workflow));\n\n// ==========================================\\n// 🔒 CONFIGURATION\\n// ==========================================\\n\n// Nazwy kluczy które ZAWSZE redagujemy (case-insensitive)\nconst SENSITIVE_KEY_NAMES = [\n  /api[-_]?key/i, /secret/i, /token/i, /password/i, /passwd/i,\n  /bearer/i, /authorization/i, /auth/i, /credential/i,\n  /rapidapi/i, /openai/i, /anthropic/i, /deepseek/i,\n  /private[-_]?key/i, /access[-_]?key/i, /client[-_]?secret/i,\n];\n\n// Wzorce wartości które ZAWSZE redagujemy\nconst SENSITIVE_VALUE_PATTERNS = [\n  { regex: /^sk-[a-zA-Z0-9]{20,}/, name: 'OpenAI' },\n  { regex: /^sk-ant-[a-zA-Z0-9-]{20,}/, name: 'Anthropic' },\n  { regex: /^xai-[a-zA-Z0-9]{20,}/, name: 'xAI' },\n  { regex: /^AIza[a-zA-Z0-9_-]{35}/, name: 'Google' },\n  { regex: /^ghp_[a-zA-Z0-9]{36}/, name: 'GitHub PAT' },\n  { regex: /^gho_[a-zA-Z0-9]{36}/, name: 'GitHub OAuth' },\n  { regex: /^xoxb-[a-zA-Z0-9-]+/, name: 'Slack Bot' },\n  { regex: /^xoxp-[a-zA-Z0-9-]+/, name: 'Slack User' },\n  { regex: /^(postgres|mysql|mongodb|redis):\\/\\/[^\\s]+/, name: 'DB Connection' },\n  { regex: /^Basic\\s+[A-Za-z0-9+/=]{10,}/, name: 'Basic Auth' },\n  { regex: /^Bearer\\s+[A-Za-z0-9._-]{10,}/, name: 'Bearer Token' },\n  { regex: /https?:\\/\\/[^:]+:[^@]+@/, name: 'URL with credentials' },\n];\n\n// Klucze do całkowitego usunięcia\nconst ALWAYS_REDACT_KEYS = [\n  'credentials', 'webhookId', 'cachedResultUrl', 'cachedResultName',\n  'instanceId', 'projectId', 'pinData', 'meta',\n];\n\n// ==========================================\\n// 🔧 ENTROPY DETECTION\\n// ==========================================\\n\nfunction calculateEntropy(str) {\n  if (!str || str.length < 8) return 0;\n  const freq = {};\n  for (const char of str) freq[char] = (freq[char] || 0) + 1;\n  let entropy = 0;\n  const len = str.length;\n  for (const count of Object.values(freq)) {\n    const p = count / len;\n    entropy -= p * Math.log2(p);\n  }\n  return entropy;\n}\n\nfunction looksLikeSecret(value) {\n  if (typeof value !== 'string') return false;\n  if (value.length < 16 || value.length > 200) return false;\n  for (const pattern of SENSITIVE_VALUE_PATTERNS) {\n    if (pattern.regex.test(value)) return true;\n  }\n  const entropy = calculateEntropy(value);\n  const hasNumbers = /\\d/.test(value);\n  const hasLetters = /[a-zA-Z]/.test(value);\n  const noSpaces = !/\\s/.test(value);\n  const longEnough = value.length >= 20;\n  if (entropy > 4.0 && hasNumbers && hasLetters && noSpaces && longEnough) {\n    return true;\n  }\n  return false;\n}\n\nfunction isSensitiveKeyName(name) {\n  if (typeof name !== 'string') return false;\n  return SENSITIVE_KEY_NAMES.some(pattern => pattern.test(name));\n}\n\n// ==========================================\\n// 🔧 SANITIZATION\\n// ==========================================\\n\nconst redactedLog = [];\n\nfunction sanitizeValue(value, keyPath) {\n  if (typeof value !== 'string') return value;\n  const uuidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi;\n  if (uuidRegex.test(value)) return value.replace(uuidRegex, 'REDACTED-UUID');\n  \n  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n  if (emailRegex.test(value)) return value.replace(emailRegex, 'REDACTED@email.com');\n  \n  if (value.includes('docs.google.com') || value.includes('sheets.google.com')) {\n    return value.replace(/\\/d\\/[a-zA-Z0-9_-]+/, '/d/REDACTED-DOC-ID');\n  }\n  \n  if (value.includes('/webhook/')) {\n    return value.replace(/\\/webhook\\/[a-f0-9-]+/gi, '/webhook/REDACTED');\n  }\n  \n  if (looksLikeSecret(value)) return 'REDACTED-POSSIBLE-SECRET';\n  \n  return value;\n}\n\nfunction sanitizeObject(obj, path = '') {\n  if (obj === null || obj === undefined) return obj;\n  if (typeof obj === 'string') return sanitizeValue(obj, path);\n  if (Array.isArray(obj)) return obj.map((item, i) => sanitizeObject(item, `${path}[${i}]`));\n  \n  if (typeof obj === 'object') {\n    const result = {};\n    if (obj.name && obj.value !== undefined) {\n      if (isSensitiveKeyName(obj.name)) return { ...obj, value: 'REDACTED-API-KEY' };\n      if (looksLikeSecret(obj.value)) return { ...obj, value: 'REDACTED-POSSIBLE-SECRET' };\n    }\n    const keyField = obj.key || obj.header || obj.param;\n    const valueField = obj.value || obj.content || obj.val;\n    if (keyField && valueField) {\n      if (isSensitiveKeyName(keyField) || looksLikeSecret(valueField)) {\n        return { ...obj, [Object.keys(obj).find(k => ['value', 'content', 'val'].includes(k))]: 'REDACTED' };\n      }\n    }\n    for (const [key, value] of Object.entries(obj)) {\n      const currentPath = path ? `${path}.${key}` : key;\n      if (ALWAYS_REDACT_KEYS.includes(key)) {\n        result[key] = { \"_redacted\": true };\n        continue;\n      }\n      if (isSensitiveKeyName(key) && typeof value === 'string') {\n        result[key] = 'REDACTED';\n        continue;\n      }\n      result[key] = sanitizeObject(value, currentPath);\n    }\n    return result;\n  }\n  return obj;\n}\n\nconst anonymized = sanitizeObject(sanitized);\n\n// Dodajemy metadane, żeby wiedzieć że zadziałało\nanonymized._sanitized = {\n  note: \"Sanitized automatically\",\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: anonymized }];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          3856,
-          -96
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Existing file anonymizer"
       }
     ],
     "connections": {
@@ -1684,7 +1282,7 @@
           ],
           [
             {
-              "node": "Basic LLM Chain2",
+              "node": "New file anonymizer",
               "type": "main",
               "index": 0
             }
@@ -1711,13 +1309,7 @@
               "index": 0
             }
           ],
-          [
-            {
-              "node": "Upload file [GITHUB]1",
-              "type": "main",
-              "index": 0
-            }
-          ]
+          []
         ]
       },
       "Schedule Trigger": {
@@ -1768,7 +1360,7 @@
         "main": [
           [
             {
-              "node": "Basic LLM Chain1",
+              "node": "Update file [GITHUB]",
               "type": "main",
               "index": 0
             }
@@ -1786,72 +1378,6 @@
           ]
         ]
       },
-      "Basic LLM Chain1": {
-        "main": [
-          [
-            {
-              "node": "Existing file anonymizer",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "DeepSeek Chat Model1": {
-        "ai_languageModel": [
-          [
-            {
-              "node": "Basic LLM Chain1",
-              "type": "ai_languageModel",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Structured Output Parser": {
-        "ai_outputParser": [
-          [
-            {
-              "node": "Basic LLM Chain1",
-              "type": "ai_outputParser",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Basic LLM Chain2": {
-        "main": [
-          [
-            {
-              "node": "New file anonymizer",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "DeepSeek Chat Model2": {
-        "ai_languageModel": [
-          [
-            {
-              "node": "Basic LLM Chain2",
-              "type": "ai_languageModel",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Structured Output Parser1": {
-        "ai_outputParser": [
-          [
-            {
-              "node": "Basic LLM Chain2",
-              "type": "ai_outputParser",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "If": {
         "main": [
           [
@@ -1861,17 +1387,6 @@
               "index": 0
             }
           ],
-          [
-            {
-              "node": "Split to single items",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Upload file [GITHUB]1": {
-        "main": [
           [
             {
               "node": "Split to single items",
@@ -1902,27 +1417,16 @@
             }
           ]
         ]
-      },
-      "Existing file anonymizer": {
-        "main": [
-          [
-            {
-              "node": "Update file [GITHUB]",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
       }
     },
     "authors": "REDACTED",
-    "name": "Version 179a75f3",
+    "name": "Version 16b54172",
     "description": "",
     "autosaved": false
   },
   "tags": [],
   "_sanitized": {
-    "note": "Sanitized automatically",
-    "timestamp": "2026-01-25T23:02:55.765Z"
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-01-25T23:19:52.748Z"
   }
 }
