@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-25T20:30:29.497Z",
+  "updatedAt": "2026-01-25T22:29:48.818Z",
   "createdAt": "2026-01-23T14:06:42.706Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offers scrape & scoring",
@@ -62,7 +62,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -1088,
+        -672,
         656
       ],
       "id": "REDACTED-UUID",
@@ -80,7 +80,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.1,
       "position": [
-        -192,
+        224,
         16
       ],
       "id": "REDACTED-UUID",
@@ -111,7 +111,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        -864,
+        -448,
         208
       ],
       "id": "REDACTED-UUID",
@@ -139,7 +139,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        256,
+        672,
         208
       ],
       "id": "REDACTED-UUID",
@@ -226,7 +226,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -416,
+        0,
         192
       ],
       "id": "REDACTED-UUID",
@@ -242,7 +242,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.1,
       "position": [
-        -192,
+        224,
         208
       ],
       "id": "REDACTED-UUID",
@@ -251,13 +251,13 @@
     {
       "parameters": {
         "operation": "pdf",
-        "binaryPropertyName": "binary0321321",
+        "binaryPropertyName": "binary0",
         "options": {}
       },
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.1,
       "position": [
-        -192,
+        224,
         400
       ],
       "id": "REDACTED-UUID",
@@ -291,7 +291,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -640,
+        -224,
         208
       ],
       "id": "REDACTED-UUID",
@@ -305,7 +305,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        256,
+        672,
         384
       ],
       "id": "REDACTED-UUID",
@@ -321,7 +321,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -864,
+        -448,
         656
       ],
       "id": "REDACTED-UUID",
@@ -380,7 +380,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -96,
+        320,
         656
       ],
       "id": "REDACTED-UUID",
@@ -418,7 +418,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        112,
+        528,
         656
       ],
       "id": "REDACTED-UUID",
@@ -434,7 +434,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        320,
+        736,
         656
       ],
       "id": "REDACTED-UUID",
@@ -457,7 +457,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -1088,
+        -672,
         1072
       ],
       "id": "REDACTED-UUID",
@@ -470,7 +470,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        -1088,
+        -672,
         1248
       ],
       "id": "REDACTED-UUID",
@@ -486,7 +486,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.3,
       "position": [
-        -944,
+        -528,
         1248
       ],
       "id": "REDACTED-UUID",
@@ -499,7 +499,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -752,
+        -336,
         1072
       ],
       "id": "REDACTED-UUID",
@@ -740,7 +740,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -528,
+        -112,
         1072
       ],
       "id": "REDACTED-UUID",
@@ -776,7 +776,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -320,
+        96,
         1072
       ],
       "id": "REDACTED-UUID",
@@ -798,7 +798,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -880,
+        -464,
         1584
       ],
       "id": "REDACTED-UUID",
@@ -812,7 +812,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        -880,
+        -464,
         1744
       ],
       "id": "REDACTED-UUID",
@@ -1054,7 +1054,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -560,
+        -144,
         1584
       ],
       "id": "REDACTED-UUID",
@@ -1100,7 +1100,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -672,
+        -256,
         768
       ],
       "id": "REDACTED-UUID",
@@ -1119,7 +1119,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -304,
+        112,
         656
       ],
       "id": "REDACTED-UUID",
@@ -1142,7 +1142,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -480,
+        -64,
         768
       ],
       "id": "REDACTED-UUID",
@@ -1163,7 +1163,7 @@
       "type": "n8n-nodes-base.perplexity",
       "typeVersion": 1,
       "position": [
-        -1104,
+        -688,
         1584
       ],
       "id": "REDACTED-UUID",
@@ -1188,7 +1188,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -368,
+        48,
         1584
       ],
       "id": "REDACTED-UUID",
@@ -1202,7 +1202,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        -368,
+        48,
         1744
       ],
       "id": "REDACTED-UUID",
@@ -1444,11 +1444,301 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -32,
+        384,
         1584
       ],
       "id": "REDACTED-UUID",
       "name": "Append or update row in sheet2",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Analyze the following JOB DESCRIPTION to create my application checklist.\n\n=== JOB DESCRIPTION ===\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== INSTRUCTIONS ===\nDetermine if I should include my GitHub or Video based on the keywords in the text. Also extract special instructions and the tech stack.\n\nReturn ONLY this list (keep reasons under 5 words):\n\n[GITHUB]: YES/NO - (Reason)\n[VIDEO]: YES/NO - (Reason)\n[CUSTOM]: (Look for specific subject lines, \"secret words\", or \"apply to email\". If none, write \"None\")\n[STACK]: (List top 3 tools mentioned, comma separated)",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a Job Application Sniper. Your ONLY goal is to analyze job descriptions and output a strict, logic-based checklist for the applicant.  You have NO personality. You do NOT chat. You only output the requested data in the requested format.  Your analysis is based on the candidate having two specific assets: 1. A GitHub Portfolio (Automation code, n8n workflows, Python). 2. A Loom Video (Walkthrough of automation tools).  RULES: - If the text mentions \"code\", \"repo\", \"portfolio\", \"github\", \"samples\" -> GITHUB: YES. - If the text mentions \"video\", \"loom\", \"recording\", \"intro yourself\", \"why you\" -> VIDEO: YES. - Keep the output extremely concise. No bolding, no headers."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        624,
+        1584
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        624,
+        1744
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model4",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Checklist": "={{ $json.text }}",
+            "ID": "={{ $('Code in JavaScript2').item.json.job_offer.id }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Listed At",
+              "displayName": "Listed At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company URL",
+              "displayName": "Company URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job URL",
+              "displayName": "Job URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Remote",
+              "displayName": "Remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Level",
+              "displayName": "Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CV Recommended",
+              "displayName": "CV Recommended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "One liner",
+              "displayName": "One liner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Fit Reasons",
+              "displayName": "Fit Reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Red flags",
+              "displayName": "Red flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date added",
+              "displayName": "Date added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cover letter",
+              "displayName": "Cover letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Checklist",
+              "displayName": "Checklist",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        1584
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Append or update row in sheet3",
       "credentials": {
         "_redacted": true
       }
@@ -1794,6 +2084,39 @@
           }
         ]
       ]
+    },
+    "Basic LLM Chain4": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1834,6 +2157,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized automatically",
-    "timestamp": "2026-01-25T22:00:32.615Z"
+    "timestamp": "2026-01-25T22:50:27.622Z"
   }
 }
