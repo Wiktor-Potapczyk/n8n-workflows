@@ -1,0 +1,654 @@
+{
+  "updatedAt": "2026-01-25T20:32:57.586Z",
+  "createdAt": "2026-01-13T18:27:56.175Z",
+  "id": "REDACTED-POSSIBLE-SECRET",
+  "name": "ASSistant",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}{{ $json.output }}{{ $json.error }}",
+        "options": {
+          "systemMessage": "You are a smart AI assistant integrated with n8n workflow tools, use them if needed.\n\n### ANTI-HALLUCINATION PROTOCOL:\n\nNEVER write out fake tool logs like [Used tools: ...] or JSON outputs in your response. These are system generated, not for you to write.\n\nACTION OVER TEXT: Writing \"I created the event\" does NOT create an event. You MUST trigger the Google_calendar_tool_Agent tool node to make it happen.\n\nIf you didn't trigger the tool (no actual function call), assume the action failed.\n\n### CRITICAL OPERATIONAL PROTOCOL (READ CAREFULLY):\n\n1. **NO INTERNAL KNOWLEDGE:** You have NO access to real-time data, current date/time, user's schedule, emails, or system status unless you use a tool to fetch it.\n2. **TOOL-FIRST MENTALITY:** Before answering ANY question, check if a tool can provide the data.\n   - If the user asks \"What time is it?\" -> Use a tool.\n   - If the user asks \"Do I have meetings?\" -> Use a tool.\n   - If the user asks \"Summarize this text\" -> You can answer directly.\n3. **NO GUESSING:** Never hallucinate or simulate a tool's output. If you didn't run the tool, do not say you checked it.\n4. **HONEST FAILURES:** If a tool returns an empty result or error, report that faithfully to the user. Do not make up a \"successful\" response to please the user.\n\n### OUTPUT FORMATTING RULES:\n\n1. **PLAIN TEXT ONLY:** Do NOT use Markdown formatting (no `**`, no `__`, no `#` headers).\n2. **NO HTML:** Do NOT use HTML tags (no `<b>`, no `<i>`).\n3. **CLEAN LISTS:** Use simple dashes `-` for lists.\n4. **STYLE:** Keep it clean and concise. Avoid excessive emojis.",
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        192,
+        224
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Telegram Trigger",
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1056,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Send a text message",
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        432,
+        224
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Call this tool to ask user for confirmation.\n\nUse this tool ONLY when you need to ask the user for confirmation (Approve/Decline) or missing details before proceeding with an action (e.g., 'Shall I add this event?'). DO NOT use this for the final answer. Using this tool pauses the workflow until the user clicks a button.",
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        384
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Send message and wait for response in Telegram",
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "ALWAYS use this tool FIRST if the user mentions relative time terms like 'today', 'tomorrow', 'next Friday', or 'in 2 hours'. Use it to get the concrete ISO date string (e.g., 2026-01-14) needed for other tools.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        528,
+        224
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}{{ $json.error }}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        224
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to access google calendar.\n\nPOWERFUL tool for FULL calendar management. Use this not only to read events but also to CREATE new events, UPDATE existing ones, and DELETE them. You MUST pass a clear instruction string in the 'Message' field, including the specific date (YYYY-MM-DD) obtained from the Date_Time tool (e.g., 'Create a meeting called Test on 2026-01-14 at 10:00').",
+        "workflowId": {
+          "__rl": true,
+          "value": "kQNYKOkJTUytNrFm",
+          "mode": "list",
+          "cachedResultUrl": {
+            "_redacted": true
+          },
+          "cachedResultName": {
+            "_redacted": true
+          }
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `A precise natural language instruction for the calendar agent. MUST include the action (Create, Update, Delete, or Get) and the specific date in YYYY-MM-DD format obtained from the Date_Time tool. Example value: 'Create a meeting named Test on 2026-01-14 at 10:00'.`, 'string') }}"
+          },
+          "matchingColumns": [
+            "Message"
+          ],
+          "schema": [
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        224
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Google calendar"
+    }
+  ],
+  "connections": {
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response in Telegram": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": "REDACTED-UUID",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T18:27:56.178Z",
+      "createdAt": "2026-01-13T18:27:56.178Z",
+      "role": "workflow:owner",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-13T22:40:03.000Z",
+    "createdAt": "2026-01-13T22:40:01.548Z",
+    "versionId": "REDACTED-UUID",
+    "workflowId": "REDACTED-POSSIBLE-SECRET",
+    "nodes": [
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.message.text }}{{ $json.output }}{{ $json.error }}",
+          "options": {
+            "systemMessage": "You are a smart AI assistant integrated with n8n workflow tools, use them if needed.\n\n### ANTI-HALLUCINATION PROTOCOL:\n\nNEVER write out fake tool logs like [Used tools: ...] or JSON outputs in your response. These are system generated, not for you to write.\n\nACTION OVER TEXT: Writing \"I created the event\" does NOT create an event. You MUST trigger the Google_calendar_tool_Agent tool node to make it happen.\n\nIf you didn't trigger the tool (no actual function call), assume the action failed.\n\n### CRITICAL OPERATIONAL PROTOCOL (READ CAREFULLY):\n\n1. **NO INTERNAL KNOWLEDGE:** You have NO access to real-time data, current date/time, user's schedule, emails, or system status unless you use a tool to fetch it.\n2. **TOOL-FIRST MENTALITY:** Before answering ANY question, check if a tool can provide the data.\n   - If the user asks \"What time is it?\" -> Use a tool.\n   - If the user asks \"Do I have meetings?\" -> Use a tool.\n   - If the user asks \"Summarize this text\" -> You can answer directly.\n3. **NO GUESSING:** Never hallucinate or simulate a tool's output. If you didn't run the tool, do not say you checked it.\n4. **HONEST FAILURES:** If a tool returns an empty result or error, report that faithfully to the user. Do not make up a \"successful\" response to please the user.\n\n### OUTPUT FORMATTING RULES:\n\n1. **PLAIN TEXT ONLY:** Do NOT use Markdown formatting (no `**`, no `__`, no `#` headers).\n2. **NO HTML:** Do NOT use HTML tags (no `<b>`, no `<i>`).\n3. **CLEAN LISTS:** Use simple dashes `-` for lists.\n4. **STYLE:** Keep it clean and concise. Avoid excessive emojis.",
+            "passthroughBinaryImages": true
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          464,
+          0
+        ],
+        "id": "REDACTED-UUID",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 1,
+        "position": [
+          192,
+          224
+        ],
+        "id": "REDACTED-UUID",
+        "name": "DeepSeek Chat Model",
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "updates": [
+            "message"
+          ],
+          "additionalFields": {
+            "download": true
+          }
+        },
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -16,
+          0
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Telegram Trigger",
+        "webhookId": {
+          "_redacted": true
+        },
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "={{ $json.output.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+          "additionalFields": {
+            "appendAttribution": false,
+            "parse_mode": "HTML"
+          }
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          1056,
+          0
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Send a text message",
+        "webhookId": {
+          "_redacted": true
+        },
+        "credentials": {
+          "_redacted": true
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+        "typeVersion": 1,
+        "position": [
+          432,
+          224
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Calculator"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "Call this tool to ask user for confirmation.\n\nUse this tool ONLY when you need to ask the user for confirmation (Approve/Decline) or missing details before proceeding with an action (e.g., 'Shall I add this event?'). DO NOT use this for the final answer. Using this tool pauses the workflow until the user clicks a button.",
+          "operation": "sendAndWait",
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+          "approvalOptions": {
+            "values": {
+              "approvalType": "double"
+            }
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.telegramTool",
+        "typeVersion": 1.2,
+        "position": [
+          208,
+          384
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Send message and wait for response in Telegram",
+        "webhookId": {
+          "_redacted": true
+        },
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "ALWAYS use this tool FIRST if the user mentions relative time terms like 'today', 'tomorrow', 'next Friday', or 'in 2 hours'. Use it to get the concrete ISO date string (e.g., 2026-01-14) needed for other tools.",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dateTimeTool",
+        "typeVersion": 2,
+        "position": [
+          528,
+          224
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Date & Time"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $json.message.chat.id }}{{ $json.error }}"
+        },
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 1.3,
+        "position": [
+          320,
+          224
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "description": "Call this tool to access google calendar.\n\nPOWERFUL tool for FULL calendar management. Use this not only to read events but also to CREATE new events, UPDATE existing ones, and DELETE them. You MUST pass a clear instruction string in the 'Message' field, including the specific date (YYYY-MM-DD) obtained from the Date_Time tool (e.g., 'Create a meeting called Test on 2026-01-14 at 10:00').",
+          "workflowId": {
+            "__rl": true,
+            "value": "kQNYKOkJTUytNrFm",
+            "mode": "list",
+            "cachedResultUrl": {
+              "_redacted": true
+            },
+            "cachedResultName": {
+              "_redacted": true
+            }
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `A precise natural language instruction for the calendar agent. MUST include the action (Create, Update, Delete, or Get) and the specific date in YYYY-MM-DD format obtained from the Date_Time tool. Example value: 'Create a meeting named Test on 2026-01-14 at 10:00'.`, 'string') }}"
+            },
+            "matchingColumns": [
+              "Message"
+            ],
+            "schema": [
+              {
+                "id": "Message",
+                "displayName": "Message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 2.2,
+        "position": [
+          640,
+          224
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Google calendar"
+      }
+    ],
+    "connections": {
+      "DeepSeek Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Telegram Trigger": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Send a text message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calculator": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send message and wait for response in Telegram": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send a text message": {
+        "main": [
+          [],
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Date & Time": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google calendar": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "REDACTED",
+    "name": "Version 04df0b25",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized automatically",
+    "timestamp": "2026-01-25T22:00:45.823Z"
+  }
+}
