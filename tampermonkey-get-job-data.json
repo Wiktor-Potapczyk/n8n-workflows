@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-25T15:30:32.817Z",
+  "updatedAt": "2026-01-25T23:24:48.437Z",
   "createdAt": "2026-01-24T22:05:02.300Z",
   "id": "EHZiHIZf8aHAuyoLqQAsw",
   "name": "TamperMonkey GET JOB DATA",
@@ -86,7 +86,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// 1. Pobieramy ID z zapytania Webhooka (z węzła \"Webhook\")\n// Używamy .first(), żeby dostać się do danych z triggera\nconst queryId = $('Webhook').first().json.query.job_id;\n\n// 2. Pobieramy wiersze z Google Sheets (to są dane wejściowe do tego węzła)\nconst allRows = $input.all();\n\n// Debug (opcjonalnie)\n// console.log(\"Szukam ID:\", queryId);\n\nif (!queryId) {\n    return { json: { found: false, error: \"Brak parametru job_id\" } };\n}\n\n// 3. Szukamy pasującego wiersza (porównanie stringów, usuwamy spacje)\nconst matchedRow = allRows.find(item => \n    String(item.json.ID).trim() === String(queryId).trim()\n);\n\nif (matchedRow) {\n    const data = matchedRow.json;\n\n    // 4. Logika wyboru CV\n    // Domyślnie TECH, chyba że znajdziemy co innego\n    let cvType = 'TECH';\n    const title = (data.Title || '').toLowerCase();\n\n    // --- POPRAWKA: Używamy kolumny 'CV Recommended' ---\n    if (data['CV Recommended']) {\n        cvType = data['CV Recommended']; \n    } \n    // Fallback: Jeśli kolumna jest pusta, sprawdzamy tytuł stanowiska\n    else if (title.includes('manager') || title.includes('head') || title.includes('director') || title.includes('lead') || title.includes('owner')) {\n        cvType = 'MANAGER';\n    }\n\n    // 5. Budujemy czysty JSON dla Tampermonkey\n    return {\n        json: {\n            found: true,\n            id: data.ID,\n            score: data.Score,\n            cv_type: cvType,\n            cover_letter: data['Cover letter'] || \"Brak danych.\",\n            // Mapujemy kolumnę 'Notes' z arkusza na pole 'interview_brief'\n            interview_brief: data['Notes'] || \"Brak danych.\",\n            status: data.Status || \"new\"\n        }\n    };\n} else {\n    // Nie znaleziono wiersza\n    return {\n        json: {\n            found: false\n        }\n    };\n}"
+        "jsCode": "// 1. Pobieramy ID z zapytania Webhooka (z węzła \"Webhook\")\n// Używamy .first(), żeby dostać się do danych z triggera\nconst queryId = $('Webhook').first().json.query.job_id;\n\n// 2. Pobieramy wiersze z Google Sheets (to są dane wejściowe do tego węzła)\nconst allRows = $input.all();\n\n// Debug (opcjonalnie)\n// console.log(\"Szukam ID:\", queryId);\n\nif (!queryId) {\n    return { json: { found: false, error: \"Brak parametru job_id\" } };\n}\n\n// 3. Szukamy pasującego wiersza (porównanie stringów, usuwamy spacje)\nconst matchedRow = allRows.find(item => \n    String(item.json.ID).trim() === String(queryId).trim()\n);\n\nif (matchedRow) {\n    const data = matchedRow.json;\n\n    // 4. Logika wyboru CV\n    // Domyślnie TECH, chyba że znajdziemy co innego\n    let cvType = 'TECH';\n    const title = (data.Title || '').toLowerCase();\n\n    // --- POPRAWKA: Używamy kolumny 'CV Recommended' ---\n    if (data['CV Recommended']) {\n        cvType = data['CV Recommended']; \n    } \n    // Fallback: Jeśli kolumna jest pusta, sprawdzamy tytuł stanowiska\n    else if (title.includes('manager') || title.includes('head') || title.includes('director') || title.includes('lead') || title.includes('owner')) {\n        cvType = 'MANAGER';\n    }\n\n    // 5. Budujemy czysty JSON dla Tampermonkey\n    return {\n        json: {\n            found: true,\n            id: data.ID,\n            score: data.Score,\n            cv_type: cvType,\n            cover_letter: data['Cover letter'] || \"Brak danych.\",\n            // Mapujemy kolumnę 'Notes' z arkusza na pole 'interview_brief'\n            interview_brief: data['Notes'] || \"Brak danych.\",\n            // === NOWE: Przekazujemy checklistę ===\n            checklist: data['Checklist'] || \"\",\n            status: data.Status || \"new\"\n        }\n    };\n} else {\n    // Nie znaleziono wiersza\n    return {\n        json: {\n            found: false\n        }\n    };\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -159,8 +159,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-24T23:02:00.000Z",
-    "createdAt": "2026-01-24T23:01:45.692Z",
+    "updatedAt": "2026-01-25T23:24:50.000Z",
+    "createdAt": "2026-01-25T23:24:48.438Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "EHZiHIZf8aHAuyoLqQAsw",
     "nodes": [
@@ -244,7 +244,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// 1. Pobieramy ID z zapytania Webhooka (z węzła \"Webhook\")\n// Używamy .first(), żeby dostać się do danych z triggera\nconst queryId = $('Webhook').first().json.query.job_id;\n\n// 2. Pobieramy wiersze z Google Sheets (to są dane wejściowe do tego węzła)\nconst allRows = $input.all();\n\n// Debug (opcjonalnie)\n// console.log(\"Szukam ID:\", queryId);\n\nif (!queryId) {\n    return { json: { found: false, error: \"Brak parametru job_id\" } };\n}\n\n// 3. Szukamy pasującego wiersza (porównanie stringów, usuwamy spacje)\nconst matchedRow = allRows.find(item => \n    String(item.json.ID).trim() === String(queryId).trim()\n);\n\nif (matchedRow) {\n    const data = matchedRow.json;\n\n    // 4. Logika wyboru CV\n    // Domyślnie TECH, chyba że znajdziemy co innego\n    let cvType = 'TECH';\n    const title = (data.Title || '').toLowerCase();\n\n    // --- POPRAWKA: Używamy kolumny 'CV Recommended' ---\n    if (data['CV Recommended']) {\n        cvType = data['CV Recommended']; \n    } \n    // Fallback: Jeśli kolumna jest pusta, sprawdzamy tytuł stanowiska\n    else if (title.includes('manager') || title.includes('head') || title.includes('director') || title.includes('lead') || title.includes('owner')) {\n        cvType = 'MANAGER';\n    }\n\n    // 5. Budujemy czysty JSON dla Tampermonkey\n    return {\n        json: {\n            found: true,\n            id: data.ID,\n            score: data.Score,\n            cv_type: cvType,\n            cover_letter: data['Cover letter'] || \"Brak danych.\",\n            // Mapujemy kolumnę 'Notes' z arkusza na pole 'interview_brief'\n            interview_brief: data['Notes'] || \"Brak danych.\",\n            status: data.Status || \"new\"\n        }\n    };\n} else {\n    // Nie znaleziono wiersza\n    return {\n        json: {\n            found: false\n        }\n    };\n}"
+          "jsCode": "// 1. Pobieramy ID z zapytania Webhooka (z węzła \"Webhook\")\n// Używamy .first(), żeby dostać się do danych z triggera\nconst queryId = $('Webhook').first().json.query.job_id;\n\n// 2. Pobieramy wiersze z Google Sheets (to są dane wejściowe do tego węzła)\nconst allRows = $input.all();\n\n// Debug (opcjonalnie)\n// console.log(\"Szukam ID:\", queryId);\n\nif (!queryId) {\n    return { json: { found: false, error: \"Brak parametru job_id\" } };\n}\n\n// 3. Szukamy pasującego wiersza (porównanie stringów, usuwamy spacje)\nconst matchedRow = allRows.find(item => \n    String(item.json.ID).trim() === String(queryId).trim()\n);\n\nif (matchedRow) {\n    const data = matchedRow.json;\n\n    // 4. Logika wyboru CV\n    // Domyślnie TECH, chyba że znajdziemy co innego\n    let cvType = 'TECH';\n    const title = (data.Title || '').toLowerCase();\n\n    // --- POPRAWKA: Używamy kolumny 'CV Recommended' ---\n    if (data['CV Recommended']) {\n        cvType = data['CV Recommended']; \n    } \n    // Fallback: Jeśli kolumna jest pusta, sprawdzamy tytuł stanowiska\n    else if (title.includes('manager') || title.includes('head') || title.includes('director') || title.includes('lead') || title.includes('owner')) {\n        cvType = 'MANAGER';\n    }\n\n    // 5. Budujemy czysty JSON dla Tampermonkey\n    return {\n        json: {\n            found: true,\n            id: data.ID,\n            score: data.Score,\n            cv_type: cvType,\n            cover_letter: data['Cover letter'] || \"Brak danych.\",\n            // Mapujemy kolumnę 'Notes' z arkusza na pole 'interview_brief'\n            interview_brief: data['Notes'] || \"Brak danych.\",\n            // === NOWE: Przekazujemy checklistę ===\n            checklist: data['Checklist'] || \"\",\n            status: data.Status || \"new\"\n        }\n    };\n} else {\n    // Nie znaleziono wiersza\n    return {\n        json: {\n            found: false\n        }\n    };\n}"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -292,13 +292,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": "Version 94195d64",
+    "name": "Version 558cf61b",
     "description": "",
     "autosaved": false
   },
   "tags": [],
   "_sanitized": {
-    "note": "Sanitized automatically",
-    "timestamp": "2026-01-25T23:03:12.712Z"
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-01-25T23:46:02.018Z"
   }
 }
