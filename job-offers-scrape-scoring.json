@@ -1,0 +1,1839 @@
+{
+  "updatedAt": "2026-01-25T20:30:29.497Z",
+  "createdAt": "2026-01-23T14:06:42.706Z",
+  "id": "REDACTED-POSSIBLE-SECRET",
+  "name": "Job offers scrape & scoring",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "authentication": "REDACTED",
+        "nodeCredentialType": "REDACTED",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "geocode",
+              "value": "105076658"
+            },
+            {
+              "name": "date_posted",
+              "value": "past_month"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "REDACTED-API-KEY"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "page",
+                    "value": "={{ $response.body.page+1 }}"
+                  }
+                ]
+              },
+              "limitPagesFetched": true,
+              "maxRequests": 6,
+              "requestInterval": 3500
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1088,
+        656
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "binaryPropertyName": "binary0",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "simple": false,
+        "filters": {},
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "binary",
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -864,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get many messages",
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=### ROLE\nYou are a LinkedIn Boolean Search String Generator. Your ONLY output is a raw search query string.\n\n### INPUT\nYou will receive a Career Profile document containing:\n- Target roles organized in Buckets (A = Primary, B = Secondary, C = Fallback)\n- Technical skills with proficiency levels\n- Tool keywords organized by signal strength (Tier 1 = highest)\n- Seniority constraints (what to include/exclude)\n- Search string templates for reference\n\n### YOUR TASK\nGenerate ONE comprehensive LinkedIn Boolean search string based on the profile.\n\n### BOOLEAN SYNTAX RULES\n1. Use OR to combine alternatives: \"GTM Engineer\" OR \"Growth Engineer\"\n2. Use AND to require combinations: (roles) AND (skills)\n3. Use NOT to exclude: NOT (\"Senior\" OR \"Director\")\n4. Use quotes for exact phrases: \"Product Owner\"\n5. Use parentheses for grouping: (A OR B) AND (C OR D)\n\n### SEARCH STRING STRUCTURE\nYour output MUST follow this structure:\n(ROLE_BLOCK) AND (SKILL_BLOCK) NOT (EXCLUSION_BLOCK)\n\nWhere:\n- ROLE_BLOCK = Role titles from profile's Target Roles section, connected with OR\n- SKILL_BLOCK = Tools/skills from profile's high-signal tiers, connected with OR  \n- EXCLUSION_BLOCK = Seniority exclusions from profile, connected with OR\n\n### CRITICAL RULES\n\n1. ROLE SELECTION (BE COMPREHENSIVE):\n   - Include ALL roles from Bucket A (Primary)\n   - Include ALL roles from Bucket B (Secondary)\n   - Include roles from Bucket C (Fallback) - these are still valid matches\n   - Use ROOT titles (e.g., \"Product Owner\" not \"Technical Product Owner\")\n   - Include common variants: \"Release Manager\", \"Delivery Manager\", \"Vendor Manager\", etc.\n   - DO NOT artificially limit the number of roles\n\n2. SKILL SELECTION (BE COMPREHENSIVE):\n   - Include ALL Tier 1 tools (highest signal)\n   - Include ALL Tier 2 tools\n   - Include key Tier 3/4 tools (Python, API, SQL, Jira, Agile)\n   - Mix technical AND process keywords\n   - DO NOT artificially limit the number of skills\n\n3. EXCLUSIONS:\n   - Always exclude: \"Director\", \"VP\", \"Head of\", \"Chief\", \"C-Level\", \"Principal\", \"Staff Engineer\"\n   - Do NOT exclude \"Manager\" (needed for Release Manager, Vendor Manager)\n   - Do NOT exclude \"Senior\" or \"Lead\" unless profile explicitly says to\n\n4. OUTPUT FORMAT:\n   - Output ONLY the raw query string\n   - Start with opening parenthesis (\n   - NO markdown backticks\n   - NO explanations\n   - NO line breaks within the query\n   - NO prefix like \"Query:\" or \"Search:\"\n   - NO length restrictions - include all relevant terms\n\n5. BROADENING:\n   - Always include generic terms that match candidate's archetype: \"Consultant\", \"Implementation\", \"Specialist\"\n\n### EXAMPLE OUTPUT (comprehensive)\n(\"GTM Engineer\" OR \"Growth Engineer\" OR \"Revenue Engineer\" OR \"RevOps Engineer\" OR \"Automation Engineer\" OR \"Integration Engineer\" OR \"AI Engineer\" OR \"Solutions Engineer\" OR \"Product Owner\" OR \"Business Analyst\" OR \"Systems Analyst\" OR \"Requirements Engineer\" OR \"Release Manager\" OR \"Delivery Manager\" OR \"Vendor Manager\" OR \"DevOps Engineer\") AND (\"n8n\" OR \"Clay\" OR \"HubSpot\" OR \"Apollo\" OR \"Instantly\" OR \"HeyReach\" OR \"Phantombuster\" OR \"Python\" OR \"API\" OR \"LLM\" OR \"OpenAI\" OR \"Jira\" OR \"Jenkins\" OR \"Agile\" OR \"SQL\" OR \"Kubernetes\") NOT (\"Director\" OR \"VP\" OR \"Head of\" OR \"Chief\" OR \"C-Level\" OR \"Principal\" OR \"Staff Engineer\")\n\n### NOW GENERATE\nRead the Career Profile below and generate the search string."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        256,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $binary.binary0.fileExtension }}",
+                    "rightValue": "md",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "REDACTED-UUID"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "REDACTED-UUID",
+                    "leftValue": "={{ $binary.binary0.fileExtension }}",
+                    "rightValue": "txt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "REDACTED-UUID",
+                    "leftValue": "={{ $binary.binary0.fileExtension }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "allMatchingOutputs": false
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -416,
+        192
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Switch",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "binaryPropertyName": "binary0",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "binary0321321",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        400
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Extract from File2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $binary.binary0.fileExtension }}",
+              "rightValue": "md",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -640,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        256,
+        384
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pobieramy wszystkie odpowiedzi (batch-e) z poprzedniego węzła\nconst batches = $input.all();\nconst extractedJobs = [];\n\n// Iterujemy przez każdy \"batch\" (czyli stronę wyników z API)\nfor (const batch of batches) {\n  // Sprawdzamy, czy w ogóle jest pole 'data' i czy jest tablicą\n  if (batch.json.data && Array.isArray(batch.json.data)) {\n    \n    // Iterujemy przez konkretne oferty wewnątrz pola 'data'\n    for (const job of batch.json.data) {\n      \n      // Tutaj możemy od razu lekko wyczyścić strukturę, jeśli trzeba\n      // Ale na razie po prostu przekazujemy czystą ofertę dalej\n      extractedJobs.push({\n        json: job\n      });\n    }\n  }\n}\n\n// Zwracamy płaską listę ofert. \n// Teraz każda oferta jest oddzielnym itemem w n8n.\nreturn extractedJobs;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        656
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "location",
+              "value": "={{ $json.location }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "company.id",
+              "value": "={{ $json.company.id }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "company.name",
+              "value": "={{ $json.company.name }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "company.url",
+              "value": "={{ $json.company.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        656
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "authentication": "REDACTED",
+        "nodeCredentialType": "REDACTED",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "job_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 3500
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        112,
+        656
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request1",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const batches = $input.all();\nconst extractedJobs = [];\n\nfor (const batch of batches) {\n  const job = batch.json.data;\n  \n  if (job && job.id) {\n    extractedJobs.push({\n      json: {\n        // Core info\n        id: job.id,\n        title: job.title,\n        description: job.description,\n        job_url: job.job_url,\n        listed_at: job.listed_at,\n        \n        // Location & work mode\n        location: job.location,\n        country_code: job.country_code,\n        work_remote_allowed: job.work_remote_allowed,\n        workplace_types: job.workplace_types,\n        \n        // Job details\n        level: job.level,\n        employment_status: job.employment_status,\n        salary: job.salary,\n        industries: job.industries,\n        job_functions: job.job_functions,\n        \n        // Company (flattened)\n        company_name: job.company?.name,\n        company_description: job.company?.description,\n        company_size: job.company?.staff_count,\n        company_industries: job.company?.industries,\n        company_url: job.company?.url\n      }\n    });\n  }\n}\n\nreturn extractedJobs;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        656
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## CANDIDATE\n{{ $('Extract from File').first().json.data }}\n\n---\n\n## JOB OFFER\n\n### Basic info\nTitle: {{ $json.title }}\nLevel: {{ $json.level }}\nEmployment: {{ $json.employment_status }}\nSalary: {{ $json.salary.salary_exists ? $json.salary.min_salary + '-' + $json.salary.max_salary + ' ' + $json.salary.currency : 'Not specified' }}\n\n### Location & work mode\nLocation: {{ $json.location }}\nCountry: {{ $json.country_code }}\nRemote: {{ $json.work_remote_allowed }}\nWorkplace: {{ $json.workplace_types }}\n\n### Industry & function\nIndustries: {{ $json.industries }}\nFunctions: {{ $json.job_functions }}\n\n### Company\nName: {{ $json.company_name }}\nSize: {{ $json.company_size }} people\nCompany industries: {{ $json.company_industries }}\nCompany description: {{ $json.company_description }}\n\n### Job description\n{{ $json.description }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a recruiter evaluating candidate-job fit.\nRespond ONLY in JSON format. No markdown, no comments, no ```json blocks.\n\nSCORING RULES:\n- 9-10: Perfect match - role describes exactly what candidate does, tools overlap\n- 7-8: Very good match - most requirements met, minor gaps\n- 5-6: Medium match - some requirements OK, some stretch\n- 3-4: Weak match - candidate could try, but significant gaps\n- 1-2: No match - different career path, missing key requirements\n\nRED FLAGS (lower score significantly):\n- \"Senior\", \"Lead\", \"Principal\", \"Staff\" in title → max score 5\n- Requires >5 years of experience → max score 5\n- Requires skills candidate does NOT have (e.g., Kubernetes expert, ML Engineer, Architect)\n- On-site only outside Warsaw\n- Requires relocation\n- US-based only\n\nGREEN FLAGS (raise score):\n- Tools mentioned: n8n, Clay, HubSpot, Apollo, Jira, Confluence\n- Keywords: automation, AI, LLM, integration, workflow, agentic\n- Remote EU/Poland or Hybrid Warsaw\n- \"Associate\", \"Mid\", or no seniority in title\n- Implementation, consulting, client-facing technical role\n\nCV SELECTION:\nThe candidate profile contains a \"CV SELECTION LOGIC\" section with multiple CV versions.\nBased on the job requirements, recommend the most appropriate CV version ID.\nIf no CV selection logic exists in profile, return \"DEFAULT\".\n\nOUTPUT FORMAT:\n{\"score\": <1-10>, \"fit_reasons\": [\"reason 1\", \"reason 2\"], \"red_flags\": [\"flag 1\"] or [], \"one_liner\": \"max 15 words summary\", \"cv_recommended\": \"<CV_VERSION_ID>\"}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -1088,
+        1072
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        1248
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"score\": 7,\n  \"fit_reasons\": [\"powód 1\", \"powód 2\"],\n  \"red_flags\": [],\n  \"one_liner\": \"max 15 słów\",\n  \"cv_recommended\": \"TECH\"\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        -944,
+        1248
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst originalJobs = $('Code in JavaScript1').all();\n\nreturn items.map((item, index) => ({\n  json: {\n    // === SCORING (LLM output) ===\n    scoring: {\n      score: item.json.output.score,\n      fit_reasons: item.json.output.fit_reasons,\n      red_flags: item.json.output.red_flags,\n      one_liner: item.json.output.one_liner\n    },\n    \n    // === JOB OFFER (original data) ===\n    job_offer: {\n      id: originalJobs[index].json.id,\n      title: originalJobs[index].json.title,\n      description: originalJobs[index].json.description,\n      job_url: originalJobs[index].json.job_url,\n      \n      location: originalJobs[index].json.location,\n      country_code: originalJobs[index].json.country_code,\n      work_remote_allowed: originalJobs[index].json.work_remote_allowed,\n      workplace_types: originalJobs[index].json.workplace_types,\n      \n      level: originalJobs[index].json.level,\n      employment_status: originalJobs[index].json.employment_status,\n      salary: originalJobs[index].json.salary,\n      industries: originalJobs[index].json.industries,\n      job_functions: originalJobs[index].json.job_functions,\n      \n      company_name: originalJobs[index].json.company_name,\n      company_description: originalJobs[index].json.company_description,\n      company_size: originalJobs[index].json.company_size,\n      company_industries: originalJobs[index].json.company_industries,\n      company_url: originalJobs[index].json.company_url\n    },\n    \n    // === SHEETS-READY (flat) ===\n    sheets: {\n      id: originalJobs[index].json.id,\n      title: originalJobs[index].json.title,\n      company_name: originalJobs[index].json.company_name,\n      company_url: originalJobs[index].json.company_url,\n      job_url: originalJobs[index].json.job_url,\n      location: originalJobs[index].json.location,\n      remote: originalJobs[index].json.work_remote_allowed ? 'Yes' : 'No',\n      level: originalJobs[index].json.level || 'Not specified',\n      salary: originalJobs[index].json.salary?.salary_exists \n        ? `${originalJobs[index].json.salary.min_salary}-${originalJobs[index].json.salary.max_salary} ${originalJobs[index].json.salary.currency}`\n        : 'Not specified',\n      score: item.json.output.score,\n      cv_recommended: item.json.output.cv_recommended || 'DEFAULT',\n      one_liner: item.json.output.one_liner,\n      fit_reasons: item.json.output.fit_reasons.join(' | '),\n      red_flags: item.json.output.red_flags.length > 0 \n        ? item.json.output.red_flags.join(' | ') \n        : 'None',\n      status: 'new',\n      date_added: new Date().toISOString().split('T')[0],\n      cover_letter: '',\n      notes: ''\n    }\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        1072
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.sheets.id }}",
+            "Title": "={{ $json.sheets.title }}",
+            "Company Name": "={{ $json.sheets.company_name }}",
+            "Company URL": "={{ $json.sheets.company_url }}",
+            "Job URL": "={{ $json.sheets.job_url }}",
+            "Date added": "={{ $json.sheets.date_added }}",
+            "Status": "={{ $json.sheets.status }}",
+            "Red flags": "={{ $json.sheets.red_flags }}",
+            "Fit Reasons": "={{ $json.sheets.fit_reasons }}",
+            "One liner": "={{ $json.sheets.one_liner }}",
+            "Score": "={{ $json.sheets.score }}",
+            "Salary": "={{ $json.sheets.salary }}",
+            "Level": "={{ $json.sheets.level }}",
+            "Remote": "={{ $json.sheets.remote }}",
+            "Location": "={{ $json.sheets.location }}",
+            "CV Recommended": "={{ $json.sheets.cv_recommended }}",
+            "Listed At": "={{ DateTime.fromISO($('Code in JavaScript1').item.json.listed_at).toFormat('dd-MM-yyyy, HH:mm') }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Listed At",
+              "displayName": "Listed At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company URL",
+              "displayName": "Company URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job URL",
+              "displayName": "Job URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remote",
+              "displayName": "Remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Level",
+              "displayName": "Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CV Recommended",
+              "displayName": "CV Recommended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "One liner",
+              "displayName": "One liner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fit Reasons",
+              "displayName": "Fit Reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Red flags",
+              "displayName": "Red flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date added",
+              "displayName": "Date added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cover letter",
+              "displayName": "Cover letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -528,
+        1072
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.Score }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -320,
+        1072
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate the Cover Letter based on the following data:\n\n=== 1. TARGET JOB & COMPANY ===\n**Role:** {{ $('Code in JavaScript2').item.json.job_offer.title }}\n**Company:** {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\n**Industry:** {{ $('Code in JavaScript2').item.json.job_offer.industries ? $('Code in JavaScript2').item.json.job_offer.industries.join(', ') : 'Not specified' }}\n**Size:** {{ $('Code in JavaScript2').item.json.job_offer.company_size }} employees\n\n**Company Description:**\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.company_description }}\n\"\"\"\n\n**Job Description:**\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== 2. COMPANY DEEP DIVE (Research) ===\nUse these facts to personalize the intro. Do not copy-paste, but reference specific news, strategy, or tech stack to show I did my homework.\n\"\"\"\n{{ $('Message a model').item.json.choices[0].message.content }}\n\"\"\"\n\n=== 3. CANDIDATE PROFILE (Use this persona) ===\n\"\"\"\n{{ $('Extract from File').first().json.data }}\n\"\"\"\n\n=== 4. KEY MATCHING POINTS (Why this candidate fits) ===\n**Fit Reasons detected:** {{ $('Code in JavaScript2').item.json.scoring.fit_reasons.join(', ') }}\n\n---\n**ACTION:** Write the Cover Letter now.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# ROLE & OBJECTIVE\nYou are an expert Career Copywriter acting on behalf of the **CANDIDATE** provided in the context. Your goal is to write a **hyper-personalized Cover Letter** for the **TARGET JOB**.\n\nYou must adopt the CANDIDATE'S voice, experience, and specific skills. You are NOT an AI assistant; you write in the first person (\"I\", \"my\") as if you are the CANDIDATE.\n\n# DYNAMIC LANGUAGE RULE\n**Analyze the language of the \"Job Description\" provided by the user.**\n- IF the Job Description is in **Polish** → Write the entire Cover Letter in **Polish**.\n- IF the Job Description is in **English** → Write the entire Cover Letter in **English**.\n- IF mixed → Use the dominant language of the offer.\n\n# WRITING GUIDELINES\n1. **The Hook:** Do NOT start with \"I am applying for...\". Start by connecting the CANDIDATE'S specific background (industry, unique mix of skills) to the COMPANY'S domain or problem.\n2. **The Bridge:** Explicitly link the CANDIDATE'S past experience (e.g., corporate/enterprise) with their new direction (e.g., automation/startup), showing why this mix is valuable.\n3. **The Proof:** Mention specific tools/technologies found in the Job Description ONLY if they exist in the CANDIDATE PROFILE.\n4. **Tone:** Professional, confident, concise. No fluff.\n5. **Length:** Strictly under 200 words.\n\n# FORMATTING\n- Plain text only.\n- No placeholders like [Date], [Address], [Manager Name].\n- Sign off with the CANDIDATE'S Name found in the profile."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -880,
+        1584
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain2"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        1744
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model2",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Code in JavaScript2').item.json.job_offer.id }}",
+            "Cover letter": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Listed At",
+              "displayName": "Listed At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company URL",
+              "displayName": "Company URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job URL",
+              "displayName": "Job URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Remote",
+              "displayName": "Remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Level",
+              "displayName": "Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CV Recommended",
+              "displayName": "CV Recommended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "One liner",
+              "displayName": "One liner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Fit Reasons",
+              "displayName": "Fit Reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Red flags",
+              "displayName": "Red flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date added",
+              "displayName": "Date added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cover letter",
+              "displayName": "Cover letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -560,
+        1584
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID",
+              "lookupValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -672,
+        768
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "joinMode": "keepNonMatches",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -304,
+        656
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        768
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=Act as a Recruitment Researcher. I am preparing a job application for the following company.\nPerform a deep-dive research to find specific, recent, and actionable details that show I've done my homework.\n\n--- COMPANY DATA ---\nName: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nIndustry:  $('Code in JavaScript2').item.json.job_offer.industries }}\nURL: {{ $('Code in JavaScript2').item.json.job_offer.company_url }}\nDescription Provided: \"{{ $('Code in JavaScript2').item.json.job_offer.company_description }}\"\n\n--- RESEARCH OBJECTIVES ---\nUsing the company name and context, search the web for the following (focus on the last 12 months):\n\n1. **Recent News & Wins:** New partnerships (specific client names), product launches, or awards.\n2. **Financial Status:** Recent funding rounds (Series A/B/C, amount, date), investors, or growth metrics.\n3. **Strategic Focus:** What is their current main challenge or goal? (e.g., Expansion to US market, releasing a mobile app, automating internal ops).\n4. **Engineering Culture:** Search for their engineering blog, GitHub, or tech talks. Do they use specific obscure stacks? Do they contribute to open source?\n\n--- OUTPUT FORMAT ---\nReturn a concise summary (bullet points) containing ONLY facts I can use in a cover letter.\nFormat:\n- **News:** [Fact]\n- **Funding:** [Fact]\n- **Strategy:** [Fact]\n- **Tech Vibe:** [Fact]\n\nIf no info is found for a category, write \"N/A\"."
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        1584
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Message a model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please generate the Intelligence Brief based on this data:\n\n=== 1. THE JOB (Target) ===\nRole: {{ $('Code in JavaScript2').item.json.job_offer.title }}\nCompany: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nJob Description:\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== 2. INTELLIGENCE REPORT (Perplexity Research) ===\n\"\"\"\n{{ $('Message a model').item.json.choices[0].message.content }}\n\"\"\"\n\n=== 3. CANDIDATE PROFILE ===\n\"\"\"\n{{ $('Extract from File').first().json.data }}\n\"\"\"\n\n=== 4. FIT ANALYSIS ===\nScore: {{ $('Code in JavaScript2').item.json.scoring.score }}/10\nFit Reasons: {{ $('Code in JavaScript2').item.json.scoring.fit_reasons.join(', ') }}\nRed Flags/Gaps: {{ $('Code in JavaScript2').item.json.scoring.red_flags.join(', ') }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# ROLE\nYou are a Senior Technical Recruiter and Career Mentor. Your client is the **CANDIDATE** (profile provided in input).\nYour goal is NOT to write a sales pitch, but to create a **Internal Intelligence Brief (Knowledge Base)**.\nThe candidate hates reciting scripts. He needs hard facts, context, and a technical refresher to feel confident and natural during the conversation.\n\n# OBJECTIVE\nSynthesize the Job Description, Perplexity Research, and Candidate Profile into a concise \"Readiness Sheet\" to be reviewed 15 minutes before the interview.\n\n# OUTPUT FORMAT\nGenerate a Markdown document following exactly this structure:\n\n# 🧠 INTERVIEW INTELLIGENCE: [Target Company Name]\n\n## 1. COMPANY & BUSINESS CONTEXT\n*Summarize the Perplexity research into facts relevant to an engineer/PM.*\n* **Core Product/Mission:** [What do they actually do/sell?]\n* **Current State:** [Recent funding, new market expansion, technical challenges mentioned in news]\n* **Key Numbers:** [Size, Revenue, Funding - if available]\n\n## 2. THE ROLE DECODED\n*Translate the Job Description into reality.*\n* **Primary Responsibility:** [In one sentence: What will I actually be doing day-to-day?]\n* **The \"Hidden\" Need:** [What problem are they likely trying to solve hiring for this role? e.g. \"They have scaling issues\" or \"They need to clean up messy data\"]\n\n## 3. TECHNICAL REFRESHER (What to review)\n*List specific tools, concepts, or methodologies from the Job Description that the candidate should quickly Google/review before the call.*\n* **Critical Stack:** [e.g. \"Review FastAPI async concepts\", \"Check their API docs if public\"]\n* **Domain Concepts:** [e.g. \"Refresh knowledge on RAG vector databases\", \"Review Scrum artifacts\"]\n\n## 4. GAP ANALYSIS & STRATEGY\n*Identify where the candidate lacks experience (Red Flags) and suggest a LOGICAL connection to existing skills (not a script).*\n* **Gap:** [Missing skill/experience]\n* **Strategy:** [Mental note: \"Connect this to my experience in Project X where I solved a similar problem using Y\"]\n\n## 5. INVESTIGATIVE QUESTIONS\n*3 deep, non-generic questions to ask the interviewer to uncover the truth about the team/tech.*\n1. [Question about technical maturity/legacy code]\n2. [Question about business goals/roadmap]\n3. [Question about team autonomy/processes]\n\n# LANGUAGE RULES\n- **CRITICAL:** Detect the language of the **Job Description**.\n- IF Job Description is in **Polish** -> Output the ENTIRE Brief in **Polish**.\n- IF Job Description is in **English** -> Output the ENTIRE Brief in **English**."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -368,
+        1584
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain3"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        1744
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model3",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Code in JavaScript2').item.json.job_offer.id }}",
+            "Notes": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Listed At",
+              "displayName": "Listed At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company URL",
+              "displayName": "Company URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job URL",
+              "displayName": "Job URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Remote",
+              "displayName": "Remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Level",
+              "displayName": "Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CV Recommended",
+              "displayName": "CV Recommended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "One liner",
+              "displayName": "One liner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Fit Reasons",
+              "displayName": "Fit Reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Red flags",
+              "displayName": "Red flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date added",
+              "displayName": "Date added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cover letter",
+              "displayName": "Cover letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -32,
+        1584
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Append or update row in sheet2",
+      "credentials": {
+        "_redacted": true
+      }
+    }
+  ],
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File2": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain3": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-23T14:06:42.709Z",
+      "createdAt": "2026-01-23T14:06:42.709Z",
+      "role": "workflow:owner",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "projectId": {
+        "_redacted": true
+      }
+    },
+    {
+      "updatedAt": "2026-01-24T14:51:13.056Z",
+      "createdAt": "2026-01-24T14:51:13.056Z",
+      "role": "workflow:editor",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized automatically",
+    "timestamp": "2026-01-25T22:00:32.615Z"
+  }
+}
