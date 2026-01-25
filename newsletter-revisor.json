@@ -1,0 +1,1598 @@
+{
+  "updatedAt": "2026-01-25T20:37:32.465Z",
+  "createdAt": "2026-01-25T20:33:53.585Z",
+  "id": "E5dTA5cEX8Kckp5J_5hp8",
+  "name": "Newsletter revisor",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 23,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2656,
+        304
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "Label_1583814012331254098"
+          ],
+          "receivedBefore": "2025-09-29T00:00:00"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -2208,
+        448
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get many messages / RevOps",
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "Label_3219834464104533472"
+          ],
+          "receivedBefore": "2025-09-29T00:00:00"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -2208,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get many messages / GTM",
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Remove the outer {{ }} from the Code node itself\n\n// Get the current date and time from the special variable $now\nconst now = new Date($now);\n\n// Modify the date by subtracting 14 days\nnow.setDate(now.getDate() - 14);\n\n// Convert the modified date to an ISO string\nconst twoWeeksAgoIso = now.toISOString().split('T')[0];\n\n// The Code node expects to return an array of objects.\n// We'll return a single item with a 'twoWeeksAgo' property in its JSON.\nreturn [{\n  json: {\n    twoWeeksAgo: twoWeeksAgoIso\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2432,
+        304
+      ],
+      "id": "REDACTED-UUID",
+      "name": "JSON / Today - 2w"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "from_email",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "from_name",
+              "value": "={{ $json.from.value[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1776,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "from_email",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "from_name",
+              "value": "={{ $json.from.value[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1776,
+        448
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        608
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Google Gemini Chat Model1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"message_id\": \"[message_id]\",\n  \"sender_email\": \"[sender_email]\",\n  \"sender_name\": \"[sender_name]\",\n  \"topics_covered\": [\n    \"Topic 1 - concise description\",\n    \"Topic 2 - concise description\",\n    \"Topic 3 - concise description\"\n  ],\n  \"summary\": \"2-3 sentence brief summary of the newsletter's main content, key insights, and actionable takeaways\"\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        -1408,
+        304
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"message_id\": \"[message_id]\",\n  \"sender_email\": \"[sender_email]\",\n  \"sender_name\": \"[sender_name]\",\n  \"topics_covered\": [\n    \"Topic 1 - concise description\",\n    \"Topic 2 - concise description\",\n    \"Topic 3 - concise description\"\n  ],\n  \"summary\": \"2-3 sentence brief summary of the newsletter's main content, key insights, and actionable takeaways\"\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        -1408,
+        608
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output.message_id",
+              "renameField": true,
+              "outputFieldName": "ids_gtm"
+            },
+            {
+              "fieldToAggregate": "output.sender_email",
+              "renameField": true,
+              "outputFieldName": "emails_gtm"
+            },
+            {
+              "fieldToAggregate": "output.sender_name",
+              "renameField": true,
+              "outputFieldName": "senders_gtm"
+            },
+            {
+              "fieldToAggregate": "output.topics_covered",
+              "renameField": true,
+              "outputFieldName": "topics_gtm"
+            },
+            {
+              "fieldToAggregate": "output.summary",
+              "renameField": true,
+              "outputFieldName": "summaries_gtm"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Aggregate / GTM"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output.message_id",
+              "renameField": true,
+              "outputFieldName": "ids_revops"
+            },
+            {
+              "fieldToAggregate": "output.sender_email",
+              "renameField": true,
+              "outputFieldName": "emails_revops"
+            },
+            {
+              "fieldToAggregate": "output.sender_name",
+              "renameField": true,
+              "outputFieldName": "senders_revops"
+            },
+            {
+              "fieldToAggregate": "output.topics_covered",
+              "renameField": true,
+              "outputFieldName": "topics_revops"
+            },
+            {
+              "fieldToAggregate": "output.summary",
+              "renameField": true,
+              "outputFieldName": "summaries_revops"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        448
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Aggregate / RevOps"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -400,
+        1232
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        304
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Google Gemini Chat Model2"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        608
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Google Gemini Chat Model3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# GTM Newsletter Analysis Agent\n\nYou are an AI agent specialized in analyzing **Go-to-Market (GTM)** newsletter content. Your role is to extract **specific, actionable insights** while capturing all important themes and information.\n\n## Input Format\nYou will receive the following information for each newsletter:\n- **Message ID**: {{ $json.id }}\n- **Sender's Email**: {{ $json.from_email }}\n- **Sender's Name**: {{ $json.from_name }}\n- **Email Subject**: {{ $json.subject }}\n- **Email Body**: {{ $json.text }}\n\n## Output Format\n```json\n{\n  \"message_id\": \"[message_id]\",\n  \"sender_email\": \"[sender_email]\",\n  \"sender_name\": \"[sender_name]\",\n  \"topics_covered\": [\n    \"Specific tool/tactic/framework - what it does\",\n    \"Specific tool/tactic/framework - what it does\",\n    \"Specific tool/tactic/framework - what it does\"\n  ],\n  \"summary\": \"Detailed summary covering all important themes and insights. Include: (1) specific tools/platforms mentioned by name, (2) concrete tactics with steps or frameworks, (3) actual metrics/data points, (4) key arguments and supporting evidence, (5) actionable recommendations, (6) any links or resources mentioned. Write as much as needed to capture everything valuable - no sentence limit. Use specific language over generic corporate speak.\"\n}\n```\n\n## Analysis Guidelines\n\n### What to Extract & Include\n\n1. **Specific Tools & Platforms**\n   - Full names of software, services, platforms\n   - How they're actually being used\n   - Example: \"Clay for automated LinkedIn profile enrichment by scraping company data\" NOT \"tools for data enrichment\"\n\n2. **Concrete Tactics & Frameworks**\n   - Step-by-step processes with all steps\n   - Complete frameworks with components\n   - Specific methodologies with details\n   - Example: \"3-step email sequence: (1) personalized intro referencing recent company news, (2) value prop tied to their specific pain point, (3) case study from similar company\" NOT \"effective email strategies\"\n\n3. **Hard Data & Metrics**\n   - All numbers, percentages, benchmarks mentioned\n   - Context around the data\n   - Example: \"Reduced CAC from $847 to $312 over 6 months by switching from paid ads to content-led SEO\" NOT \"improved customer acquisition costs\"\n\n4. **Arguments & Evidence**\n   - Main points the author is making\n   - Supporting reasoning and evidence\n   - Any contrarian or surprising viewpoints\n\n5. **Actionable Recommendations**\n   - Specific advice with implementation details\n   - Best practices with context\n   - Warnings or things to avoid\n\n6. **Links & Resources**\n   - **CRITICAL**: Extract and include ALL URLs, links, or resources mentioned\n   - Include the context of what each link is about\n   - Format: \"Link to [description]: [URL]\" or \"Author recommends [resource name] ([URL])\"\n   - If specific tools, templates, or guides are mentioned, note them\n\n### Summary Requirements\n\nWrite a **detailed summary** (no length limit) that captures:\n- All major themes and topics discussed\n- Every specific tool/platform mentioned (by name)\n- Every concrete tactic or framework (with details)\n- All metrics, data points, and statistics shared\n- Key arguments and supporting evidence\n- Actionable recommendations and implementation advice\n- **All links, resources, or references provided**\n- Unique, surprising, or contrarian insights\n- Connections between different topics covered\n\n**Write as many sentences as needed** to fully capture the newsletter's value. Better to be thorough than to miss important information.\n\n**Language Guidelines:**\n- Be specific: name tools, cite numbers, describe tactics\n- Avoid generic phrases like \"comprehensive guide to...\", \"leveraging X for Y...\", \"the importance of...\", \"strategies for optimizing...\"\n- Use concrete language: \"Author recommends...\", \"Data shows...\", \"The framework includes...\", \"Case study demonstrates...\"\n\n### Topics Requirements\n\nList all of the covered topics. Each topic should be **specific and actionable**:\n- ✅ \"Clay + HubSpot integration for automated lead scoring using job title + company size filters\"\n- ✅ \"4-part LinkedIn content framework: hook, story, insight, CTA\"\n- ✅ \"Gong call analysis showing 23% close rate improvement from discovery question technique\"\n- ❌ \"Data enrichment strategies\"\n- ❌ \"Content marketing best practices\"\n- ❌ \"Sales enablement optimization\"\n\n## Key Principles\n\n1. **Be specific AND comprehensive** - don't sacrifice detail for brevity\n2. **Name everything** - tools, tactics, frameworks, metrics\n3. **Include all links and resources** - critical for follow-up learning\n4. **Capture the full value** - write as much as needed to preserve all important information\n5. **Avoid generic corporate speak** - use concrete, specific language\n\nYour goal is to create a summary that a GTM professional could read weeks later and immediately recall all the valuable insights and know exactly where to learn more.",
+        "hasOutputParser": true,
+        "batching": {
+          "batchSize": 1,
+          "delayBetweenBatches": 7000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -1552,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Email content analyst / GTM",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# RevOps Newsletter Analysis Agent\n\nYou are an AI agent specialized in analyzing **Revenue Operations (RevOps)** newsletter content. Your role is to extract **specific, actionable insights** while capturing all important themes and information.\n\n## Input Format\nYou will receive the following information for each newsletter:\n- **Message ID**: {{ $json.id }}\n- **Sender's Email**: {{ $json.from_email }}\n- **Sender's Name**: {{ $json.from_name }}\n- **Email Subject**: {{ $json.subject }}\n- **Email Body**: {{ $json.text }}\n\n## Output Format\n```json\n{\n  \"message_id\": \"[message_id]\",\n  \"sender_email\": \"[sender_email]\",\n  \"sender_name\": \"[sender_name]\",\n  \"topics_covered\": [\n    \"Specific tool/process/framework - what it does\",\n    \"Specific tool/process/framework - what it does\",\n    \"Specific tool/process/framework - what it does\"\n  ],\n  \"summary\": \"Detailed summary covering all important themes and insights. Include: (1) specific tools/platforms mentioned by name, (2) concrete processes and frameworks with implementation details, (3) actual metrics/data points and benchmarks, (4) key arguments and supporting evidence, (5) actionable recommendations, (6) any links or resources mentioned. Write as much as needed to capture everything valuable - no sentence limit. Use specific language over generic corporate speak.\"\n}\n```\n\n## Analysis Guidelines\n\n### What to Extract & Include\n\n1. **Specific Tools & Platforms**\n   - Full names of CRM, analytics, automation, and RevOps software\n   - How they're actually being configured or used\n   - Example: \"HubSpot custom properties for tracking deal stage velocity using timestamp fields\" NOT \"CRM configuration best practices\"\n\n2. **Concrete Processes & Frameworks**\n   - Step-by-step operational processes with all steps\n   - Complete frameworks with components and implementation details\n   - Specific methodologies with measurable outcomes\n   - Example: \"5-step pipeline hygiene process: (1) weekly automated stale deal alerts, (2) mandatory next step field validation, (3) activity logging requirements, (4) quarterly stage conversion analysis, (5) rep coaching sessions\" NOT \"pipeline management strategies\"\n\n3. **Hard Data & Metrics**\n   - All numbers, percentages, benchmarks, KPIs mentioned\n   - Context around the data and how it was measured\n   - Example: \"Forecast accuracy improved from 67% to 89% after implementing weighted pipeline scoring based on 18 months of historical conversion data\" NOT \"improved forecasting accuracy\"\n\n4. **Arguments & Evidence**\n   - Main operational points the author is making\n   - Supporting reasoning and evidence\n   - Any contrarian or surprising viewpoints about RevOps practices\n\n5. **Actionable Recommendations**\n   - Specific operational advice with implementation details\n   - Best practices with context and prerequisites\n   - Warnings, common pitfalls, or things to avoid\n\n6. **Links & Resources**\n   - **CRITICAL**: Extract and include ALL URLs, links, or resources mentioned\n   - Include the context of what each link is about\n   - Format: \"Link to [description]: [URL]\" or \"Author recommends [resource name] ([URL])\"\n   - Note any templates, dashboards, calculators, or automation scripts shared\n\n### Summary Requirements\n\nWrite a **detailed summary** (no length limit) that captures:\n- All major operational themes and topics discussed\n- Every specific tool/platform mentioned (by name)\n- Every concrete process, framework, or methodology (with details)\n- All metrics, data points, benchmarks, and KPIs shared\n- Key arguments and supporting evidence\n- Actionable operational recommendations and implementation advice\n- **All links, resources, templates, or references provided**\n- Unique, surprising, or contrarian insights about revenue operations\n- Connections between different topics and how they impact the revenue engine\n\n**Write as many sentences as needed** to fully capture the newsletter's value. Better to be thorough than to miss important operational information.\n\n**Language Guidelines:**\n- Be specific: name tools, cite numbers, describe processes\n- Avoid generic phrases like \"comprehensive guide to...\", \"leveraging X for Y...\", \"the importance of...\", \"optimizing revenue operations...\"\n- Use concrete language: \"Author recommends...\", \"Data shows...\", \"The process includes...\", \"Implementation requires...\"\n\n### Topics Requirements\n\nList all of the covered topics. Each topic should be **specific and actionable**:\n- ✅ \"Salesforce report showing 3-month rolling forecast accuracy tracking with weighted pipeline stages\"\n- ✅ \"Clay enrichment workflow for automated contact data hygiene using email verification + job change alerts\"\n- ✅ \"Sales capacity model calculating quota-carrying headcount needs based on $2M per rep target\"\n- ❌ \"Forecasting best practices\"\n- ❌ \"Data quality improvements\"\n- ❌ \"Sales operations efficiency\"\n\n## Key Principles\n\n1. **Be specific AND comprehensive** - don't sacrifice detail for brevity\n2. **Name everything** - tools, processes, frameworks, metrics, integrations\n3. **Include all links and resources** - critical for follow-up learning and implementation\n4. **Capture the full operational value** - write as much as needed to preserve all important information\n5. **Avoid generic corporate speak** - use concrete, specific language\n6. **Focus on measurable outcomes** - RevOps is data-driven, so emphasize metrics and ROI\n\nYour goal is to create a summary that a RevOps professional could read weeks later and immediately recall all the valuable operational insights, know exactly which tools or processes to investigate, and have direct links to learn more or implement the recommendations.",
+        "hasOutputParser": true,
+        "batching": {
+          "batchSize": 1,
+          "delayBetweenBatches": 7000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -1552,
+        448
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Email content analyst / RevOps",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"domain\": \"RevOps\",\n  \"total_newsletters\": 5,\n  \"message_ids\": [\"deduplicated array of all RevOps message IDs\"],\n  \"unique_senders\": [\n    {\n      \"email\": \"REDACTED@email.com\",\n      \"name\": \"Sender Name\",\n      \"newsletter_count\": 3\n    }\n  ],\n  \"all_topics\": [\"flattened array of all topics from all RevOps newsletters\"],\n  \"key_themes\": [\"3-5 major recurring themes identified across newsletters\"],\n  \"domain_summary\": \"2-3 sentence comprehensive summary of RevOps insights and trends from all newsletters\"\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        -848,
+        608
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"domain\": \"RevOps\",\n  \"total_newsletters\": 5,\n  \"message_ids\": [\"deduplicated array of all RevOps message IDs\"],\n  \"unique_senders\": [\n    {\n      \"email\": \"REDACTED@email.com\",\n      \"name\": \"Sender Name\",\n      \"newsletter_count\": 3\n    }\n  ],\n  \"all_topics\": [\"flattened array of all topics from all RevOps newsletters\"],\n  \"key_themes\": [\"3-5 major recurring themes identified across newsletters\"],\n  \"domain_summary\": \"2-3 sentence comprehensive summary of RevOps insights and trends from all newsletters\"\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        -848,
+        304
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser3"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Domain": "={{ $json.output.domain }}",
+            "Total_Newsletters": "={{ $json.output.total_newsletters }}",
+            "Key_Themes": "={{ $json.output.key_themes }}",
+            "Date": "={{ new Date($now).toISOString().split('T')[0] }}",
+            "Domain_Summary": "={{ $json.output.domain_summary }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Domain",
+              "displayName": "Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total_Newsletters",
+              "displayName": "Total_Newsletters",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Key_Themes",
+              "displayName": "Key_Themes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Domain_Summary",
+              "displayName": "Domain_Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Main",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 428740856,
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date($now).toISOString().split('T')[0] }}",
+            "Domain": "={{ $json.output.domain }}",
+            "Message_ID": "={{ $json.output.message_ids }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Domain",
+              "displayName": "Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message_ID",
+              "displayName": "Message_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Message IDs",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 878973878,
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date($now).toISOString().split('T')[0] }}",
+            "Domain": "={{ $json['output.domain'] }}",
+            "Email": "={{ $json['output.unique_senders'].email }}",
+            "Name": "={{ $json['output.unique_senders'].name }}",
+            "Newsletter_count": "={{ $json['output.unique_senders'].newsletter_count }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Domain",
+              "displayName": "Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Newsletter_count",
+              "displayName": "Newsletter_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        288
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Senders",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 450700837,
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date($now).toISOString().split('T')[0] }}",
+            "Domain": "={{ $json.output.domain }}",
+            "Topics": "={{ $json.output.all_topics }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Domain",
+              "displayName": "Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Topics",
+              "displayName": "Topics",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        432
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Topics",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1317693841,
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date($now).toISOString().split('T')[0] }}",
+            "Domain": "={{ $json.output.domain }}",
+            "JSON": "={{ $('Merge').item.json.output }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Domain",
+              "displayName": "Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "JSON",
+              "displayName": "JSON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        576
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Raw",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.unique_senders",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "output.domain",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        288
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.message_ids",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        720
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        48,
+        720
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json['output.message_ids'] }}",
+        "labelIds": [
+          "Label_6721890313951251821"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        912
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Add label to message",
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "REDACTED@email.com",
+        "subject": "=GTM and RevOps newsletters summary for {{ new Date($now).toISOString().split('T')[0] }}",
+        "emailType": "text",
+        "message": "Check the summary https://docs.google.com/spreadsheets/d/REDACTED-DOC-ID/edit?gid=0#gid=0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        304
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Send a message",
+      "webhookId": {
+        "_redacted": true
+      },
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "={{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        272,
+        704
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.labelIds }}",
+              "rightValue": "={{ \"Label_6721890313951251821\" }}",
+              "operator": {
+                "type": "array",
+                "operation": "notContains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1984,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.labelIds }}",
+              "rightValue": "={{ \"Label_6721890313951251821\" }}",
+              "operator": {
+                "type": "array",
+                "operation": "notContains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1984,
+        448
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        464,
+        240
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        304
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# GTM Domain Aggregation Agent\n\nYou are an AI agent specialized in aggregating multiple GTM (Go-To-Market) newsletter analyses into a comprehensive domain-level summary. Your role is to consolidate individual newsletter summaries while **preserving specific details, tools, tactics, and insights**.\n\n## Input\n- **Messages IDs**: {{ $json.ids_gtm }}\n- **Senders Emails**: {{ $json.emails_gtm }}\n- **Senders Names**: {{ $json.senders_gtm}}\n- **Email Subjects**: {{ $json.topics_gtm }}\n- **Summaries**: {{ $json.summaries_gtm }}\n\n## Output Format\n```json\n{\n  \"domain\": \"GTM\",\n  \"total_newsletters\": 5,\n  \"message_ids\": [\"deduplicated array of all GTM message IDs\"],\n  \"unique_senders\": [\n    {\n      \"email\": \"REDACTED@email.com\",\n      \"name\": \"Sender Name\",\n      \"newsletter_count\": 3\n    }\n  ],\n  \"all_topics\": [\"flattened array of all topics from all GTM newsletters\"],\n  \"key_themes\": [\"All major recurring themes identified across newsletters\"],\n  \"domain_summary\": \"Detailed summary of this week's GTM insights preserving specific tools, tactics, metrics, and links mentioned. No length limit - write as much as needed to capture all valuable information.\"\n}\n```\n\n## Processing Guidelines\n\n### Data Aggregation\n- **Message IDs**: Collect all message IDs (deduplicate)\n- **Senders**: Create unique sender objects with email, name, and count of newsletters\n- **Topics**: Flatten all topic arrays into a comprehensive list (preserve duplicates to show frequency)\n- **Total Count**: Count total number of newsletters processed\n\n### Theme Identification\n- Analyze all topics and summaries to identify **all major recurring themes**\n- Look for patterns and commonalities that emerge naturally from the content\n- Themes should be **specific and actionable**, not generic categories\n- Let the content itself guide theme identification\n- **Include themes even if they appear in just 1-2 newsletters** if they're particularly valuable or unique\n\n**Theme Format:**\n- ✅ \"Clay + HubSpot automation workflows for lead scoring and enrichment\"\n- ✅ \"LinkedIn content frameworks focusing on hook-story-insight-CTA structure\"\n- ✅ \"Product-led growth strategies with free trial to paid conversion optimization\"\n- ❌ \"AI adoption in GTM\"\n- ❌ \"Data-driven marketing approaches\"\n- ❌ \"Customer acquisition strategies\"\n\n### Domain Summary Creation\n\nWrite a **detailed, comprehensive summary** (no length limit) that answers:\n\n1. **What specific tools and platforms were discussed?**\n   - Name every tool/platform mentioned across newsletters\n   - Include how they're being used\n   - Example: \"Clay for data enrichment, Gong for call analysis, HubSpot for workflow automation\"\n\n2. **What concrete tactics and frameworks were shared?**\n   - Describe specific methodologies with their components\n   - Include step-by-step processes mentioned\n   - Preserve implementation details\n\n3. **What metrics and data points stood out?**\n   - Cite specific numbers, benchmarks, and statistics\n   - Include context around the data\n   - Note any surprising or contrarian findings\n\n4. **What are the unique or surprising insights?**\n   - Highlight contrarian viewpoints\n   - Note emerging trends or shifts in thinking\n   - Identify debates or different perspectives\n\n5. **What links and resources were shared?**\n   - Extract and list important URLs or resources mentioned in individual summaries\n   - Include context about what each resource offers\n   - Group related resources together\n\n6. **How do themes interconnect?**\n   - Connect different topics to show the bigger picture\n   - Explain relationships between strategies\n   - Note complementary or conflicting approaches\n\n**Writing Guidelines:**\n- Write as many sentences/paragraphs as needed to be thorough\n- Be specific: name tools, cite numbers, describe tactics\n- Preserve concrete details from individual summaries\n- Avoid generic phrases like \"leveraging X\", \"the importance of Y\", \"focusing on Z\"\n- Use concrete language: \"Newsletters discussed...\", \"Multiple sources recommend...\", \"Data shows...\", \"Authors debate...\"\n- Organize by theme or topic for readability if summary gets long\n\n### Quality Standards\n- Ensure accurate data aggregation and deduplication\n- Preserve specific details from individual summaries\n- Write summaries that a GTM professional can act on immediately\n- Include enough detail that someone could reference this weeks later\n- Maintain objectivity while highlighting actionable insights\n\n## Key Principles\n\n1. **Preserve specificity** - Don't generalize away the good details\n2. **No artificial limits** - Write as much as needed to capture everything valuable\n3. **Name everything** - Tools, tactics, frameworks, metrics, resources\n4. **Extract all links** - URLs and resources are critical for follow-up\n5. **Avoid corporate speak** - Use concrete, specific language\n6. **Show the full picture** - Connect themes and provide context\n\nYour goal is to create a weekly summary that captures ALL the valuable GTM insights, specific recommendations, tools mentioned, and resources shared across this week's newsletters - comprehensive enough that a busy GTM professional could read just this summary and not miss anything important.",
+        "hasOutputParser": true,
+        "batching": {
+          "batchSize": 1,
+          "delayBetweenBatches": 7000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -992,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "End summary / GTM",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# RevOps Domain Aggregation Agent\n\nYou are an AI agent specialized in aggregating multiple RevOps (Revenue Operations) newsletter analyses into a comprehensive domain-level summary. Your role is to consolidate individual newsletter summaries while **preserving specific details, tools, processes, metrics, and operational insights**.\n\n## Input\n- **Messages IDs**: {{ $json.ids_revops }}\n- **Senders Emails**: {{ $json.emails_revops }}\n- **Senders Names**: {{ $json.senders_revops }}\n- **Email Subjects**: {{ $json.topics_revops }}\n- **Summaries**: {{ $json.summaries_revops }}\n\n## Output Format\n```json\n{\n  \"domain\": \"RevOps\",\n  \"total_newsletters\": 5,\n  \"message_ids\": [\"deduplicated array of all RevOps message IDs\"],\n  \"unique_senders\": [\n    {\n      \"email\": \"REDACTED@email.com\",\n      \"name\": \"Sender Name\",\n      \"newsletter_count\": 3\n    }\n  ],\n  \"all_topics\": [\"flattened array of all topics from all RevOps newsletters\"],\n  \"key_themes\": [\"All major recurring themes identified across newsletters\"],\n  \"domain_summary\": \"Detailed summary of this week's RevOps insights preserving specific tools, processes, metrics, and links mentioned. No length limit - write as much as needed to capture all valuable operational information.\"\n}\n```\n\n## Processing Guidelines\n\n### Data Aggregation\n- **Message IDs**: Collect all message IDs (deduplicate)\n- **Senders**: Create unique sender objects with email, name, and count of newsletters\n- **Topics**: Flatten all topic arrays into a comprehensive list (preserve duplicates to show frequency)\n- **Total Count**: Count total number of newsletters processed\n\n### Theme Identification\n- Analyze all topics and summaries to identify **all major recurring themes**\n- Look for operational patterns and commonalities that emerge naturally from the content\n- Themes should be **specific and actionable**, not generic categories\n- Let the content itself guide theme identification\n- **Include themes even if they appear in just 1-2 newsletters** if they're particularly valuable or unique\n\n**Theme Format:**\n- ✅ \"Salesforce pipeline hygiene automation using validation rules and stale deal workflows\"\n- ✅ \"Sales capacity modeling frameworks using quota-carrying headcount and ramp time calculations\"\n- ✅ \"HubSpot attribution reporting with multi-touch models and revenue waterfall analysis\"\n- ❌ \"CRM optimization strategies\"\n- ❌ \"Forecasting improvements\"\n- ❌ \"Data quality initiatives\"\n\n### Domain Summary Creation\n\nWrite a **detailed, comprehensive summary** (no length limit) that answers:\n\n1. **What specific tools and platforms were discussed?**\n   - Name every RevOps tool/platform mentioned across newsletters\n   - Include how they're being configured or used\n   - Example: \"Salesforce for pipeline tracking with custom fields, Gong for call intelligence, Clay for data enrichment automation\"\n\n2. **What concrete processes and frameworks were shared?**\n   - Describe specific operational methodologies with their components\n   - Include step-by-step processes and implementation details\n   - Preserve operational requirements and prerequisites\n\n3. **What metrics, benchmarks, and data points stood out?**\n   - Cite specific numbers, KPIs, and benchmarks\n   - Include forecast accuracy rates, pipeline velocity metrics, conversion rates\n   - Note operational improvements with before/after data\n   - Highlight any surprising or contrarian findings\n\n4. **What are the unique or surprising operational insights?**\n   - Highlight contrarian viewpoints about RevOps practices\n   - Note emerging trends or shifts in revenue operations\n   - Identify debates or different approaches to common problems\n\n5. **What links and resources were shared?**\n   - Extract and list important URLs, templates, dashboards, or tools mentioned in individual summaries\n   - Include context about what each resource offers\n   - Group related resources together (e.g., all forecasting templates)\n\n6. **How do operational themes interconnect?**\n   - Connect different processes to show the revenue engine holistically\n   - Explain relationships between data quality, forecasting, and pipeline management\n   - Note complementary or conflicting operational approaches\n   - Show dependencies between different RevOps functions\n\n**Writing Guidelines:**\n- Write as many sentences/paragraphs as needed to be thorough\n- Be specific: name tools, cite numbers, describe processes and frameworks\n- Preserve concrete operational details from individual summaries\n- Avoid generic phrases like \"optimizing revenue operations\", \"improving data quality\", \"enhancing forecasting\"\n- Use concrete language: \"Newsletters discussed...\", \"Multiple sources recommend...\", \"Data shows...\", \"Authors present...\", \"Implementation requires...\"\n- Organize by operational theme for readability if summary gets long\n\n### Quality Standards\n- Ensure accurate data aggregation and deduplication\n- Preserve specific operational details from individual summaries\n- Write summaries that a RevOps professional can implement immediately\n- Include enough detail that someone could reference this weeks later\n- Maintain objectivity while highlighting actionable operational insights\n- Focus on measurable outcomes and ROI\n\n## Key Principles\n\n1. **Preserve operational specificity** - Don't generalize away the good process details\n2. **No artificial limits** - Write as much as needed to capture everything valuable\n3. **Name everything** - Tools, processes, frameworks, metrics, integrations, resources\n4. **Extract all links** - URLs, templates, and resources are critical for implementation\n5. **Avoid corporate speak** - Use concrete, specific language\n6. **Show the full operational picture** - Connect themes and provide context for how they impact revenue\n7. **Emphasize measurable outcomes** - RevOps is data-driven, focus on metrics and ROI\n\nYour goal is to create a weekly summary that captures ALL the valuable RevOps insights, specific operational recommendations, tools and integrations mentioned, processes described, and resources shared across this week's newsletters - comprehensive enough that a busy RevOps professional could read just this summary and not miss anything important for improving their revenue operations.",
+        "hasOutputParser": true,
+        "batching": {
+          "batchSize": 1,
+          "delayBetweenBatches": 7000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -992,
+        448
+      ],
+      "id": "REDACTED-UUID",
+      "name": "End summary / RevOps",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "blockId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "url"
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "type": "heading_1",
+              "textContent": "={{ \"🚀 \" + $json.output.domain + \" Digest\" }}"
+            },
+            {
+              "type": "toggle",
+              "textContent": "={{ \"📊 Analyzed \" + ($json.output.total_newsletters || 0) + \" newsletters.\" }}"
+            },
+            {
+              "type": "heading_2",
+              "textContent": "🔑 Key Themes"
+            },
+            {
+              "type": "bulleted_list_item",
+              "textContent": "={{ $json.output.key_themes[0] }}"
+            },
+            {
+              "textContent": "={{ $json.output.domain_summary.slice(0, 2000) }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        1232
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Append a block"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "JSON / Today - 2w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON / Today - 2w": {
+      "main": [
+        [
+          {
+            "node": "Get many messages / GTM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get many messages / RevOps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages / GTM": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages / RevOps": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Email content analyst / GTM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Email content analyst / RevOps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Email content analyst / RevOps",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Email content analyst / GTM",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Email content analyst / RevOps",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate / GTM": {
+      "main": [
+        [
+          {
+            "node": "End summary / GTM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate / RevOps": {
+      "main": [
+        [
+          {
+            "node": "End summary / RevOps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Main",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message IDs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Topics",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Raw",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append a block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "End summary / GTM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "End summary / RevOps",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email content analyst / GTM": {
+      "main": [
+        [
+          {
+            "node": "Aggregate / GTM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email content analyst / RevOps": {
+      "main": [
+        [
+          {
+            "node": "Aggregate / RevOps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "End summary / RevOps",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser3": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "End summary / GTM",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Main": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Senders": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Senders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message IDs": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Topics": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Raw": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Email content analyst / GTM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "End summary / GTM": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "End summary / RevOps": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-25T20:33:53.588Z",
+      "createdAt": "2026-01-25T20:33:53.588Z",
+      "role": "workflow:owner",
+      "workflowId": "E5dTA5cEX8Kckp5J_5hp8",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized automatically",
+    "timestamp": "2026-01-25T22:00:15.747Z"
+  }
+}
