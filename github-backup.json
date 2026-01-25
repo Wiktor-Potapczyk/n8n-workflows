@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-25T22:33:52.562Z",
+  "updatedAt": "2026-01-25T22:49:22.089Z",
   "createdAt": "2026-01-25T21:17:23.654Z",
   "id": "7CYMwhpzDbdxJsTc",
   "name": "GitHub Backup",
@@ -424,7 +424,8 @@
         -96
       ],
       "id": "REDACTED-UUID",
-      "name": "Basic LLM Chain1"
+      "name": "Basic LLM Chain1",
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -1919,6 +1920,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized automatically",
-    "timestamp": "2026-01-25T22:47:09.815Z"
+    "timestamp": "2026-01-25T22:49:57.422Z"
   }
 }
