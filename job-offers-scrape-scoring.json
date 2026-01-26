@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-26T01:21:13.181Z",
+  "updatedAt": "2026-01-26T16:49:49.585Z",
   "createdAt": "2026-01-23T14:06:42.706Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offers scrape & scoring",
@@ -491,7 +491,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst originalJobs = $('Code in JavaScript1').all();\n\nreturn items.map((item, index) => ({\n  json: {\n    // === SCORING (LLM output) ===\n    scoring: {\n      score: item.json.output.score,\n      fit_reasons: item.json.output.fit_reasons,\n      red_flags: item.json.output.red_flags,\n      one_liner: item.json.output.one_liner\n    },\n    \n    // === JOB OFFER (original data) ===\n    job_offer: {\n      id: originalJobs[index].json.id,\n      title: originalJobs[index].json.title,\n      description: originalJobs[index].json.description,\n      job_url: originalJobs[index].json.job_url,\n      \n      location: originalJobs[index].json.location,\n      country_code: originalJobs[index].json.country_code,\n      work_remote_allowed: originalJobs[index].json.work_remote_allowed,\n      workplace_types: originalJobs[index].json.workplace_types,\n      \n      level: originalJobs[index].json.level,\n      employment_status: originalJobs[index].json.employment_status,\n      salary: originalJobs[index].json.salary,\n      industries: originalJobs[index].json.industries,\n      job_functions: originalJobs[index].json.job_functions,\n      \n      company_name: originalJobs[index].json.company_name,\n      company_description: originalJobs[index].json.company_description,\n      company_size: originalJobs[index].json.company_size,\n      company_industries: originalJobs[index].json.company_industries,\n      company_url: originalJobs[index].json.company_url\n    },\n    \n    // === SHEETS-READY (flat) ===\n    sheets: {\n      id: originalJobs[index].json.id,\n      title: originalJobs[index].json.title,\n      company_name: originalJobs[index].json.company_name,\n      company_url: originalJobs[index].json.company_url,\n      job_url: originalJobs[index].json.job_url,\n      location: originalJobs[index].json.location,\n      remote: originalJobs[index].json.work_remote_allowed ? 'Yes' : 'No',\n      level: originalJobs[index].json.level || 'Not specified',\n      salary: originalJobs[index].json.salary?.salary_exists \n        ? `${originalJobs[index].json.salary.min_salary}-${originalJobs[index].json.salary.max_salary} ${originalJobs[index].json.salary.currency}`\n        : 'Not specified',\n      score: item.json.output.score,\n      cv_recommended: item.json.output.cv_recommended || 'DEFAULT',\n      one_liner: item.json.output.one_liner,\n      fit_reasons: item.json.output.fit_reasons.join(' | '),\n      red_flags: item.json.output.red_flags.length > 0 \n        ? item.json.output.red_flags.join(' | ') \n        : 'None',\n      status: 'new',\n      date_added: new Date().toISOString().split('T')[0],\n      cover_letter: '',\n      notes: ''\n    }\n  }\n}));"
+        "jsCode": "const items = $input.all();\nconst originalJobs = $('Code in JavaScript1').all();\n\nreturn items.map((item, index) => ({\n  json: {\n    // === SCORING (LLM output) ===\n    scoring: {\n      score: item.json.output.score,\n      fit_reasons: item.json.output.fit_reasons,\n      red_flags: item.json.output.red_flags,\n      one_liner: item.json.output.one_liner\n    },\n    \n    // === JOB OFFER (original data) ===\n    job_offer: {\n      id: originalJobs[index].json.id,\n      title: originalJobs[index].json.title,\n      description: originalJobs[index].json.description,\n      job_url: originalJobs[index].json.job_url,\n      \n      location: originalJobs[index].json.location,\n      country_code: originalJobs[index].json.country_code,\n      work_remote_allowed: originalJobs[index].json.work_remote_allowed,\n      workplace_types: originalJobs[index].json.workplace_types,\n      \n      level: originalJobs[index].json.level,\n      employment_status: originalJobs[index].json.employment_status,\n      salary: originalJobs[index].json.salary,\n      industries: originalJobs[index].json.industries,\n      job_functions: originalJobs[index].json.job_functions,\n      \n      company_name: originalJobs[index].json.company_name,\n      company_description: originalJobs[index].json.company_description,\n      company_size: originalJobs[index].json.company_size,\n      company_industries: originalJobs[index].json.company_industries,\n      company_url: originalJobs[index].json.company_url,\n      company_id: originalJobs[index].json.company_id\n    },\n    \n    // === SHEETS-READY (flat) ===\n    sheets: {\n      id: originalJobs[index].json.id,\n      title: originalJobs[index].json.title,\n      company_name: originalJobs[index].json.company_name,\n      company_url: originalJobs[index].json.company_url,\n      job_url: originalJobs[index].json.job_url,\n      location: originalJobs[index].json.location,\n      remote: originalJobs[index].json.work_remote_allowed ? 'Yes' : 'No',\n      level: originalJobs[index].json.level || 'Not specified',\n      salary: originalJobs[index].json.salary?.salary_exists \n        ? `${originalJobs[index].json.salary.min_salary}-${originalJobs[index].json.salary.max_salary} ${originalJobs[index].json.salary.currency}`\n        : 'Not specified',\n      score: item.json.output.score,\n      cv_recommended: item.json.output.cv_recommended || 'DEFAULT',\n      one_liner: item.json.output.one_liner,\n      fit_reasons: item.json.output.fit_reasons.join(' | '),\n      red_flags: item.json.output.red_flags.length > 0 \n        ? item.json.output.red_flags.join(' | ') \n        : 'None',\n      status: 'new',\n      date_added: new Date().toISOString().split('T')[0],\n      cover_letter: '',\n      notes: ''\n    }\n  }\n}));"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -546,7 +546,8 @@
             "Remote": "={{ $json.sheets.remote }}",
             "Location": "={{ $json.sheets.location }}",
             "CV Recommended": "={{ $json.sheets.cv_recommended }}",
-            "Listed At": "={{ DateTime.fromISO($('Code in JavaScript1').item.json.listed_at).toFormat('dd-MM-yyyy, HH:mm') }}"
+            "Listed At": "={{ DateTime.fromISO($('Code in JavaScript1').item.json.listed_at).toFormat('dd-MM-yyyy, HH:mm') }}",
+            "Company ID": "={{ $json.sheets.company_id }}"
           },
           "matchingColumns": [
             "ID"
@@ -598,6 +599,16 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company ID",
+              "displayName": "Company ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "Job URL",
@@ -727,6 +738,26 @@
               "type": "string",
               "canBeUsedToMatch": true,
               "removed": true
+            },
+            {
+              "id": "Checklist",
+              "displayName": "Checklist",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Who to message",
+              "displayName": "Who to message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -1777,7 +1808,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 2,
       "position": [
-        -272,
+        -256,
         656
       ],
       "id": "REDACTED-UUID",
@@ -2215,6 +2246,24 @@
   "triggerCount": 0,
   "shared": [
     {
+      "updatedAt": "2026-01-26T12:32:29.018Z",
+      "createdAt": "2026-01-26T12:32:29.018Z",
+      "role": "workflow:editor",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "projectId": {
+        "_redacted": true
+      }
+    },
+    {
+      "updatedAt": "2026-01-26T12:30:52.793Z",
+      "createdAt": "2026-01-26T12:30:52.793Z",
+      "role": "workflow:editor",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "projectId": {
+        "_redacted": true
+      }
+    },
+    {
       "updatedAt": "2026-01-23T14:06:42.709Z",
       "createdAt": "2026-01-23T14:06:42.709Z",
       "role": "workflow:owner",
@@ -2237,6 +2286,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-26T02:00:56.971Z"
+    "timestamp": "2026-01-26T17:00:32.530Z"
   }
 }
