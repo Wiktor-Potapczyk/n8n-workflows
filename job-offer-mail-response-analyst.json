@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-26T14:42:09.072Z",
+  "updatedAt": "2026-01-26T19:55:33.698Z",
   "createdAt": "2026-01-26T13:29:30.988Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offer mail response analyst",
@@ -281,29 +281,6 @@
         "pollTimes": {
           "item": [
             {
-              "mode": "everyMinute"
-            }
-          ]
-        },
-        "filters": {}
-      },
-      "type": "n8n-nodes-base.gmailTrigger",
-      "typeVersion": 1.3,
-      "position": [
-        2976,
-        80
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Gmail Trigger",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "pollTimes": {
-          "item": [
-            {
               "mode": "everyX",
               "value": 15,
               "unit": "minutes"
@@ -479,7 +456,7 @@
   },
   "versionId": "REDACTED-UUID",
   "activeVersionId": "REDACTED-UUID",
-  "triggerCount": 2,
+  "triggerCount": 1,
   "shared": [
     {
       "updatedAt": "2026-01-26T13:29:30.994Z",
@@ -492,8 +469,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-26T14:42:11.000Z",
-    "createdAt": "2026-01-26T14:42:09.074Z",
+    "updatedAt": "2026-01-26T19:55:36.000Z",
+    "createdAt": "2026-01-26T19:55:33.700Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
@@ -772,29 +749,6 @@
           "pollTimes": {
             "item": [
               {
-                "mode": "everyMinute"
-              }
-            ]
-          },
-          "filters": {}
-        },
-        "type": "n8n-nodes-base.gmailTrigger",
-        "typeVersion": 1.3,
-        "position": [
-          2976,
-          80
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Gmail Trigger",
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "pollTimes": {
-            "item": [
-              {
                 "mode": "everyX",
                 "value": 15,
                 "unit": "minutes"
@@ -958,13 +912,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": "Version 1e6317c2",
+    "name": "Version 847bcc59",
     "description": "",
     "autosaved": false
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-26T15:00:31.451Z"
+    "timestamp": "2026-01-26T20:00:21.561Z"
   }
 }
