@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-25T22:29:48.818Z",
+  "updatedAt": "2026-01-26T00:54:00.152Z",
   "createdAt": "2026-01-23T14:06:42.706Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offers scrape & scoring",
@@ -35,10 +35,7 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            {
-              "name": "x-rapidapi-host",
-              "value": "REDACTED-API-KEY"
-            }
+            {}
           ]
         },
         "options": {
@@ -53,7 +50,7 @@
                 ]
               },
               "limitPagesFetched": true,
-              "maxRequests": 6,
+              "maxRequests": 10,
               "requestInterval": 3500
             }
           }
@@ -91,7 +88,7 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -1088,
+        -720,
         208
       ],
       "id": "REDACTED-UUID",
@@ -321,7 +318,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -448,
+        -464,
         656
       ],
       "id": "REDACTED-UUID",
@@ -380,7 +377,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        320,
+        528,
         656
       ],
       "id": "REDACTED-UUID",
@@ -418,7 +415,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        528,
+        736,
         656
       ],
       "id": "REDACTED-UUID",
@@ -434,7 +431,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        736,
+        944,
         656
       ],
       "id": "REDACTED-UUID",
@@ -457,7 +454,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -672,
+        -464,
         1072
       ],
       "id": "REDACTED-UUID",
@@ -470,7 +467,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        -672,
+        -464,
         1248
       ],
       "id": "REDACTED-UUID",
@@ -486,7 +483,7 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.3,
       "position": [
-        -528,
+        -320,
         1248
       ],
       "id": "REDACTED-UUID",
@@ -499,7 +496,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -336,
+        -128,
         1072
       ],
       "id": "REDACTED-UUID",
@@ -740,7 +737,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -112,
+        96,
         1072
       ],
       "id": "REDACTED-UUID",
@@ -776,7 +773,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        96,
+        304,
         1072
       ],
       "id": "REDACTED-UUID",
@@ -798,8 +795,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -464,
-        1584
+        -256,
+        1680
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain2"
@@ -812,8 +809,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        -464,
-        1744
+        -256,
+        1840
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model2",
@@ -823,7 +820,219 @@
     },
     {
       "parameters": {
-        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID",
+              "lookupValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -256,
+        720
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "joinMode": "keepNonMatches",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        112,
+        656
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        720
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=Act as a Recruitment Researcher. I am preparing a job application for the following company.\nPerform a deep-dive research to find specific, recent, and actionable details that show I've done my homework.\n\n--- COMPANY DATA ---\nName: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nIndustry:  $('Code in JavaScript2').item.json.job_offer.industries }}\nURL: {{ $('Code in JavaScript2').item.json.job_offer.company_url }}\nDescription Provided: \"{{ $('Code in JavaScript2').item.json.job_offer.company_description }}\"\n\n--- RESEARCH OBJECTIVES ---\nUsing the company name and context, search the web for the following (focus on the last 12 months):\n\n1. **Recent News & Wins:** New partnerships (specific client names), product launches, or awards.\n2. **Financial Status:** Recent funding rounds (Series A/B/C, amount, date), investors, or growth metrics.\n3. **Strategic Focus:** What is their current main challenge or goal? (e.g., Expansion to US market, releasing a mobile app, automating internal ops).\n4. **Engineering Culture:** Search for their engineering blog, GitHub, or tech talks. Do they use specific obscure stacks? Do they contribute to open source?\n\n--- OUTPUT FORMAT ---\nReturn a concise summary (bullet points) containing ONLY facts I can use in a cover letter.\nFormat:\n- **News:** [Fact]\n- **Funding:** [Fact]\n- **Strategy:** [Fact]\n- **Tech Vibe:** [Fact]\n\nIf no info is found for a category, write \"N/A\"."
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        1680
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Message a model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please generate the Intelligence Brief based on this data:\n\n=== 1. THE JOB (Target) ===\nRole: {{ $('Code in JavaScript2').item.json.job_offer.title }}\nCompany: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nJob Description:\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== 2. INTELLIGENCE REPORT (Perplexity Research) ===\n\"\"\"\n{{ $('Message a model').item.json.choices[0].message.content }}\n\"\"\"\n\n=== 3. CANDIDATE PROFILE ===\n\"\"\"\n{{ $('Extract from File').first().json.data }}\n\"\"\"\n\n=== 4. FIT ANALYSIS ===\nScore: {{ $('Code in JavaScript2').item.json.scoring.score }}/10\nFit Reasons: {{ $('Code in JavaScript2').item.json.scoring.fit_reasons.join(', ') }}\nRed Flags/Gaps: {{ $('Code in JavaScript2').item.json.scoring.red_flags.join(', ') }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# ROLE\nYou are a Senior Technical Recruiter and Career Mentor. Your client is the **CANDIDATE** (profile provided in input).\nYour goal is NOT to write a sales pitch, but to create a **Internal Intelligence Brief (Knowledge Base)**.\nThe candidate hates reciting scripts. He needs hard facts, context, and a technical refresher to feel confident and natural during the conversation.\n\n# OBJECTIVE\nSynthesize the Job Description, Perplexity Research, and Candidate Profile into a concise \"Readiness Sheet\" to be reviewed 15 minutes before the interview.\n\n# OUTPUT FORMAT\nGenerate a Markdown document following exactly this structure:\n\n# 🧠 INTERVIEW INTELLIGENCE: [Target Company Name]\n\n## 1. COMPANY & BUSINESS CONTEXT\n*Summarize the Perplexity research into facts relevant to an engineer/PM.*\n* **Core Product/Mission:** [What do they actually do/sell?]\n* **Current State:** [Recent funding, new market expansion, technical challenges mentioned in news]\n* **Key Numbers:** [Size, Revenue, Funding - if available]\n\n## 2. THE ROLE DECODED\n*Translate the Job Description into reality.*\n* **Primary Responsibility:** [In one sentence: What will I actually be doing day-to-day?]\n* **The \"Hidden\" Need:** [What problem are they likely trying to solve hiring for this role? e.g. \"They have scaling issues\" or \"They need to clean up messy data\"]\n\n## 3. TECHNICAL REFRESHER (What to review)\n*List specific tools, concepts, or methodologies from the Job Description that the candidate should quickly Google/review before the call.*\n* **Critical Stack:** [e.g. \"Review FastAPI async concepts\", \"Check their API docs if public\"]\n* **Domain Concepts:** [e.g. \"Refresh knowledge on RAG vector databases\", \"Review Scrum artifacts\"]\n\n## 4. GAP ANALYSIS & STRATEGY\n*Identify where the candidate lacks experience (Red Flags) and suggest a LOGICAL connection to existing skills (not a script).*\n* **Gap:** [Missing skill/experience]\n* **Strategy:** [Mental note: \"Connect this to my experience in Project X where I solved a similar problem using Y\"]\n\n## 5. INVESTIGATIVE QUESTIONS\n*3 deep, non-generic questions to ask the interviewer to uncover the truth about the team/tech.*\n1. [Question about technical maturity/legacy code]\n2. [Question about business goals/roadmap]\n3. [Question about team autonomy/processes]\n\n# LANGUAGE RULES\n- **CRITICAL:** Detect the language of the **Job Description**.\n- IF Job Description is in **Polish** -> Output the ENTIRE Brief in **Polish**.\n- IF Job Description is in **English** -> Output the ENTIRE Brief in **English**."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        256,
+        1680
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain3"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        256,
+        1840
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model3",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Analyze the following JOB DESCRIPTION to create my application checklist.\n\n=== JOB DESCRIPTION ===\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== INSTRUCTIONS ===\nDetermine if I should include my GitHub or Video based on the keywords in the text. Also extract special instructions and the tech stack.\n\nReturn ONLY this list (keep reasons under 5 words):\n\n[GITHUB]: YES/NO - (Reason)\n[VIDEO]: YES/NO - (Reason)\n[CUSTOM]: (Look for specific subject lines, \"secret words\", or \"apply to email\". If none, write \"None\")\n[STACK]: (List top 3 tools mentioned, comma separated)",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a Job Application Sniper. Your ONLY goal is to analyze job descriptions and output a strict, logic-based checklist for the applicant.  You have NO personality. You do NOT chat. You only output the requested data in the requested format.  Your analysis is based on the candidate having two specific assets: 1. A GitHub Portfolio (Automation code, n8n workflows, Python). 2. A Loom Video (Walkthrough of automation tools).  RULES: - If the text mentions \"code\", \"repo\", \"portfolio\", \"github\", \"samples\" -> GITHUB: YES. - If the text mentions \"video\", \"loom\", \"recording\", \"intro yourself\", \"why you\" -> VIDEO: YES. - Keep the output extremely concise. No bolding, no headers."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        832,
+        1680
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        832,
+        1840
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model4",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -672,
+        1568
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        1552
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
         "documentId": {
           "__rl": true,
           "value": "REDACTED-POSSIBLE-SECRET",
@@ -1054,166 +1263,18 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -144,
-        1584
+        64,
+        1680
       ],
       "id": "REDACTED-UUID",
-      "name": "Append or update row in sheet1",
+      "name": "Update row in sheet",
       "credentials": {
         "_redacted": true
       }
     },
     {
       "parameters": {
-        "documentId": {
-          "__rl": true,
-          "value": "REDACTED-POSSIBLE-SECRET",
-          "mode": "list",
-          "cachedResultName": {
-            "_redacted": true
-          },
-          "cachedResultUrl": {
-            "_redacted": true
-          }
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": {
-            "_redacted": true
-          },
-          "cachedResultUrl": {
-            "_redacted": true
-          }
-        },
-        "filtersUI": {
-          "values": [
-            {
-              "lookupColumn": "ID",
-              "lookupValue": "={{ $json.id }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [
-        -256,
-        768
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Get row(s) in sheet",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "fieldsToMatchString": "id",
-        "joinMode": "keepNonMatches",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        112,
-        656
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "REDACTED-UUID",
-              "name": "id",
-              "value": "={{ $json.ID }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -64,
-        768
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Edit Fields1"
-    },
-    {
-      "parameters": {
-        "messages": {
-          "message": [
-            {
-              "content": "=Act as a Recruitment Researcher. I am preparing a job application for the following company.\nPerform a deep-dive research to find specific, recent, and actionable details that show I've done my homework.\n\n--- COMPANY DATA ---\nName: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nIndustry:  $('Code in JavaScript2').item.json.job_offer.industries }}\nURL: {{ $('Code in JavaScript2').item.json.job_offer.company_url }}\nDescription Provided: \"{{ $('Code in JavaScript2').item.json.job_offer.company_description }}\"\n\n--- RESEARCH OBJECTIVES ---\nUsing the company name and context, search the web for the following (focus on the last 12 months):\n\n1. **Recent News & Wins:** New partnerships (specific client names), product launches, or awards.\n2. **Financial Status:** Recent funding rounds (Series A/B/C, amount, date), investors, or growth metrics.\n3. **Strategic Focus:** What is their current main challenge or goal? (e.g., Expansion to US market, releasing a mobile app, automating internal ops).\n4. **Engineering Culture:** Search for their engineering blog, GitHub, or tech talks. Do they use specific obscure stacks? Do they contribute to open source?\n\n--- OUTPUT FORMAT ---\nReturn a concise summary (bullet points) containing ONLY facts I can use in a cover letter.\nFormat:\n- **News:** [Fact]\n- **Funding:** [Fact]\n- **Strategy:** [Fact]\n- **Tech Vibe:** [Fact]\n\nIf no info is found for a category, write \"N/A\"."
-            }
-          ]
-        },
-        "options": {},
-        "requestOptions": {}
-      },
-      "type": "n8n-nodes-base.perplexity",
-      "typeVersion": 1,
-      "position": [
-        -688,
-        1584
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Message a model",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Please generate the Intelligence Brief based on this data:\n\n=== 1. THE JOB (Target) ===\nRole: {{ $('Code in JavaScript2').item.json.job_offer.title }}\nCompany: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nJob Description:\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== 2. INTELLIGENCE REPORT (Perplexity Research) ===\n\"\"\"\n{{ $('Message a model').item.json.choices[0].message.content }}\n\"\"\"\n\n=== 3. CANDIDATE PROFILE ===\n\"\"\"\n{{ $('Extract from File').first().json.data }}\n\"\"\"\n\n=== 4. FIT ANALYSIS ===\nScore: {{ $('Code in JavaScript2').item.json.scoring.score }}/10\nFit Reasons: {{ $('Code in JavaScript2').item.json.scoring.fit_reasons.join(', ') }}\nRed Flags/Gaps: {{ $('Code in JavaScript2').item.json.scoring.red_flags.join(', ') }}",
-        "messages": {
-          "messageValues": [
-            {
-              "message": "# ROLE\nYou are a Senior Technical Recruiter and Career Mentor. Your client is the **CANDIDATE** (profile provided in input).\nYour goal is NOT to write a sales pitch, but to create a **Internal Intelligence Brief (Knowledge Base)**.\nThe candidate hates reciting scripts. He needs hard facts, context, and a technical refresher to feel confident and natural during the conversation.\n\n# OBJECTIVE\nSynthesize the Job Description, Perplexity Research, and Candidate Profile into a concise \"Readiness Sheet\" to be reviewed 15 minutes before the interview.\n\n# OUTPUT FORMAT\nGenerate a Markdown document following exactly this structure:\n\n# 🧠 INTERVIEW INTELLIGENCE: [Target Company Name]\n\n## 1. COMPANY & BUSINESS CONTEXT\n*Summarize the Perplexity research into facts relevant to an engineer/PM.*\n* **Core Product/Mission:** [What do they actually do/sell?]\n* **Current State:** [Recent funding, new market expansion, technical challenges mentioned in news]\n* **Key Numbers:** [Size, Revenue, Funding - if available]\n\n## 2. THE ROLE DECODED\n*Translate the Job Description into reality.*\n* **Primary Responsibility:** [In one sentence: What will I actually be doing day-to-day?]\n* **The \"Hidden\" Need:** [What problem are they likely trying to solve hiring for this role? e.g. \"They have scaling issues\" or \"They need to clean up messy data\"]\n\n## 3. TECHNICAL REFRESHER (What to review)\n*List specific tools, concepts, or methodologies from the Job Description that the candidate should quickly Google/review before the call.*\n* **Critical Stack:** [e.g. \"Review FastAPI async concepts\", \"Check their API docs if public\"]\n* **Domain Concepts:** [e.g. \"Refresh knowledge on RAG vector databases\", \"Review Scrum artifacts\"]\n\n## 4. GAP ANALYSIS & STRATEGY\n*Identify where the candidate lacks experience (Red Flags) and suggest a LOGICAL connection to existing skills (not a script).*\n* **Gap:** [Missing skill/experience]\n* **Strategy:** [Mental note: \"Connect this to my experience in Project X where I solved a similar problem using Y\"]\n\n## 5. INVESTIGATIVE QUESTIONS\n*3 deep, non-generic questions to ask the interviewer to uncover the truth about the team/tech.*\n1. [Question about technical maturity/legacy code]\n2. [Question about business goals/roadmap]\n3. [Question about team autonomy/processes]\n\n# LANGUAGE RULES\n- **CRITICAL:** Detect the language of the **Job Description**.\n- IF Job Description is in **Polish** -> Output the ENTIRE Brief in **Polish**.\n- IF Job Description is in **English** -> Output the ENTIRE Brief in **English**."
-            }
-          ]
-        },
-        "batching": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        48,
-        1584
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Basic LLM Chain3"
-    },
-    {
-      "parameters": {
-        "model": "deepseek-reasoner",
-        "options": {}
-      },
-      "type": "REDACTED-POSSIBLE-SECRET",
-      "typeVersion": 1,
-      "position": [
-        48,
-        1744
-      ],
-      "id": "REDACTED-UUID",
-      "name": "DeepSeek Chat Model3",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "operation": "appendOrUpdate",
+        "operation": "update",
         "documentId": {
           "__rl": true,
           "value": "REDACTED-POSSIBLE-SECRET",
@@ -1444,56 +1505,18 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        384,
-        1584
+        592,
+        1680
       ],
       "id": "REDACTED-UUID",
-      "name": "Append or update row in sheet2",
+      "name": "Update row in sheet1",
       "credentials": {
         "_redacted": true
       }
     },
     {
       "parameters": {
-        "promptType": "define",
-        "text": "==Analyze the following JOB DESCRIPTION to create my application checklist.\n\n=== JOB DESCRIPTION ===\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== INSTRUCTIONS ===\nDetermine if I should include my GitHub or Video based on the keywords in the text. Also extract special instructions and the tech stack.\n\nReturn ONLY this list (keep reasons under 5 words):\n\n[GITHUB]: YES/NO - (Reason)\n[VIDEO]: YES/NO - (Reason)\n[CUSTOM]: (Look for specific subject lines, \"secret words\", or \"apply to email\". If none, write \"None\")\n[STACK]: (List top 3 tools mentioned, comma separated)",
-        "messages": {
-          "messageValues": [
-            {
-              "message": "You are a Job Application Sniper. Your ONLY goal is to analyze job descriptions and output a strict, logic-based checklist for the applicant.  You have NO personality. You do NOT chat. You only output the requested data in the requested format.  Your analysis is based on the candidate having two specific assets: 1. A GitHub Portfolio (Automation code, n8n workflows, Python). 2. A Loom Video (Walkthrough of automation tools).  RULES: - If the text mentions \"code\", \"repo\", \"portfolio\", \"github\", \"samples\" -> GITHUB: YES. - If the text mentions \"video\", \"loom\", \"recording\", \"intro yourself\", \"why you\" -> VIDEO: YES. - Keep the output extremely concise. No bolding, no headers."
-            }
-          ]
-        },
-        "batching": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        624,
-        1584
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Basic LLM Chain4"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "REDACTED-POSSIBLE-SECRET",
-      "typeVersion": 1,
-      "position": [
-        624,
-        1744
-      ],
-      "id": "REDACTED-UUID",
-      "name": "DeepSeek Chat Model4",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "operation": "appendOrUpdate",
+        "operation": "update",
         "documentId": {
           "__rl": true,
           "value": "REDACTED-POSSIBLE-SECRET",
@@ -1734,14 +1757,29 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        960,
-        1584
+        1168,
+        1680
       ],
       "id": "REDACTED-UUID",
-      "name": "Append or update row in sheet3",
+      "name": "Update row in sheet2",
       "credentials": {
         "_redacted": true
       }
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "id",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 2,
+      "position": [
+        320,
+        656
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Remove Duplicates"
     }
   ],
   "connections": {
@@ -1979,7 +2017,7 @@
       "main": [
         [
           {
-            "node": "Message a model",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -2001,7 +2039,7 @@
       "main": [
         [
           {
-            "node": "Append or update row in sheet1",
+            "node": "Update row in sheet",
             "type": "main",
             "index": 0
           }
@@ -2023,7 +2061,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "Remove Duplicates",
             "type": "main",
             "index": 0
           }
@@ -2052,17 +2090,6 @@
         ]
       ]
     },
-    "Append or update row in sheet1": {
-      "main": [
-        [
-          {
-            "node": "Basic LLM Chain3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "DeepSeek Chat Model3": {
       "ai_languageModel": [
         [
@@ -2078,7 +2105,7 @@
       "main": [
         [
           {
-            "node": "Append or update row in sheet2",
+            "node": "Update row in sheet1",
             "type": "main",
             "index": 0
           }
@@ -2089,7 +2116,7 @@
       "main": [
         [
           {
-            "node": "Append or update row in sheet3",
+            "node": "Update row in sheet2",
             "type": "main",
             "index": 0
           }
@@ -2107,11 +2134,62 @@
         ]
       ]
     },
-    "Append or update row in sheet2": {
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
       "main": [
         [
           {
             "node": "Basic LLM Chain4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
@@ -2156,7 +2234,7 @@
   "activeVersion": null,
   "tags": [],
   "_sanitized": {
-    "note": "Sanitized automatically",
-    "timestamp": "2026-01-25T23:03:25.560Z"
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-01-26T01:00:57.702Z"
   }
 }
