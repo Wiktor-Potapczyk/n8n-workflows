@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-26T14:34:54.739Z",
+  "updatedAt": "2026-01-26T14:42:09.072Z",
   "createdAt": "2026-01-26T13:29:30.988Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offer mail response analyst",
@@ -304,7 +304,9 @@
         "pollTimes": {
           "item": [
             {
-              "mode": "everyHour"
+              "mode": "everyX",
+              "value": 15,
+              "unit": "minutes"
             }
           ]
         },
@@ -490,8 +492,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-26T14:34:56.000Z",
-    "createdAt": "2026-01-26T14:34:54.740Z",
+    "updatedAt": "2026-01-26T14:42:11.000Z",
+    "createdAt": "2026-01-26T14:42:09.074Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
@@ -793,7 +795,9 @@
           "pollTimes": {
             "item": [
               {
-                "mode": "everyHour"
+                "mode": "everyX",
+                "value": 15,
+                "unit": "minutes"
               }
             ]
           },
@@ -954,13 +958,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": "Version 353101b1",
+    "name": "Version 1e6317c2",
     "description": "",
     "autosaved": false
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-26T14:35:45.912Z"
+    "timestamp": "2026-01-26T15:00:31.451Z"
   }
 }
