@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-26T18:35:19.876Z",
+  "updatedAt": "2026-01-26T20:32:21.669Z",
   "createdAt": "2026-01-26T16:36:56.749Z",
   "id": "payc5g5Vjh-4DIrj6rrbP",
   "name": "Recruiters scrape & score",
@@ -120,20 +120,6 @@
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// GENERATOR LINKU SALES NAVIGATOR (Poprawiona Wersja)\n// ============================================================\n\n// 1. Pobierz wszystkie elementy wejściowe (19 firm)\nconst items = $input.all();\n\n// Twój Link z Teslą (Base URL)\nconst baseLink = \"https://www.linkedin.com/sales/search/people?query=(recentSearchParam%3A(id%3A4072880329%2CdoLogHistory%3Atrue)%2Cfilters%3AList((type%3ACURRENT_COMPANY%2Cvalues%3AList((id%3Aurn%253Ali%253Aorganization%253A15564%2Ctext%3ATesla%2CselectionType%3AINCLUDED%2Cparent%3A(id%3A0))))%2C(type%3ACURRENT_TITLE%2Cvalues%3AList((id%3A79%2Ctext%3AHuman%2520Resources%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A45%2Ctext%3AHuman%2520Resources%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A91%2Ctext%3ARecruiter%2CselectionType%3AINCLUDED)%2C(id%3A444%2Ctext%3ARecruitment%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A300%2Ctext%3AHuman%2520Resources%2520Assistant%2CselectionType%3AINCLUDED)%2C(id%3A105%2Ctext%3AHuman%2520Resources%2520Director%2CselectionType%3AINCLUDED)%2C(id%3A483%2Ctext%3AHuman%2520Resources%2520Executive%2CselectionType%3AINCLUDED)%2C(id%3A248%2Ctext%3AHuman%2520Resources%2520Consultant%2CselectionType%3AINCLUDED)%2C(id%3A271%2Ctext%3AHuman%2520Resources%2520Generalist%2CselectionType%3AINCLUDED)%2C(id%3A400%2Ctext%3AHuman%2520Resources%2520Coordinator%2CselectionType%3AINCLUDED)%2C(id%3A268%2Ctext%3ARecruitment%2520Consultant%2CselectionType%3AINCLUDED)%2C(id%3A495%2Ctext%3ATechnical%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A13195%2Ctext%3ASenior%2520Human%2520Resources%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A609%2Ctext%3ARecruitment%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A1094%2Ctext%3AInformation%2520Technology%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A921%2Ctext%3ADirector%2520of%2520Recruiting%2CselectionType%3AINCLUDED)%2C(id%3A1827%2Ctext%3ARecruitment%2520Coordinator%2CselectionType%3AINCLUDED)%2C(id%3A787%2Ctext%3AExecutive%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A2446%2Ctext%3ATalent%2520Acquisition%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A4318%2Ctext%3ATalent%2520Management%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A4288%2Ctext%3ATalent%2520Acquisition%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A2577%2Ctext%3ATalent%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A21338%2Ctext%3ASenior%2520Talent%2520Acquisition%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A6780%2Ctext%3ATalent%2520Director%2CselectionType%3AINCLUDED)))))&sessionId=%2F%2BDjWjZhTnS%2BxIaRqX7Z9w%3D%3D&viewAllFilters=true\";\n\n// 2. Budowanie segmentu URL dla firm\n// Iterujemy po wszystkich elementach wejścia (items)\nconst urlSegments = items.map(item => {\n  const data = item.json;\n  // Pobieramy nazwę i ID. Jeśli brakuje, dajemy puste.\n  const name = data[\"Company Name\"] || \"\";\n  const id = data[\"Company ID\"] || \"\";\n\n  // Pomijamy jeśli brak ID\n  if (!id) return null;\n\n  // Kodowanie nazwy (spacje na %2520, dwukropki na %253A itd.)\n  const encodedName = encodeURIComponent(name).replace(/%20/g, '%2520');\n  \n  // Tworzymy segment dla pojedynczej firmy\n  return `(id%3Aurn%253Ali%253Aorganization%253A${id}%2Ctext%3A${encodedName}%2CselectionType%3AINCLUDED%2Cparent%3A(id%3A0))`;\n}).filter(segment => segment !== null); // Usuwamy puste wyniki\n\n// 3. Łączymy wszystkie firmy separatorem %2C (przecinek)\nconst newCompaniesFilter = urlSegments.join('%2C');\n\n// 4. Podmiana w linku (REGEX)\n// Szukamy sekcji CURRENT_COMPANY z Teslą\nconst regex = /(type%3ACURRENT_COMPANY%2Cvalues%3AList\\()(.*?)(\\)\\)\\)%2C\\(type%3ACURRENT_TITLE)/;\n\n// Sprawdzenie czy Regex pasuje\nif (!regex.test(baseLink)) {\n    return { json: { error: \"Nie znaleziono sekcji 'CURRENT_COMPANY' w Base URL\" } };\n}\n\n// Wykonujemy podmianę\nconst finalUrl = baseLink.replace(regex, `$1${newCompaniesFilter}$3`);\n\n// Zwracamy wynik (tylko jeden element, bo link jest jeden dla wszystkich firm)\nreturn {\n  json: {\n    sales_navigator_url: finalUrl,\n    companies_count: urlSegments.length\n  }\n};"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -2112,
-        384
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Code in JavaScript1",
-      "disabled": true
-    },
-    {
-      "parameters": {
         "operation": "getAll"
       },
       "type": "n8n-nodes-base.phantombuster",
@@ -162,7 +148,7 @@
             {
               "id": "REDACTED-UUID",
               "leftValue": "={{ $json.id }}",
-              "rightValue": "=6285499117163770",
+              "rightValue": "=3548035391342865",
               "operator": {
                 "type": "string",
                 "operation": "equals"
@@ -275,8 +261,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -400,
-        16
+        -32,
+        0
       ],
       "id": "REDACTED-UUID",
       "name": "HTTP Request3",
@@ -316,13 +302,95 @@
     },
     {
       "parameters": {
+        "operation": "getOutput",
+        "agentId": "={{ $('HTTP Request2').item.json.id }}",
+        "resolveData": false,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.phantombuster",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get the output of an agent",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "finished",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -304,
+        16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        256
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Wait1",
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// GENERATOR LINKU SALES NAVIGATOR (Poprawiona Wersja)\n// ============================================================\n\n// 1. Pobierz wszystkie elementy wejściowe (19 firm)\nconst items = $input.all();\n\n// Twój Link z Teslą (Base URL)\nconst baseLink = \"https://www.linkedin.com/sales/search/people?query=(recentSearchParam%3A(id%3A4072880329%2CdoLogHistory%3Atrue)%2Cfilters%3AList((type%3ACURRENT_COMPANY%2Cvalues%3AList((id%3Aurn%253Ali%253Aorganization%253A15564%2Ctext%3ATesla%2CselectionType%3AINCLUDED%2Cparent%3A(id%3A0))))%2C(type%3ACURRENT_TITLE%2Cvalues%3AList((id%3A79%2Ctext%3AHuman%2520Resources%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A45%2Ctext%3AHuman%2520Resources%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A91%2Ctext%3ARecruiter%2CselectionType%3AINCLUDED)%2C(id%3A444%2Ctext%3ARecruitment%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A300%2Ctext%3AHuman%2520Resources%2520Assistant%2CselectionType%3AINCLUDED)%2C(id%3A105%2Ctext%3AHuman%2520Resources%2520Director%2CselectionType%3AINCLUDED)%2C(id%3A483%2Ctext%3AHuman%2520Resources%2520Executive%2CselectionType%3AINCLUDED)%2C(id%3A248%2Ctext%3AHuman%2520Resources%2520Consultant%2CselectionType%3AINCLUDED)%2C(id%3A271%2Ctext%3AHuman%2520Resources%2520Generalist%2CselectionType%3AINCLUDED)%2C(id%3A400%2Ctext%3AHuman%2520Resources%2520Coordinator%2CselectionType%3AINCLUDED)%2C(id%3A268%2Ctext%3ARecruitment%2520Consultant%2CselectionType%3AINCLUDED)%2C(id%3A495%2Ctext%3ATechnical%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A13195%2Ctext%3ASenior%2520Human%2520Resources%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A609%2Ctext%3ARecruitment%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A1094%2Ctext%3AInformation%2520Technology%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A921%2Ctext%3ADirector%2520of%2520Recruiting%2CselectionType%3AINCLUDED)%2C(id%3A1827%2Ctext%3ARecruitment%2520Coordinator%2CselectionType%3AINCLUDED)%2C(id%3A787%2Ctext%3AExecutive%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A2446%2Ctext%3ATalent%2520Acquisition%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A4318%2Ctext%3ATalent%2520Management%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A4288%2Ctext%3ATalent%2520Acquisition%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A2577%2Ctext%3ATalent%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A21338%2Ctext%3ASenior%2520Talent%2520Acquisition%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A6780%2Ctext%3ATalent%2520Director%2CselectionType%3AINCLUDED)))))&sessionId=%2F%2BDjWjZhTnS%2BxIaRqX7Z9w%3D%3D&viewAllFilters=true\";\n\n// 2. Budowanie segmentu URL dla firm\n// Iterujemy po wszystkich elementach wejścia (items)\nconst urlSegments = items.map(item => {\n  const data = item.json;\n  // Pobieramy nazwę i ID. Jeśli brakuje, dajemy puste.\n  const name = data[\"Company Name\"] || \"\";\n  const id = data[\"Company ID\"] || \"\";\n\n  // Pomijamy jeśli brak ID\n  if (!id) return null;\n\n  // Kodowanie nazwy (spacje na %2520, dwukropki na %253A itd.)\n  const encodedName = encodeURIComponent(name).replace(/%20/g, '%2520');\n  \n  // Tworzymy segment dla pojedynczej firmy\n  return `(id%3Aurn%253Ali%253Aorganization%253A${id}%2Ctext%3A${encodedName}%2CselectionType%3AINCLUDED%2Cparent%3A(id%3A0))`;\n}).filter(segment => segment !== null); // Usuwamy puste wyniki\n\n// 3. Łączymy wszystkie firmy separatorem %2C (przecinek)\nconst newCompaniesFilter = urlSegments.join('%2C');\n\n// 4. Podmiana w linku (REGEX)\n// Szukamy sekcji CURRENT_COMPANY z Teslą\nconst regex = /(type%3ACURRENT_COMPANY%2Cvalues%3AList\\()(.*?)(\\)\\)\\)%2C\\(type%3ACURRENT_TITLE)/;\n\n// Sprawdzenie czy Regex pasuje\nif (!regex.test(baseLink)) {\n    return { json: { error: \"Nie znaleziono sekcji 'CURRENT_COMPANY' w Base URL\" } };\n}\n\n// Wykonujemy podmianę\nconst finalUrl = baseLink.replace(regex, `$1${newCompaniesFilter}$3`);\n\n// Zwracamy wynik (tylko jeden element, bo link jest jeden dla wszystkich firm)\nreturn {\n  json: {\n    sales_navigator_url: finalUrl,\n    companies_count: urlSegments.length\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2112,
+        384
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript1",
+      "disabled": true
+    },
+    {
+      "parameters": {
         "jsCode": "// 1. Get the raw CSV string from the previous node\nconst csvString = items[0].json.data;\n\n// Safety check\nif (!csvString) return [];\n\n// 2. Helper function to safely parse a CSV line (handling quotes)\nfunction parseCSVLine(line) {\n  const result = [];\n  let start = 0;\n  let inQuotes = false;\n\n  for (let i = 0; i < line.length; i++) {\n    if (line[i] === '\"') {\n      inQuotes = !inQuotes; // Toggle quote state\n    } else if (line[i] === ',' && !inQuotes) {\n      // Found a separator\n      let field = line.substring(start, i);\n      // Remove surrounding quotes if present\n      field = field.replace(/^\"|\"$/g, '').replace(/\"\"/g, '\"');\n      result.push(field);\n      start = i + 1;\n    }\n  }\n  // Push the last field\n  let lastField = line.substring(start);\n  lastField = lastField.replace(/^\"|\"$/g, '').replace(/\"\"/g, '\"');\n  result.push(lastField);\n\n  return result;\n}\n\n// 3. Process the Data\nconst lines = csvString.trim().split('\\n');\nconst headers = parseCSVLine(lines[0]); // Extract headers from first line\n\nconst jsonData = lines.slice(1).map(line => {\n  const values = parseCSVLine(line);\n  const obj = {};\n\n  headers.forEach((header, index) => {\n    // Map headers to values, handling missing trailing columns\n    obj[header] = values[index] || \"\";\n  });\n\n  return { json: obj };\n});\n\nreturn jsonData;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -128,
-        16
+        224,
+        0
       ],
       "id": "REDACTED-UUID",
       "name": "Code in JavaScript2"
@@ -366,23 +434,12 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript1",
+            "node": "Basic LLM Chain",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Basic LLM Chain",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript1": {
-      "main": [
-        [
-          {
-            "node": "Get many agents",
+            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
@@ -437,7 +494,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request3",
+            "node": "Get the output of an agent",
             "type": "main",
             "index": 0
           }
@@ -476,6 +533,51 @@
           }
         ]
       ]
+    },
+    "Get the output of an agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get the output of an agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        []
+      ]
     }
   },
   "settings": {
@@ -507,6 +609,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-26T18:59:49.576Z"
+    "timestamp": "2026-01-26T21:00:23.680Z"
   }
 }
