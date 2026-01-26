@@ -1,0 +1,966 @@
+{
+  "updatedAt": "2026-01-26T14:34:54.739Z",
+  "createdAt": "2026-01-26T13:29:30.988Z",
+  "id": "REDACTED-POSSIBLE-SECRET",
+  "name": "Job offer mail response analyst",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "threadId",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "from",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "REDACTED-UUID",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "Company Name",
+              "value": "={{ $json[\"Company Name\"] }} ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "ID",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 2,
+      "position": [
+        928,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// 1. POBIERANIE DANYCH\n// ============================================================\n\nconst emails = $('Edit Fields').all().map(item => item.json);\nconst companies = $('Edit Fields1').all().map(item => item.json);\n\n// ============================================================\n// 2. PRZYGOTOWANIE FILTRA (Case Sensitive + Trim)\n// ============================================================\n\nconst companyKeywords = companies\n  .map(c => c[\"Company Name\"])\n  // Najpierw sprawdzamy czy istnieje i usuwamy spacje z obu stron\n  .filter(name => name) \n  .map(name => name.trim()) \n  // Teraz filtrujemy za krótkie. Zmieniam na >= 2, bo \"TP\" ma 2 litery. \n  // Jeśli masz dużo śmieciowych 2-literowych firm, zmień na > 2.\n  .filter(name => name.length >= 2); \n\n// ============================================================\n// 3. LOGIKA FILTROWANIA (Dokładne dopasowanie)\n// ============================================================\n\nconst matchedEmails = [];\n\nfor (const email of emails) {\n  // Pobieramy dane z maila BEZ zamiany na małe litery\n  const subject = (email.subject || \"\");\n  const body = (email.text || \"\");\n  const sender = (email.from || \"\");\n\n  // Szukamy dokładnego dopasowania (TP znajdzie \"TP\", ale nie znajdzie \"tp\" w https)\n  const foundCompany = companyKeywords.find(company => \n    subject.includes(company) || \n    body.includes(company) ||\n    sender.includes(company)\n  );\n\n  if (foundCompany) {\n    matchedEmails.push({\n      json: {\n        ...email,\n        matchedCompany: foundCompany\n      }\n    });\n  }\n}\n\nreturn matchedEmails;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1616,
+        96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Remove Duplicates1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Przeanalizuj treść tego maila rekrutacyjnego.\n\nDANE WEJŚCIOWE (Zachowaj je w output):\n- Thread ID: {{ $json.threadId }}\n- Subject: {{ $json.subject }}\n\nDANE DO ANALIZY:\nNadawca: {{ $json.from }}\nTreść: {{ $json.text }}\nDopasowana firma: {{ $json.matchedCompany }}\n\nKATEGORIE:\n1. APPLICATION_RECEIVED - Automatyczne potwierdzenie (np. \"Thanks for applying\").\n2. REJECTION - Odmowa.\n3. INTERVIEW_INVITE - Zaproszenie na rozmowę, prośba o dostępność.\n4. OTHER - Spam, newslettery.\n\nZwróć JSON zawierający analizę ORAZ oryginalny temat i thread_id:\n{\n  \"company_name\": \"TU_WPISZ_NAZWE_FIRMY\",\n  \"category\": \"NAZWA_KATEGORII\",\n  \"reason\": \"Krótkie uzasadnienie po polsku\",\n  \"action_needed\": true/false,\n  \"original_subject\": \"TU_WPISZ_TEMAT_Z_INPUTU\",\n  \"thread_id\": \"TU_WPISZ_THREAD_ID_Z_INPUTU\"\n}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2080,
+        96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        256
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"company_name\": \"TU_WPISZ_NAZWE_FIRMY\",\n  \"category\": \"NAZWA_KATEGORII\",\n  \"reason\": \"Krótkie uzasadnienie po polsku\",\n  \"action_needed\": true,\n  \"original_subject\": \"TU_WPISZ_TEMAT_Z_INPUTU\",\n  \"thread_id\": \"TU_WPISZ_THREAD_ID_Z_INPUTU\"\n}"
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1.3,
+      "position": [
+        2224,
+        256
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.output.action_needed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2432,
+        96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AAZDFE8LS",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          }
+        },
+        "messageType": "block",
+        "blocksUi": "={\n\t\"blocks\": [\n\t\t{\n\t\t\t\"type\": \"header\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\"text\": \"{{ $json.output.category == 'INTERVIEW_INVITE' ? '🚀' : ($json.output.category == 'REJECTION' ? '💀' : '📥') }} Nowy status: {{ $json.output.company_name }}\",\n\t\t\t\t\"emoji\": true\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Kategoria:*\\n`{{ $json.output.category }}`\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Wymagana akcja:*\\n{{ $json.output.action_needed ? '🚨 TAK' : '✅ Nie' }}\"\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\": \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"*🤖 Analiza AI:*\\n{{ $json.output.reason.toString().replace(/\\\"/g, '\\\\\\\"') }}\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"context\",\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Temat:* {{ $json.output.original_subject.toString().replace(/\\\"/g, '\\\\\\\"') }}\"\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\"text\": \"Otwórz w Gmail\",\n\t\t\t\t\t\t\"emoji\": true\n\t\t\t\t\t},\n\t\t\t\t\t\"value\": \"open_gmail\",\n\t\t\t\t\t\"url\": \"https://mail.google.com/mail/u/0/#inbox/{{ $json.output.thread_id }}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        2768,
+        80
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Send a message",
+      "webhookId": {
+        "_redacted": true
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        2976,
+        80
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        96
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Gmail Trigger1",
+      "credentials": {
+        "_redacted": true
+      }
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": "REDACTED-UUID",
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-01-26T13:29:30.994Z",
+      "createdAt": "2026-01-26T13:29:30.994Z",
+      "role": "workflow:owner",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-26T14:34:56.000Z",
+    "createdAt": "2026-01-26T14:34:54.740Z",
+    "versionId": "REDACTED-UUID",
+    "workflowId": "REDACTED-POSSIBLE-SECRET",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "REDACTED-UUID",
+                "name": "id",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "REDACTED-UUID",
+                "name": "threadId",
+                "value": "={{ $json.threadId }}",
+                "type": "string"
+              },
+              {
+                "id": "REDACTED-UUID",
+                "name": "from",
+                "value": "={{ $json.from.value[0].address }}",
+                "type": "string"
+              },
+              {
+                "id": "REDACTED-UUID",
+                "name": "subject",
+                "value": "={{ $json.subject }}",
+                "type": "string"
+              },
+              {
+                "id": "REDACTED-UUID",
+                "name": "text",
+                "value": "={{ $json.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          448,
+          96
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "REDACTED-POSSIBLE-SECRET",
+            "mode": "list",
+            "cachedResultName": {
+              "_redacted": true
+            },
+            "cachedResultUrl": {
+              "_redacted": true
+            }
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": {
+              "_redacted": true
+            },
+            "cachedResultUrl": {
+              "_redacted": true
+            }
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          720,
+          208
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Get row(s) in sheet",
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "REDACTED-UUID",
+                "name": "Company Name",
+                "value": "={{ $json[\"Company Name\"] }} ",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1120,
+          208
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "compare": "selectedFields",
+          "fieldsToCompare": "ID",
+          "options": {}
+        },
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 2,
+        "position": [
+          928,
+          208
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Remove Duplicates"
+      },
+      {
+        "parameters": {
+          "jsCode": "// ============================================================\n// 1. POBIERANIE DANYCH\n// ============================================================\n\nconst emails = $('Edit Fields').all().map(item => item.json);\nconst companies = $('Edit Fields1').all().map(item => item.json);\n\n// ============================================================\n// 2. PRZYGOTOWANIE FILTRA (Case Sensitive + Trim)\n// ============================================================\n\nconst companyKeywords = companies\n  .map(c => c[\"Company Name\"])\n  // Najpierw sprawdzamy czy istnieje i usuwamy spacje z obu stron\n  .filter(name => name) \n  .map(name => name.trim()) \n  // Teraz filtrujemy za krótkie. Zmieniam na >= 2, bo \"TP\" ma 2 litery. \n  // Jeśli masz dużo śmieciowych 2-literowych firm, zmień na > 2.\n  .filter(name => name.length >= 2); \n\n// ============================================================\n// 3. LOGIKA FILTROWANIA (Dokładne dopasowanie)\n// ============================================================\n\nconst matchedEmails = [];\n\nfor (const email of emails) {\n  // Pobieramy dane z maila BEZ zamiany na małe litery\n  const subject = (email.subject || \"\");\n  const body = (email.text || \"\");\n  const sender = (email.from || \"\");\n\n  // Szukamy dokładnego dopasowania (TP znajdzie \"TP\", ale nie znajdzie \"tp\" w https)\n  const foundCompany = companyKeywords.find(company => \n    subject.includes(company) || \n    body.includes(company) ||\n    sender.includes(company)\n  );\n\n  if (foundCompany) {\n    matchedEmails.push({\n      json: {\n        ...email,\n        matchedCompany: foundCompany\n      }\n    });\n  }\n}\n\nreturn matchedEmails;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1840,
+          96
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1616,
+          96
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 2,
+        "position": [
+          1312,
+          208
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Remove Duplicates1"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Przeanalizuj treść tego maila rekrutacyjnego.\n\nDANE WEJŚCIOWE (Zachowaj je w output):\n- Thread ID: {{ $json.threadId }}\n- Subject: {{ $json.subject }}\n\nDANE DO ANALIZY:\nNadawca: {{ $json.from }}\nTreść: {{ $json.text }}\nDopasowana firma: {{ $json.matchedCompany }}\n\nKATEGORIE:\n1. APPLICATION_RECEIVED - Automatyczne potwierdzenie (np. \"Thanks for applying\").\n2. REJECTION - Odmowa.\n3. INTERVIEW_INVITE - Zaproszenie na rozmowę, prośba o dostępność.\n4. OTHER - Spam, newslettery.\n\nZwróć JSON zawierający analizę ORAZ oryginalny temat i thread_id:\n{\n  \"company_name\": \"TU_WPISZ_NAZWE_FIRMY\",\n  \"category\": \"NAZWA_KATEGORII\",\n  \"reason\": \"Krótkie uzasadnienie po polsku\",\n  \"action_needed\": true/false,\n  \"original_subject\": \"TU_WPISZ_TEMAT_Z_INPUTU\",\n  \"thread_id\": \"TU_WPISZ_THREAD_ID_Z_INPUTU\"\n}",
+          "hasOutputParser": true,
+          "batching": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.9,
+        "position": [
+          2080,
+          96
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Basic LLM Chain"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 1,
+        "position": [
+          2080,
+          256
+        ],
+        "id": "REDACTED-UUID",
+        "name": "DeepSeek Chat Model",
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"company_name\": \"TU_WPISZ_NAZWE_FIRMY\",\n  \"category\": \"NAZWA_KATEGORII\",\n  \"reason\": \"Krótkie uzasadnienie po polsku\",\n  \"action_needed\": true,\n  \"original_subject\": \"TU_WPISZ_TEMAT_Z_INPUTU\",\n  \"thread_id\": \"TU_WPISZ_THREAD_ID_Z_INPUTU\"\n}"
+        },
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 1.3,
+        "position": [
+          2224,
+          256
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Structured Output Parser"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "REDACTED-UUID",
+                "leftValue": "={{ $json.output.action_needed }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2432,
+          96
+        ],
+        "id": "REDACTED-UUID",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "select": "channel",
+          "channelId": {
+            "__rl": true,
+            "value": "C0AAZDFE8LS",
+            "mode": "list",
+            "cachedResultName": {
+              "_redacted": true
+            }
+          },
+          "messageType": "block",
+          "blocksUi": "={\n\t\"blocks\": [\n\t\t{\n\t\t\t\"type\": \"header\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\"text\": \"{{ $json.output.category == 'INTERVIEW_INVITE' ? '🚀' : ($json.output.category == 'REJECTION' ? '💀' : '📥') }} Nowy status: {{ $json.output.company_name }}\",\n\t\t\t\t\"emoji\": true\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Kategoria:*\\n`{{ $json.output.category }}`\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Wymagana akcja:*\\n{{ $json.output.action_needed ? '🚨 TAK' : '✅ Nie' }}\"\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\": \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"*🤖 Analiza AI:*\\n{{ $json.output.reason.toString().replace(/\\\"/g, '\\\\\\\"') }}\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"context\",\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Temat:* {{ $json.output.original_subject.toString().replace(/\\\"/g, '\\\\\\\"') }}\"\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\"text\": \"Otwórz w Gmail\",\n\t\t\t\t\t\t\"emoji\": true\n\t\t\t\t\t},\n\t\t\t\t\t\"value\": \"open_gmail\",\n\t\t\t\t\t\"url\": \"https://mail.google.com/mail/u/0/#inbox/{{ $json.output.thread_id }}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}",
+          "otherOptions": {
+            "includeLinkToWorkflow": false
+          }
+        },
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "position": [
+          2768,
+          80
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Send a message",
+        "webhookId": {
+          "_redacted": true
+        },
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "filters": {}
+        },
+        "type": "n8n-nodes-base.gmailTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          2976,
+          80
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Gmail Trigger",
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyHour"
+              }
+            ]
+          },
+          "simple": false,
+          "filters": {},
+          "options": {}
+        },
+        "type": "n8n-nodes-base.gmailTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          176,
+          96
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Gmail Trigger1",
+        "credentials": {
+          "_redacted": true
+        }
+      }
+    ],
+    "connections": {
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicates",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicates1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates1": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gmail Trigger1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "REDACTED",
+    "name": "Version 353101b1",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-01-26T14:35:45.912Z"
+  }
+}
