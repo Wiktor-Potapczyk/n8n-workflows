@@ -1,0 +1,474 @@
+// ==UserScript==
+// @name         Apply intel v4.3 (Actions & MD)
+// @namespace    http://tampermonkey.net/
+// @version      4.3
+// @description  LinkedIn Overlay: Frontend dla ekosystemu n8n (Scraping/Scoring/Interview)
+// @author       Wiktor & Gemini
+// @match        https://www.linkedin.com/jobs/*
+// @grant        GM_xmlhttpRequest
+// @grant        GM_setClipboard
+// @grant        GM_addStyle
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // ==========================================
+    // ⚙️ KONFIGURACJA
+    // ==========================================
+    const CONFIG = {
+        CHECK_URL: 'REDACTED',
+        UPDATE_URL: 'REDACTED'
+    };
+
+    // ==========================================
+    // 🎨 STYLE (Duże czcionki + Przyciski Akcji)
+    // ==========================================
+    GM_addStyle(`
+        #cyborg-panel {
+            position: fixed;
+            top: 75px;
+            left: 68%;
+            width: 400px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            z-index: 10000;
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+        #cyborg-header {
+            background: #1e293b; padding: 14px 18px; border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #334155; display: flex; justify-content: space-between;
+            align-items: center; font-weight: 700; font-size: 15px; color: #38bdf8;
+            cursor: pointer; user-select: none;
+        }
+        #cyborg-content { padding: 18px; max-height: 85vh; overflow-y: auto; }
+
+        .c-row { margin-bottom: 18px; }
+        .c-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            display: block;
+            font-weight: 600;
+        }
+
+        /* Meta Data */
+        .meta-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 12px; border-radius: 6px; }
+        .score-val { font-size: 20px; font-weight: 800; }
+        .status-val { font-size: 14px; font-weight: 600; }
+
+        /* CV Badge */
+        .cv-badge {
+            text-align: center; padding: 12px; border-radius: 6px;
+            font-weight: 700; font-size: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .cv-tech { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid #3b82f6; }
+        .cv-manager { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #10b981; }
+        .cv-default { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid #8b5cf6; }
+
+        /* Inputs */
+        .cyborg-textarea {
+            width: 100%; background: #020617; border: 1px solid #334155;
+            color: #cbd5e1; padding: 12px; border-radius: 6px;
+            min-height: 120px; resize: vertical;
+            font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.5;
+            box-sizing: border-box;
+        }
+
+        /* Buttons & Actions */
+        .action-row { display: flex; gap: 10px; margin-top: 20px; }
+
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; color: white; transition: background 0.2s; display: flex; justify-content: center; align-items: center; }
+
+        .btn-copy { background: #3b82f6; margin-top: 10px; }
+        .btn-copy:hover { background: #2563eb; }
+
+        .btn-apply { background: #8b5cf6; flex: 2; } /* Takes more space */
+        .btn-apply:hover { background: #7c3aed; }
+
+        .btn-na { background: #334155; flex: 1; color: #94a3b8; } /* Smaller, gray */
+        .btn-na:hover { background: #475569; color: #fff; }
+
+        .btn:disabled { background: #1e293b; cursor: not-allowed; opacity: 0.5; color: #64748b; }
+        .btn-done { background: #10b981; cursor: default; }
+
+        /* Checklist Items */
+        .checklist-box { background: #1e293b; padding: 12px; border-radius: 6px; margin-top: 5px; }
+        .checklist-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 8px 10px; border-radius: 5px; background: #0f172a; border: 1px solid #334155; }
+        .checklist-item:last-child { margin-bottom: 0; }
+        .checklist-tag { font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 4px; min-width: 60px; text-align: center; letter-spacing: 0.5px; }
+        .checklist-value { font-size: 14px; font-weight: 500; }
+
+        .tag-github { background: #4a044e; color: #f0abfc; border: 1px solid #f0abfc; }
+        .tag-video { background: #451a03; color: #fbbf24; border: 1px solid #fbbf24; }
+        .tag-custom { background: #083344; color: #67e8f9; border: 1px solid #67e8f9; }
+        .tag-stack { background: #172554; color: #a5f3fc; border: 1px solid #a5f3fc; }
+
+        .status-yes { color: #4ade80; font-weight: bold; margin-right: 5px; }
+        .status-no { color: #f87171; font-weight: bold; margin-right: 5px; }
+        .status-none { color: #64748b; font-style: italic; }
+
+        /* Brief (Notes) */
+        .brief-box {
+            background: #1e293b; padding: 15px; border-radius: 6px; margin-top: 5px;
+            display: none; color: #cbd5e1; font-size: 14px;
+        }
+        .brief-box h1, .brief-box h2, .brief-box h3 { margin-top: 15px; margin-bottom: 8px; color: #e2e8f0; font-weight: 700; }
+        .brief-box h1 { font-size: 18px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
+        .brief-box h2 { font-size: 16px; color: #38bdf8; }
+        .brief-box h3 { font-size: 14px; color: #fbbf24; text-transform: uppercase; }
+        .brief-box p { margin-bottom: 10px; }
+        .brief-box ul { padding-left: 20px; margin-bottom: 10px; }
+        .brief-box li { margin-bottom: 4px; }
+        .brief-box strong { color: #fff; font-weight: 700; }
+
+        .brief-toggle { color: #94a3b8; cursor: pointer; font-size: 12px; text-decoration: underline; margin-left: auto; padding: 5px; }
+        .brief-toggle:hover { color: #fff; }
+    `);
+
+    // ==========================================
+    // 🛠️ HELPERY DOM
+    // ==========================================
+    function el(tag, classes = [], text = '', children = []) {
+        const element = document.createElement(tag);
+        if (classes.length) element.classList.add(...classes);
+        if (text) element.innerHTML = text;
+        children.forEach(child => { if (child) element.appendChild(child); });
+        return element;
+    }
+
+    function parseMarkdown(text) {
+        if (!text) return 'Brak notatek';
+        return text
+            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+            .replace(/^\s*[-*]\s+(.*)$/gim, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>)/gim, '<ul>$1</ul>')
+            .replace(/<\/ul>\s*<ul>/gim, '')
+            .replace(/\n/g, '<br>');
+    }
+
+    // ==========================================
+    // 🧠 LOGIKA
+    // ==========================================
+    let currentJobId = null;
+    let panelContent = null;
+
+    setInterval(() => {
+        const newId = getJobId();
+        if (newId && newId !== currentJobId) {
+            currentJobId = newId;
+            renderLoading();
+            fetchData(currentJobId);
+        }
+    }, 1000);
+
+    function getJobId() {
+        const url = window.location.href;
+        const m1 = url.match(/currentJobId=(\d+)/);
+        const m2 = url.match(/jobs\/view\/(\d+)/);
+        return m1 ? m1[1] : (m2 ? m2[1] : null);
+    }
+
+    function fetchData(id) {
+        console.log(`🤖 Pobieram dane dla ID: ${id}`);
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: `${CONFIG.CHECK_URL}?job_id=${id}`,
+            onload: (res) => {
+                if (res.status === 200) {
+                    try {
+                        let data = JSON.parse(res.responseText);
+                        if (Array.isArray(data)) data = data[0];
+                        if (data && (data.found === true || data.found === "true")) {
+                            renderData(data);
+                        } else {
+                            renderNotFound(id);
+                        }
+                    } catch (e) {
+                        renderError('Błąd JSON: ' + e.message);
+                    }
+                } else {
+                    renderError(`Błąd HTTP: ${res.status}`);
+                }
+            },
+            onerror: () => renderError('Błąd połączenia z n8n')
+        });
+    }
+
+    // --- NOWA FUNKCJA WYSYŁAJĄCA STATUS ---
+    function sendStatusUpdate(newStatus, btnElement, statusSpan) {
+        const originalText = btnElement.textContent;
+        const allBtns = document.querySelectorAll('.action-row .btn');
+
+        // Zablokuj wszystkie przyciski
+        allBtns.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+        });
+
+        btnElement.textContent = '⏳ Zapisuję...';
+        btnElement.style.opacity = '1';
+
+        GM_xmlhttpRequest({
+            method: "POST",
+            url: CONFIG.UPDATE_URL,
+            headers: { "Content-Type": "application/json" },
+            data: JSON.stringify({
+                job_id: currentJobId,
+                status: newStatus // Przesyłamy wybrany status
+            }),
+            onload: (res) => {
+                if (res.status === 200) {
+                    // Sukces - odśwież UI
+                    btnElement.className = 'btn btn-done';
+                    btnElement.textContent = (newStatus === 'Applied') ? 'Zapisano! ✅' : 'Odrzucono 🗑️';
+
+                    if (statusSpan) {
+                        statusSpan.textContent = newStatus;
+                        statusSpan.style.color = (newStatus === 'Applied') ? '#10b981' : '#94a3b8';
+                    }
+                } else {
+                    btnElement.textContent = 'Błąd! ❌';
+                    setTimeout(() => {
+                        btnElement.textContent = originalText;
+                        allBtns.forEach(btn => btn.disabled = false);
+                    }, 2000);
+                }
+            },
+            onerror: () => {
+                btnElement.textContent = 'Błąd sieci ❌';
+                setTimeout(() => {
+                    btnElement.textContent = originalText;
+                    allBtns.forEach(btn => btn.disabled = false);
+                }, 2000);
+            }
+        });
+    }
+
+    // ... Reszta parserów (parseChecklist, renderChecklistItem) bez zmian ...
+    function parseChecklist(raw) {
+        if (!raw) return [];
+        const items = [];
+        const regex = /\[(\w+)\]:\s*(.+?)(?=\[|$)/gs;
+        let match;
+        while ((match = regex.exec(raw)) !== null) {
+            items.push({ tag: match[1].toUpperCase(), value: match[2].trim() });
+        }
+        return items;
+    }
+
+    function renderChecklistItem(item) {
+        const tagClass = {
+            'GITHUB': 'tag-github',
+            'VIDEO': 'tag-video',
+            'CUSTOM': 'tag-custom',
+            'STACK': 'tag-stack'
+        }[item.tag] || 'tag-custom';
+
+        const tagEl = el('span', ['checklist-tag', tagClass], item.tag);
+        const valueEl = el('span', ['checklist-value'], '');
+
+        if (item.value.startsWith('YES')) {
+            valueEl.innerHTML = `<span class="status-yes">YES</span> ${item.value.substring(3)}`;
+        } else if (item.value.startsWith('NO')) {
+            valueEl.innerHTML = `<span class="status-no">NO</span> ${item.value.substring(2)}`;
+        } else if (item.value === 'None' || item.value.startsWith('None')) {
+            valueEl.classList.add('status-none');
+            valueEl.textContent = item.value;
+        } else {
+            valueEl.textContent = item.value;
+        }
+        return el('div', ['checklist-item'], '', [tagEl, valueEl]);
+    }
+
+    function initPanel() {
+        if (document.getElementById('cyborg-panel')) return;
+        const panel = el('div', [], '', []);
+        panel.id = 'cyborg-panel';
+        const header = el('div', [], '', [el('span', [], '🤖 Cyborg Helper v4.3'), el('span', [], '_')]);
+        header.id = 'cyborg-header';
+        header.addEventListener('click', () => {
+            panelContent.style.display = panelContent.style.display === 'none' ? 'block' : 'none';
+        });
+        panelContent = el('div', [], 'Inicjalizacja...');
+        panelContent.id = 'cyborg-content';
+        panel.appendChild(header);
+        panel.appendChild(panelContent);
+        document.body.appendChild(panel);
+    }
+
+    function clearPanel() {
+        initPanel();
+        panelContent.innerHTML = '';
+    }
+
+    function renderLoading() {
+        clearPanel();
+        panelContent.appendChild(el('div', [], '📡 Sprawdzam bazę...', []));
+        panelContent.style.textAlign = 'center';
+        panelContent.style.padding = '30px';
+    }
+
+    function renderError(msg) {
+        clearPanel();
+        const errDiv = el('div', [], msg);
+        errDiv.style.color = '#f87171';
+        panelContent.appendChild(errDiv);
+    }
+
+    function renderNotFound(id) {
+        clearPanel();
+        const container = el('div', [], '', [
+            el('div', [], '👻', []),
+            el('div', [], 'Brak w bazie'),
+            el('div', [], `ID: ${id}`)
+        ]);
+        container.style.textAlign = 'center';
+        container.style.opacity = '0.7';
+        container.firstChild.style.fontSize = '40px';
+        panelContent.appendChild(container);
+    }
+
+    function renderData(data) {
+        clearPanel();
+        panelContent.style.textAlign = 'left';
+        panelContent.style.padding = '18px';
+
+        // 1. Status & Score
+        let currentStatus = (data.status || 'New').trim();
+        const isApplied = currentStatus.toLowerCase() === 'applied';
+        const isRejected = currentStatus.toLowerCase() === 'n/a';
+
+        const score = parseInt(data.score) || 0;
+        const scoreColor = score >= 7 ? '#4ade80' : (score >= 4 ? '#facc15' : '#f87171');
+        const scoreSpan = el('span', ['score-val'], `${score}/10`);
+        scoreSpan.style.color = scoreColor;
+
+        const statusSpan = el('span', ['status-val'], currentStatus);
+        if (isApplied) statusSpan.style.color = '#10b981';
+        if (isRejected) statusSpan.style.color = '#94a3b8';
+
+        panelContent.appendChild(el('div', ['meta-row'], '', [
+            el('div', [], '', [ el('span', ['c-label'], 'Wynik'), scoreSpan ]),
+            el('div', [], '', [ el('span', ['c-label'], 'Status'), statusSpan ])
+        ]));
+
+        // 2. CV Badge
+        const rawCvType = (data.cv_type || 'STANDARD').toString().toUpperCase();
+        let badgeClass = 'cv-default';
+        let badgeIcon = '📄';
+        if (rawCvType.includes('TECH')) { badgeClass = 'cv-tech'; badgeIcon = '💻'; }
+        else if (rawCvType.includes('MANAGER')) { badgeClass = 'cv-manager'; badgeIcon = '👔'; }
+
+        const cvRow = el('div', ['c-row'], '', [
+            el('div', ['cv-badge', badgeClass], '', [ el('span', [], badgeIcon), el('span', [], data.cv_type) ])
+        ]);
+        cvRow.style.marginTop = '20px';
+        panelContent.appendChild(cvRow);
+
+        // 3. CHECKLIST
+        const checklistRaw = data.checklist || '';
+        const checklistItems = parseChecklist(checklistRaw);
+        if (checklistItems.length > 0) {
+            const checklistContent = el('div', ['checklist-box']);
+            checklistItems.forEach(item => {
+                checklistContent.appendChild(renderChecklistItem(item));
+            });
+            panelContent.appendChild(el('div', ['c-row'], '', [
+                el('span', ['c-label'], '📋 Checklist'),
+                checklistContent
+            ]));
+        }
+
+        // 4. Copy List
+        const txtArea = el('textarea', ['cyborg-textarea'], '');
+        txtArea.value = data.cover_letter || "Brak listu.";
+        txtArea.readOnly = true;
+        txtArea.addEventListener('click', function() { this.select(); });
+
+        const copyBtn = el('button', ['btn', 'btn-copy'], '📋 Kopiuj Treść');
+        copyBtn.addEventListener('click', () => {
+            GM_setClipboard(txtArea.value);
+            copyBtn.textContent = 'Skopiowano! ✅';
+            copyBtn.style.background = '#22c55e';
+            setTimeout(() => { copyBtn.textContent = '📋 Kopiuj Treść'; copyBtn.style.background = '#3b82f6'; }, 2000);
+        });
+
+        panelContent.appendChild(el('div', ['c-row'], '', [
+            el('span', ['c-label'], 'List Motywacyjny'), txtArea, copyBtn
+        ]));
+
+        // 5. Brief
+        const formattedBrief = parseMarkdown(data.interview_brief || 'Brak notatek');
+        const briefContent = el('div', ['brief-box'], formattedBrief);
+        const toggleBtn = el('div', ['brief-toggle'], 'Pokaż Brief ▼');
+        toggleBtn.addEventListener('click', () => {
+            if (briefContent.style.display === 'block') {
+                briefContent.style.display = 'none';
+                toggleBtn.textContent = 'Pokaż Brief ▼';
+            } else {
+                briefContent.style.display = 'block';
+                toggleBtn.textContent = 'Ukryj Brief ▲';
+            }
+        });
+        const briefRow = el('div', ['c-row'], '', [
+            el('div', [], '', [ el('span', ['c-label'], 'Interview Intelligence'), toggleBtn ]),
+            briefContent
+        ]);
+        briefRow.firstChild.style.display = 'flex';
+        briefRow.firstChild.style.justifyContent = 'space-between';
+        briefRow.firstChild.style.alignItems = 'center';
+        panelContent.appendChild(briefRow);
+
+        // 6. Action Buttons
+        const actionRow = el('div', ['action-row']);
+
+        // Przycisk APPLY
+        const applyBtn = el('button', ['btn', 'btn-apply'], '🚀 Aplikuj');
+        if (isApplied) {
+            applyBtn.textContent = '✅ Zaaplikowano';
+            applyBtn.disabled = true;
+            applyBtn.className = 'btn btn-done';
+            applyBtn.style.flex = "1";
+        } else {
+            applyBtn.addEventListener('click', () => sendStatusUpdate('Applied', applyBtn, statusSpan));
+        }
+
+        // Przycisk N/A
+        const naBtn = el('button', ['btn', 'btn-na'], '⛔ Odrzuć');
+        if (isRejected) {
+             naBtn.textContent = '🗑️ Odrzucono';
+             naBtn.disabled = true;
+        } else {
+             naBtn.addEventListener('click', () => sendStatusUpdate('N/A', naBtn, statusSpan));
+        }
+
+        // Jeśli status jest już ustawiony, pokaż tylko odpowiedni przycisk (lub oba wyszarzone, zależnie od woli - tu pokazuję status)
+        if (!isApplied && !isRejected) {
+             actionRow.appendChild(applyBtn);
+             actionRow.appendChild(naBtn);
+        } else {
+             // Jeśli już coś zrobiono, pokazujemy tylko ten status jako duży button
+             const activeBtn = isApplied ? applyBtn : naBtn;
+             activeBtn.style.width = "100%";
+             actionRow.appendChild(activeBtn);
+        }
+
+        panelContent.appendChild(actionRow);
+    }
+
+    initPanel();
+})();
