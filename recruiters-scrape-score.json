@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-26T20:32:21.669Z",
+  "updatedAt": "2026-01-27T08:45:13.435Z",
   "createdAt": "2026-01-26T16:36:56.749Z",
   "id": "payc5g5Vjh-4DIrj6rrbP",
   "name": "Recruiters scrape & score",
@@ -255,7 +255,7 @@
     },
     {
       "parameters": {
-        "url": "REDACTED-POSSIBLE-SECRET",
+        "url": "=https://phantombuster.s3.amazonaws.com/{{ $('HTTP Request2').item.json.orgS3Folder }}/{{ $('HTTP Request2').item.json.s3Folder }}/result.csv",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -609,6 +609,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-26T21:00:23.680Z"
+    "timestamp": "2026-01-27T09:01:04.605Z"
   }
 }
