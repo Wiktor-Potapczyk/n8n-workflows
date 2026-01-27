@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-27T08:45:13.435Z",
+  "updatedAt": "2026-01-27T10:48:17.709Z",
   "createdAt": "2026-01-26T16:36:56.749Z",
   "id": "payc5g5Vjh-4DIrj6rrbP",
   "name": "Recruiters scrape & score",
@@ -255,21 +255,6 @@
     },
     {
       "parameters": {
-        "url": "=https://phantombuster.s3.amazonaws.com/{{ $('HTTP Request2').item.json.orgS3Folder }}/{{ $('HTTP Request2').item.json.s3Folder }}/result.csv",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        -32,
-        0
-      ],
-      "id": "REDACTED-UUID",
-      "name": "HTTP Request3",
-      "executeOnce": true
-    },
-    {
-      "parameters": {
         "promptType": "define",
         "text": "=You are a URL processing engine. Your only task is to update the \"CURRENT_COMPANY\" filter in a LinkedIn Sales Navigator URL.\n\n\n\n**INSTRUCTIONS:**\n\n1.  Analyze the [Base Link] provided below.\n\n2.  Locate the section starting with `(type%3ACURRENT_COMPANY`.\n\n3.  Replace the existing company list with the [New Company List] provided below.\n\n4.  **Format each new company exactly as follows:**\n\n    `(id%3Aurn%253Ali%253Aorganization%253A{ID}%2Ctext%3A{NAME}%2CselectionType%3AINCLUDED%2Cparent%3A(id%3A0))`\n\n    *(Note: Ensure the URL encoding matches the depth of the Base Link, typically %253A for colons).*\n\n5.  Preserve all other filters (Region, Title, etc.) exactly as they are in the Base Link.\n\n6.  Output ONLY the final valid URL. No text, no explanations.\n\n**DATA INPUT:**\n\n[Base Link]:\nhttps://www.linkedin.com/sales/search/people?query=(recentSearchParam%3A(id%3A4072880329%2CdoLogHistory%3Atrue)%2Cfilters%3AList((type%3ACURRENT_COMPANY%2Cvalues%3AList((id%3Aurn%253Ali%253Aorganization%253A15564%2Ctext%3ATesla%2CselectionType%3AINCLUDED%2Cparent%3A(id%3A0))))%2C(type%3ACURRENT_TITLE%2Cvalues%3AList((id%3A79%2Ctext%3AHuman%2520Resources%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A45%2Ctext%3AHuman%2520Resources%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A91%2Ctext%3ARecruiter%2CselectionType%3AINCLUDED)%2C(id%3A444%2Ctext%3ARecruitment%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A300%2Ctext%3AHuman%2520Resources%2520Assistant%2CselectionType%3AINCLUDED)%2C(id%3A105%2Ctext%3AHuman%2520Resources%2520Director%2CselectionType%3AINCLUDED)%2C(id%3A483%2Ctext%3AHuman%2520Resources%2520Executive%2CselectionType%3AINCLUDED)%2C(id%3A248%2Ctext%3AHuman%2520Resources%2520Consultant%2CselectionType%3AINCLUDED)%2C(id%3A271%2Ctext%3AHuman%2520Resources%2520Generalist%2CselectionType%3AINCLUDED)%2C(id%3A400%2Ctext%3AHuman%2520Resources%2520Coordinator%2CselectionType%3AINCLUDED)%2C(id%3A268%2Ctext%3ARecruitment%2520Consultant%2CselectionType%3AINCLUDED)%2C(id%3A495%2Ctext%3ATechnical%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A13195%2Ctext%3ASenior%2520Human%2520Resources%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A609%2Ctext%3ARecruitment%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A1094%2Ctext%3AInformation%2520Technology%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A921%2Ctext%3ADirector%2520of%2520Recruiting%2CselectionType%3AINCLUDED)%2C(id%3A1827%2Ctext%3ARecruitment%2520Coordinator%2CselectionType%3AINCLUDED)%2C(id%3A787%2Ctext%3AExecutive%2520Recruiter%2CselectionType%3AINCLUDED)%2C(id%3A2446%2Ctext%3ATalent%2520Acquisition%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A4318%2Ctext%3ATalent%2520Management%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A4288%2Ctext%3ATalent%2520Acquisition%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A2577%2Ctext%3ATalent%2520Manager%2CselectionType%3AINCLUDED)%2C(id%3A21338%2Ctext%3ASenior%2520Talent%2520Acquisition%2520Specialist%2CselectionType%3AINCLUDED)%2C(id%3A6780%2Ctext%3ATalent%2520Director%2CselectionType%3AINCLUDED)))))&sessionId=%2F%2BDjWjZhTnS%2BxIaRqX7Z9w%3D%3D&viewAllFilters=true\n\n\n[New Company List]:\n{{ $json.companies_list_formatted }}",
         "batching": {}
@@ -360,7 +345,7 @@
       "typeVersion": 1.1,
       "position": [
         -64,
-        256
+        240
       ],
       "id": "REDACTED-UUID",
       "name": "Wait1",
@@ -389,11 +374,67 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
+        144,
         0
       ],
       "id": "REDACTED-UUID",
       "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED-API-KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.location }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        352,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Filter"
     }
   ],
   "connections": {
@@ -523,17 +564,6 @@
         ]
       ]
     },
-    "HTTP Request3": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get the output of an agent": {
       "main": [
         [
@@ -549,7 +579,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request3",
+            "node": "HTTP Request",
             "type": "main",
             "index": 0
           }
@@ -577,6 +607,28 @@
     "Code in JavaScript1": {
       "main": [
         []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
@@ -609,6 +661,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-27T09:01:04.605Z"
+    "timestamp": "2026-01-27T11:01:06.768Z"
   }
 }
