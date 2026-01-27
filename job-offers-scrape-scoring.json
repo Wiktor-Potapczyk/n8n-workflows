@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-26T16:49:49.585Z",
+  "updatedAt": "2026-01-27T10:21:19.383Z",
   "createdAt": "2026-01-23T14:06:42.706Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offers scrape & scoring",
@@ -431,7 +431,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        976,
+        1024,
         656
       ],
       "id": "REDACTED-UUID",
@@ -1813,6 +1813,47 @@
       ],
       "id": "REDACTED-UUID",
       "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "authentication": "REDACTED",
+        "nodeCredentialType": "REDACTED",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "job_id",
+              "value": "=4354865608"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 3500
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1392,
+        624
+      ],
+      "id": "REDACTED-UUID",
+      "name": "HTTP Request2",
+      "credentials": {
+        "_redacted": true
+      }
     }
   ],
   "connections": {
@@ -2228,6 +2269,11 @@
           }
         ]
       ]
+    },
+    "HTTP Request2": {
+      "main": [
+        []
+      ]
     }
   },
   "settings": {
@@ -2286,6 +2332,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-26T17:00:32.530Z"
+    "timestamp": "2026-01-27T11:01:01.772Z"
   }
 }
