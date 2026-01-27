@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-27T10:21:19.383Z",
+  "updatedAt": "2026-01-27T22:43:35.141Z",
   "createdAt": "2026-01-23T14:06:42.706Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offers scrape & scoring",
@@ -28,7 +28,7 @@
             },
             {
               "name": "date_posted",
-              "value": "past_month"
+              "value": "past_24_hours"
             }
           ]
         },
@@ -50,7 +50,7 @@
                 ]
               },
               "limitPagesFetched": true,
-              "maxRequests": 20,
+              "maxRequests": 10,
               "requestInterval": 3500
             }
           }
@@ -64,6 +64,8 @@
       ],
       "id": "REDACTED-UUID",
       "name": "HTTP Request",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "_redacted": true
       }
@@ -2332,6 +2334,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-27T11:01:01.772Z"
+    "timestamp": "2026-01-27T23:01:01.711Z"
   }
 }
