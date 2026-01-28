@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-27T22:43:35.141Z",
+  "updatedAt": "2026-01-28T22:22:04.577Z",
   "createdAt": "2026-01-23T14:06:42.706Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offers scrape & scoring",
@@ -50,7 +50,7 @@
                 ]
               },
               "limitPagesFetched": true,
-              "maxRequests": 10,
+              "maxRequests": 5,
               "requestInterval": 3500
             }
           }
@@ -2334,6 +2334,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-27T23:01:01.711Z"
+    "timestamp": "2026-01-28T23:01:01.453Z"
   }
 }
