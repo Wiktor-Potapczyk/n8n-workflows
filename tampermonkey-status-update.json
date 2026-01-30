@@ -1,30 +1,11 @@
 {
-  "updatedAt": "2026-01-25T23:39:35.656Z",
-  "createdAt": "2026-01-24T22:34:15.872Z",
+  "updatedAt": "2026-01-30T15:12:13.438Z",
+  "createdAt": "2026-01-30T15:12:00.368Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "TamperMonkey status update",
   "active": true,
   "isArchived": false,
   "nodes": [
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "REDACTED-UUID",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Webhook",
-      "webhookId": {
-        "_redacted": true
-      }
-    },
     {
       "parameters": {
         "respondWith": "allIncomingItems",
@@ -272,25 +253,42 @@
         "_redacted": true
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "path": "REDACTED-UUID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Webhook",
+      "webhookId": {
+        "_redacted": true
+      }
     }
   ],
   "connections": {
-    "Webhook": {
+    "Update row in sheet": {
       "main": [
         [
           {
-            "node": "Update row in sheet",
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Update row in sheet": {
+    "Webhook": {
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Update row in sheet",
             "type": "main",
             "index": 0
           }
@@ -314,8 +312,8 @@
   "triggerCount": 1,
   "shared": [
     {
-      "updatedAt": "2026-01-24T22:34:15.877Z",
-      "createdAt": "2026-01-24T22:34:15.877Z",
+      "updatedAt": "2026-01-30T15:12:00.371Z",
+      "createdAt": "2026-01-30T15:12:00.371Z",
       "role": "workflow:owner",
       "workflowId": "REDACTED-POSSIBLE-SECRET",
       "projectId": {
@@ -324,30 +322,11 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-25T23:39:37.000Z",
-    "createdAt": "2026-01-25T23:39:35.657Z",
+    "updatedAt": "2026-01-30T15:12:18.000Z",
+    "createdAt": "2026-01-30T15:12:13.440Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
-      {
-        "parameters": {
-          "httpMethod": "POST",
-          "path": "REDACTED-UUID",
-          "responseMode": "responseNode",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.webhook",
-        "typeVersion": 2.1,
-        "position": [
-          0,
-          0
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Webhook",
-        "webhookId": {
-          "_redacted": true
-        }
-      },
       {
         "parameters": {
           "respondWith": "allIncomingItems",
@@ -595,20 +574,26 @@
           "_redacted": true
         },
         "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "path": "REDACTED-UUID",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Webhook",
+        "webhookId": {
+          "_redacted": true
+        }
       }
     ],
     "connections": {
-      "Webhook": {
-        "main": [
-          [
-            {
-              "node": "Update row in sheet",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Update row in sheet": {
         "main": [
           [
@@ -619,16 +604,27 @@
             }
           ]
         ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Update row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "REDACTED",
-    "name": "Version 79cb324d",
+    "name": "Version 39ed2d97",
     "description": "",
-    "autosaved": false
+    "autosaved": true
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-25T23:46:05.704Z"
+    "timestamp": "2026-01-30T15:22:03.240Z"
   }
 }
