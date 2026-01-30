@@ -1,29 +1,11 @@
 {
-  "updatedAt": "2026-01-25T23:24:48.437Z",
-  "createdAt": "2026-01-24T22:05:02.300Z",
-  "id": "EHZiHIZf8aHAuyoLqQAsw",
+  "updatedAt": "2026-01-30T15:07:48.568Z",
+  "createdAt": "2026-01-30T15:06:36.797Z",
+  "id": "REDACTED-POSSIBLE-SECRET",
   "name": "TamperMonkey GET JOB DATA",
   "active": true,
   "isArchived": false,
   "nodes": [
-    {
-      "parameters": {
-        "path": "REDACTED-UUID",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Webhook",
-      "webhookId": {
-        "_redacted": true
-      }
-    },
     {
       "parameters": {
         "documentId": {
@@ -96,20 +78,26 @@
       ],
       "id": "REDACTED-UUID",
       "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "path": "REDACTED-UUID",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Webhook",
+      "webhookId": {
+        "_redacted": true
+      }
     }
   ],
   "connections": {
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "Get row(s) in sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get row(s) in sheet": {
       "main": [
         [
@@ -126,6 +114,17 @@
         [
           {
             "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
             "type": "main",
             "index": 0
           }
@@ -149,39 +148,21 @@
   "triggerCount": 1,
   "shared": [
     {
-      "updatedAt": "2026-01-24T22:05:02.304Z",
-      "createdAt": "2026-01-24T22:05:02.304Z",
+      "updatedAt": "2026-01-30T15:06:36.801Z",
+      "createdAt": "2026-01-30T15:06:36.801Z",
       "role": "workflow:owner",
-      "workflowId": "EHZiHIZf8aHAuyoLqQAsw",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
       "projectId": {
         "_redacted": true
       }
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-25T23:24:50.000Z",
-    "createdAt": "2026-01-25T23:24:48.438Z",
+    "updatedAt": "2026-01-30T15:11:26.000Z",
+    "createdAt": "2026-01-30T15:07:48.569Z",
     "versionId": "REDACTED-UUID",
-    "workflowId": "EHZiHIZf8aHAuyoLqQAsw",
+    "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
-      {
-        "parameters": {
-          "path": "REDACTED-UUID",
-          "responseMode": "responseNode",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.webhook",
-        "typeVersion": 2.1,
-        "position": [
-          0,
-          0
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Webhook",
-        "webhookId": {
-          "_redacted": true
-        }
-      },
       {
         "parameters": {
           "documentId": {
@@ -254,20 +235,26 @@
         ],
         "id": "REDACTED-UUID",
         "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "path": "REDACTED-UUID",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Webhook",
+        "webhookId": {
+          "_redacted": true
+        }
       }
     ],
     "connections": {
-      "Webhook": {
-        "main": [
-          [
-            {
-              "node": "Get row(s) in sheet",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Get row(s) in sheet": {
         "main": [
           [
@@ -289,16 +276,27 @@
             }
           ]
         ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "REDACTED",
-    "name": "Version 558cf61b",
+    "name": "Version 7022fe70",
     "description": "",
-    "autosaved": false
+    "autosaved": true
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-25T23:46:02.018Z"
+    "timestamp": "2026-01-30T15:22:15.816Z"
   }
 }
