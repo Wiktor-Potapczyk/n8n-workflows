@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-01-30T13:23:16.968Z",
-  "createdAt": "2026-01-23T14:06:42.706Z",
-  "id": "REDACTED-POSSIBLE-SECRET",
+  "updatedAt": "2026-01-30T15:16:34.643Z",
+  "createdAt": "2026-01-30T15:15:46.564Z",
+  "id": "pfrYMKwymwJzEpRAPujXr",
   "name": "Job offers scrape & scoring",
   "active": false,
   "isArchived": false,
@@ -28,7 +28,7 @@
             },
             {
               "name": "date_posted",
-              "value": "past_month"
+              "value": "past_24_hours"
             }
           ]
         },
@@ -50,7 +50,7 @@
                 ]
               },
               "limitPagesFetched": true,
-              "maxRequests": 30,
+              "maxRequests": 5,
               "requestInterval": 3500
             }
           }
@@ -59,8 +59,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -704,
-        656
+        -928,
+        640
       ],
       "id": "REDACTED-UUID",
       "name": "HTTP Request",
@@ -79,8 +79,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.1,
       "position": [
-        224,
-        16
+        0,
+        0
       ],
       "id": "REDACTED-UUID",
       "name": "Extract from File"
@@ -90,8 +90,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -720,
-        208
+        -944,
+        192
       ],
       "id": "REDACTED-UUID",
       "name": "When clicking ‘Execute workflow’"
@@ -110,8 +110,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        -448,
-        208
+        -672,
+        192
       ],
       "id": "REDACTED-UUID",
       "name": "Get many messages",
@@ -138,8 +138,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        672,
-        208
+        448,
+        192
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain"
@@ -225,8 +225,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        0,
-        192
+        -224,
+        176
       ],
       "id": "REDACTED-UUID",
       "name": "Switch",
@@ -241,8 +241,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.1,
       "position": [
-        224,
-        208
+        0,
+        192
       ],
       "id": "REDACTED-UUID",
       "name": "Extract from File1"
@@ -256,8 +256,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.1,
       "position": [
-        224,
-        400
+        0,
+        384
       ],
       "id": "REDACTED-UUID",
       "name": "Extract from File2"
@@ -290,8 +290,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -224,
-        208
+        -448,
+        192
       ],
       "id": "REDACTED-UUID",
       "name": "If"
@@ -304,8 +304,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        672,
-        384
+        448,
+        368
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model",
@@ -320,8 +320,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        656
+        -688,
+        640
       ],
       "id": "REDACTED-UUID",
       "name": "Code in JavaScript"
@@ -379,8 +379,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        560,
-        656
+        336,
+        640
       ],
       "id": "REDACTED-UUID",
       "name": "Edit Fields"
@@ -417,8 +417,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        768,
-        656
+        544,
+        640
       ],
       "id": "REDACTED-UUID",
       "name": "HTTP Request1",
@@ -433,8 +433,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1024,
-        656
+        800,
+        640
       ],
       "id": "REDACTED-UUID",
       "name": "Code in JavaScript1"
@@ -456,8 +456,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -704,
-        1072
+        -928,
+        1056
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain1"
@@ -469,8 +469,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        -704,
-        1248
+        -928,
+        1232
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model1",
@@ -485,8 +485,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.3,
       "position": [
-        -560,
-        1248
+        -784,
+        1232
       ],
       "id": "REDACTED-UUID",
       "name": "Structured Output Parser"
@@ -498,8 +498,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -368,
-        1072
+        -592,
+        1056
       ],
       "id": "REDACTED-UUID",
       "name": "Code in JavaScript2"
@@ -770,8 +770,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -144,
-        1072
+        -368,
+        1056
       ],
       "id": "REDACTED-UUID",
       "name": "Append or update row in sheet",
@@ -806,8 +806,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        64,
-        1072
+        -160,
+        1056
       ],
       "id": "REDACTED-UUID",
       "name": "If1"
@@ -828,8 +828,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -288,
-        1616
+        -512,
+        1600
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain2"
@@ -842,8 +842,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        -288,
-        1776
+        -512,
+        1760
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model2",
@@ -888,8 +888,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -16,
-        720
+        -240,
+        704
       ],
       "id": "REDACTED-UUID",
       "name": "Get row(s) in sheet",
@@ -909,8 +909,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        352,
-        656
+        128,
+        640
       ],
       "id": "REDACTED-UUID",
       "name": "Merge"
@@ -932,8 +932,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        176,
-        720
+        -48,
+        704
       ],
       "id": "REDACTED-UUID",
       "name": "Edit Fields1"
@@ -953,8 +953,8 @@
       "type": "n8n-nodes-base.perplexity",
       "typeVersion": 1,
       "position": [
-        -496,
-        1616
+        -720,
+        1600
       ],
       "id": "REDACTED-UUID",
       "name": "Message a model",
@@ -978,8 +978,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        224,
-        1616
+        0,
+        1600
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain3"
@@ -992,8 +992,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        224,
-        1776
+        0,
+        1760
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model3",
@@ -1017,8 +1017,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        800,
-        1616
+        576,
+        1600
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain4"
@@ -1030,8 +1030,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        800,
-        1776
+        576,
+        1760
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model4",
@@ -1046,8 +1046,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -704,
-        1504
+        -928,
+        1488
       ],
       "id": "REDACTED-UUID",
       "name": "Loop Over Items"
@@ -1059,8 +1059,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1376,
-        1488
+        1152,
+        1472
       ],
       "id": "REDACTED-UUID",
       "name": "Edit Fields2"
@@ -1298,8 +1298,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        32,
-        1616
+        -192,
+        1600
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet",
@@ -1540,8 +1540,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        560,
-        1616
+        336,
+        1600
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet1",
@@ -1792,8 +1792,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1136,
-        1616
+        912,
+        1600
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet2",
@@ -1810,8 +1810,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 2,
       "position": [
-        -256,
-        656
+        -480,
+        640
       ],
       "id": "REDACTED-UUID",
       "name": "Remove Duplicates"
@@ -1848,14 +1848,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1392,
-        624
+        1168,
+        608
       ],
       "id": "REDACTED-UUID",
-      "name": "HTTP Request2",
-      "credentials": {
-        "_redacted": true
-      }
+      "name": "HTTP Request2"
     }
   ],
   "connections": {
@@ -1914,9 +1911,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        [],
-        []
+        ]
       ]
     },
     "Extract from File1": {
@@ -2271,11 +2266,6 @@
           }
         ]
       ]
-    },
-    "HTTP Request2": {
-      "main": [
-        []
-      ]
     }
   },
   "settings": {
@@ -2294,37 +2284,10 @@
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-01-26T12:32:29.018Z",
-      "createdAt": "2026-01-26T12:32:29.018Z",
-      "role": "workflow:editor",
-      "workflowId": "REDACTED-POSSIBLE-SECRET",
-      "projectId": {
-        "_redacted": true
-      }
-    },
-    {
-      "updatedAt": "2026-01-26T12:30:52.793Z",
-      "createdAt": "2026-01-26T12:30:52.793Z",
-      "role": "workflow:editor",
-      "workflowId": "REDACTED-POSSIBLE-SECRET",
-      "projectId": {
-        "_redacted": true
-      }
-    },
-    {
-      "updatedAt": "2026-01-23T14:06:42.709Z",
-      "createdAt": "2026-01-23T14:06:42.709Z",
+      "updatedAt": "2026-01-30T15:15:46.568Z",
+      "createdAt": "2026-01-30T15:15:46.568Z",
       "role": "workflow:owner",
-      "workflowId": "REDACTED-POSSIBLE-SECRET",
-      "projectId": {
-        "_redacted": true
-      }
-    },
-    {
-      "updatedAt": "2026-01-24T14:51:13.056Z",
-      "createdAt": "2026-01-24T14:51:13.056Z",
-      "role": "workflow:editor",
-      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "workflowId": "pfrYMKwymwJzEpRAPujXr",
       "projectId": {
         "_redacted": true
       }
@@ -2334,6 +2297,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-30T14:01:01.692Z"
+    "timestamp": "2026-01-30T15:22:18.777Z"
   }
 }
