@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-01-25T20:32:58.837Z",
-  "createdAt": "2026-01-13T20:00:48.512Z",
-  "id": "kQNYKOkJTUytNrFm",
+  "updatedAt": "2026-01-30T15:05:36.742Z",
+  "createdAt": "2026-01-30T15:05:20.566Z",
+  "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Google Calendar Agent",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -16,8 +16,8 @@
       "name": "When Executed by Another Workflow",
       "type": "REDACTED-POSSIBLE-SECRET",
       "position": [
-        352,
-        352
+        -1072,
+        96
       ]
     },
     {
@@ -27,14 +27,11 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        576,
-        576
+        -848,
+        320
       ],
       "id": "REDACTED-UUID",
-      "name": "DeepSeek Chat Model",
-      "credentials": {
-        "_redacted": true
-      }
+      "name": "DeepSeek Chat Model"
     },
     {
       "parameters": {
@@ -59,8 +56,8 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        704,
-        576
+        -720,
+        320
       ],
       "id": "REDACTED-UUID",
       "name": "Create an event in Google Calendar",
@@ -87,8 +84,8 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        832,
-        576
+        -592,
+        320
       ],
       "id": "REDACTED-UUID",
       "name": "Delete an event in Google Calendar",
@@ -134,8 +131,8 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        1088,
-        576
+        -336,
+        320
       ],
       "id": "REDACTED-UUID",
       "name": "Update an event in Google Calendar",
@@ -160,8 +157,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1424,
-        256
+        0,
+        0
       ],
       "id": "REDACTED-UUID",
       "name": "Success"
@@ -173,8 +170,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1424,
-        448
+        0,
+        192
       ],
       "id": "REDACTED-UUID",
       "name": "Try again"
@@ -188,8 +185,8 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        1216,
-        576
+        -208,
+        320
       ],
       "id": "REDACTED-UUID",
       "name": "Date & Time"
@@ -205,8 +202,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        832,
-        352
+        -592,
+        96
       ],
       "id": "REDACTED-UUID",
       "name": "Calendar Agent",
@@ -235,39 +232,8 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        960,
-        576
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Get many events in Google Calendar [REDACTED@email.com]",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "THIS IS FOR MY WORK [REDACTED@email.com] ACCOUNT\n\nUse this tool to FIND/READ events or check availability. REQUIRED parameters:\n\n'After' (TimeMin): Start of the search range in ISO 8601.\n\n'Before' (TimeMax): End of the search range in ISO 8601. Example: To check \"tomorrow\", set 'After' to 2026-01-14T00:00:00 and 'Before' to 2026-01-14T23:59:59.",
-        "operation": "getAll",
-        "calendar": {
-          "__rl": true,
-          "value": "REDACTED@email.com",
-          "mode": "list",
-          "cachedResultName": {
-            "_redacted": true
-          }
-        },
-        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
-        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
-        "options": {
-          "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}"
-        }
-      },
-      "type": "n8n-nodes-base.googleCalendarTool",
-      "typeVersion": 1.3,
-      "position": [
-        1024,
-        752
+        -464,
+        320
       ],
       "id": "REDACTED-UUID",
       "name": "Get many events in Google Calendar [REDACTED@email.com]",
@@ -371,17 +337,6 @@
           }
         ]
       ]
-    },
-    "Get many events in Google Calendar [wiktor@getbackpack.ai]": {
-      "ai_tool": [
-        [
-          {
-            "node": "Calendar Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
@@ -396,411 +351,23 @@
     "_redacted": true
   },
   "versionId": "REDACTED-UUID",
-  "activeVersionId": "REDACTED-UUID",
+  "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2026-01-13T20:00:48.518Z",
-      "createdAt": "2026-01-13T20:00:48.518Z",
+      "updatedAt": "2026-01-30T15:05:20.569Z",
+      "createdAt": "2026-01-30T15:05:20.569Z",
       "role": "workflow:owner",
-      "workflowId": "kQNYKOkJTUytNrFm",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
       "projectId": {
         "_redacted": true
       }
     }
   ],
-  "activeVersion": {
-    "updatedAt": "2026-01-13T22:26:01.000Z",
-    "createdAt": "2026-01-13T22:25:59.947Z",
-    "versionId": "REDACTED-UUID",
-    "workflowId": "kQNYKOkJTUytNrFm",
-    "nodes": [
-      {
-        "parameters": {
-          "inputSource": "jsonExample",
-          "jsonExample": "{\n  \"Message\": \"a string\"\n}"
-        },
-        "id": "REDACTED-UUID",
-        "typeVersion": 1.1,
-        "name": "When Executed by Another Workflow",
-        "type": "REDACTED-POSSIBLE-SECRET",
-        "position": [
-          352,
-          352
-        ]
-      },
-      {
-        "parameters": {
-          "options": {}
-        },
-        "type": "REDACTED-POSSIBLE-SECRET",
-        "typeVersion": 1,
-        "position": [
-          576,
-          576
-        ],
-        "id": "REDACTED-UUID",
-        "name": "DeepSeek Chat Model",
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "descriptionType": "manual",
-          "toolDescription": "Use this tool to CREATE a new event. REQUIRED parameters you must generate:\n\n'Start': ISO 8601 string (YYYY-MM-DDTHH:mm:ss)\n\n'End': ISO 8601 string (YYYY-MM-DDTHH:mm:ss). If user didn't specify duration, add 1 hour to Start.\n\n'Summary': The title of the event.\n\n'Description': Short description of the event.\n\n'Use_Default_Reminders': Set to true unless specified.",
-          "calendar": {
-            "__rl": true,
-            "value": "REDACTED@email.com",
-            "mode": "list",
-            "cachedResultName": {
-              "_redacted": true
-            }
-          },
-          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
-          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
-          "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
-          "additionalFields": {
-            "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
-            "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
-          }
-        },
-        "type": "n8n-nodes-base.googleCalendarTool",
-        "typeVersion": 1.3,
-        "position": [
-          704,
-          576
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Create an event in Google Calendar",
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "descriptionType": "manual",
-          "toolDescription": "Use this tool to REMOVE an event from the calendar. REQUIRED parameter: 'Event_ID'. NOTE: If you don't have the Event ID, search for the event first using 'Get many events'.",
-          "operation": "delete",
-          "calendar": {
-            "__rl": true,
-            "value": "REDACTED@email.com",
-            "mode": "list",
-            "cachedResultName": {
-              "_redacted": true
-            }
-          },
-          "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.googleCalendarTool",
-        "typeVersion": 1.3,
-        "position": [
-          832,
-          576
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Delete an event in Google Calendar",
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "descriptionType": "manual",
-          "toolDescription": "Use this tool to MODIFY an existing event (e.g., change time or title). REQUIRED parameter: 'Event_ID'. NOTE: If you don't have the Event ID, you must use the 'Get many events' tool first to find it based on the title/time.",
-          "operation": "update",
-          "calendar": {
-            "__rl": true,
-            "value": "REDACTED@email.com",
-            "mode": "list",
-            "cachedResultName": {
-              "_redacted": true
-            }
-          },
-          "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
-          "useDefaultReminders": false,
-          "updateFields": {
-            "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
-            "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
-            "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location', ``, 'string') }}",
-            "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
-            "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
-          },
-          "remindersUi": {
-            "remindersValues": [
-              {
-                "method": "popup",
-                "minutes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('remindersValues0_Minutes_Before', ``, 'number') }}"
-              },
-              {
-                "method": "popup",
-                "minutes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('remindersValues1_Minutes_Before', ``, 'number') }}"
-              }
-            ]
-          }
-        },
-        "type": "n8n-nodes-base.googleCalendarTool",
-        "typeVersion": 1.3,
-        "position": [
-          1088,
-          576
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Update an event in Google Calendar",
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "REDACTED-UUID",
-                "name": "succesful_output",
-                "value": "={{ $json.output }}",
-                "type": "string"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          1424,
-          256
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Success"
-      },
-      {
-        "parameters": {
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          1424,
-          448
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Try again"
-      },
-      {
-        "parameters": {
-          "descriptionType": "manual",
-          "toolDescription": "ALWAYS use this tool FIRST if the user mentions relative time terms like 'today', 'tomorrow', 'next Friday', or 'in 2 hours'. Use it to get the concrete ISO date string (e.g., 2026-01-14) needed for other tools.",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.dateTimeTool",
-        "typeVersion": 2,
-        "position": [
-          1216,
-          576
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Date & Time"
-      },
-      {
-        "parameters": {
-          "promptType": "define",
-          "text": "={{ $json.Message }}",
-          "options": {
-            "systemMessage": "You are an expert Google Calendar API Handler.\nYour job is to execute the user's request using the available tools.\n\n### ACCOUNT SEPARATION:\n1. There are 2 google accounts:\n  - work\n  - personal\n2. You have 2 separate tools to get their events\n\n### CRITICAL RULES FOR PARAMETERS:\n1. **DATES:** Convert all natural language dates (e.g., \"tomorrow\", \"next Friday\") into strict ISO 8601 format (YYYY-MM-DDTHH:mm:ss).\n   - Example: \"2026-01-14T10:00:00\"\n2. **TIMEZONE:** Assume the timezone is 'Europe/Warsaw' unless specified otherwise.\n3. **MISSING END TIME:** If the user wants to create an event but provides only a start time (e.g., \"meeting at 10am\"), AUTOMATICALLY assume a duration of 60 minutes to calculate the 'End' time. DO NOT ask for clarification.\n4. **MISSING TITLE:** If no title is provided, default to \"Meeting\".\n\n### EXECUTION:\n\n- Extract parameters from the input message.\n- Call the appropriate tool immediately.\n- Do not ask follow-up questions unless the input is complete gibberish.\n\n### OUTPUT FORMATTING RULES:\n\n1. **PLAIN TEXT ONLY:** Do NOT use Markdown formatting (no `**`, no `__`, no `#` headers).\n2. **NO HTML:** Do NOT use HTML tags (no `<b>`, no `<i>`).\n3. **CLEAN LISTS:** Use simple dashes `-` for lists.\n4. **STYLE:** Keep it clean and concise. Avoid excessive emojis."
-          }
-        },
-        "type": "@n8n/n8n-nodes-langchain.agent",
-        "typeVersion": 3.1,
-        "position": [
-          832,
-          352
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Calendar Agent",
-        "retryOnFail": false,
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "descriptionType": "manual",
-          "toolDescription": "THIS IS FOR MY PERSONAL [REDACTED@email.com] ACCOUNT\n\nUse this tool to FIND/READ events or check availability. REQUIRED parameters:\n\n'After' (TimeMin): Start of the search range in ISO 8601.\n\n'Before' (TimeMax): End of the search range in ISO 8601. Example: To check \"tomorrow\", set 'After' to 2026-01-14T00:00:00 and 'Before' to 2026-01-14T23:59:59.",
-          "operation": "getAll",
-          "calendar": {
-            "__rl": true,
-            "value": "REDACTED@email.com",
-            "mode": "list",
-            "cachedResultName": {
-              "_redacted": true
-            }
-          },
-          "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
-          "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
-          "options": {
-            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}"
-          }
-        },
-        "type": "n8n-nodes-base.googleCalendarTool",
-        "typeVersion": 1.3,
-        "position": [
-          960,
-          576
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Get many events in Google Calendar [REDACTED@email.com]",
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
-          "descriptionType": "manual",
-          "toolDescription": "THIS IS FOR MY WORK [REDACTED@email.com] ACCOUNT\n\nUse this tool to FIND/READ events or check availability. REQUIRED parameters:\n\n'After' (TimeMin): Start of the search range in ISO 8601.\n\n'Before' (TimeMax): End of the search range in ISO 8601. Example: To check \"tomorrow\", set 'After' to 2026-01-14T00:00:00 and 'Before' to 2026-01-14T23:59:59.",
-          "operation": "getAll",
-          "calendar": {
-            "__rl": true,
-            "value": "REDACTED@email.com",
-            "mode": "list",
-            "cachedResultName": {
-              "_redacted": true
-            }
-          },
-          "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
-          "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
-          "options": {
-            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}"
-          }
-        },
-        "type": "n8n-nodes-base.googleCalendarTool",
-        "typeVersion": 1.3,
-        "position": [
-          1024,
-          752
-        ],
-        "id": "REDACTED-UUID",
-        "name": "Get many events in Google Calendar [REDACTED@email.com]",
-        "credentials": {
-          "_redacted": true
-        }
-      }
-    ],
-    "connections": {
-      "When Executed by Another Workflow": {
-        "main": [
-          [
-            {
-              "node": "Calendar Agent",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "DeepSeek Chat Model": {
-        "ai_languageModel": [
-          [
-            {
-              "node": "Calendar Agent",
-              "type": "ai_languageModel",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Create an event in Google Calendar": {
-        "ai_tool": [
-          [
-            {
-              "node": "Calendar Agent",
-              "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Delete an event in Google Calendar": {
-        "ai_tool": [
-          [
-            {
-              "node": "Calendar Agent",
-              "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Update an event in Google Calendar": {
-        "ai_tool": [
-          [
-            {
-              "node": "Calendar Agent",
-              "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Date & Time": {
-        "ai_tool": [
-          [
-            {
-              "node": "Calendar Agent",
-              "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Calendar Agent": {
-        "main": [
-          [
-            {
-              "node": "Success",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Try again",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Get many events in Google Calendar [wiktorpotapczyk34@gmail.com]": {
-        "ai_tool": [
-          [
-            {
-              "node": "Calendar Agent",
-              "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Get many events in Google Calendar [wiktor@getbackpack.ai]": {
-        "ai_tool": [
-          [
-            {
-              "node": "Calendar Agent",
-              "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      }
-    },
-    "authors": "REDACTED",
-    "name": "Version 769895dd",
-    "description": "",
-    "autosaved": false
-  },
+  "activeVersion": null,
   "tags": [],
   "_sanitized": {
-    "note": "Sanitized automatically",
-    "timestamp": "2026-01-25T23:03:50.101Z"
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-01-30T15:22:11.650Z"
   }
 }
