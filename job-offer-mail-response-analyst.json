@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-30T15:25:06.553Z",
+  "updatedAt": "2026-01-31T10:39:31.009Z",
   "createdAt": "2026-01-30T15:14:01.654Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "Job offer mail response analyst",
@@ -274,8 +274,9 @@
     {
       "parameters": {
         "chatId": "5043684975",
-        "text": "={{ $json.output.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "text": "=<b>Firma:</b> {{ $json.output.company_name }}\n<b>Kategoria:</b> {{ $json.output.category }}\n\n<b>Temat:</b> {{ $json.output.original_subject }}\n\n<b>Uzasadnienie:</b>\n{{ $json.output.reason }}\n\n<b>Wymagana akcja:</b> {{ $json.action_needed ? '✅ TAK' : '❌ NIE' }}",
         "additionalFields": {
+          "appendAttribution": false,
           "parse_mode": "HTML"
         }
       },
@@ -460,8 +461,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-30T15:25:10.000Z",
-    "createdAt": "2026-01-30T15:25:06.554Z",
+    "updatedAt": "2026-01-31T10:39:38.000Z",
+    "createdAt": "2026-01-31T10:39:26.615Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
@@ -733,8 +734,9 @@
       {
         "parameters": {
           "chatId": "5043684975",
-          "text": "={{ $json.output.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+          "text": "=<b>Firma:</b> {{ $json.output.company_name }}\n<b>Kategoria:</b> {{ $json.output.category }}\n\n<b>Temat:</b> {{ $json.output.original_subject }}\n\n<b>Uzasadnienie:</b>\n{{ $json.output.reason }}\n\n<b>Wymagana akcja:</b> {{ $json.action_needed ? '✅ TAK' : '❌ NIE' }}",
           "additionalFields": {
+            "appendAttribution": false,
             "parse_mode": "HTML"
           }
         },
@@ -894,13 +896,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": "Version 29115b5e",
+    "name": "Version 48990066",
     "description": "",
     "autosaved": true
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-01-30T16:00:17.526Z"
+    "timestamp": "2026-01-31T11:00:17.186Z"
   }
 }
