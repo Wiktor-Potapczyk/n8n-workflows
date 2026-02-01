@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-01T14:41:24.923Z",
+  "updatedAt": "2026-02-01T15:51:03.147Z",
   "createdAt": "2026-02-01T14:18:26.211Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "My workflow",
@@ -76,7 +76,6 @@
     },
     {
       "parameters": {
-        "model": "deepseek-reasoner",
         "options": {}
       },
       "type": "REDACTED-POSSIBLE-SECRET",
@@ -139,7 +138,6 @@
     },
     {
       "parameters": {
-        "model": "deepseek-reasoner",
         "options": {}
       },
       "type": "REDACTED-POSSIBLE-SECRET",
@@ -456,6 +454,9 @@
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
       "credentials": {
         "_redacted": true
       }
@@ -698,6 +699,9 @@
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet1",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
       "credentials": {
         "_redacted": true
       }
@@ -950,6 +954,9 @@
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet2",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
       "credentials": {
         "_redacted": true
       }
@@ -1351,6 +1358,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-01T15:00:18.086Z"
+    "timestamp": "2026-02-01T16:00:18.659Z"
   }
 }
