@@ -1,0 +1,1356 @@
+{
+  "updatedAt": "2026-02-01T14:41:24.923Z",
+  "createdAt": "2026-02-01T14:18:26.211Z",
+  "id": "REDACTED-POSSIBLE-SECRET",
+  "name": "My workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst originalJobs = $('Code in JavaScript1').all();\n\nreturn items.map((item, index) => ({\n  json: {\n    // === SCORING (LLM output) ===\n    scoring: {\n      score: item.json.output.score,\n      fit_reasons: item.json.output.fit_reasons,\n      red_flags: item.json.output.red_flags,\n      one_liner: item.json.output.one_liner\n    },\n    \n    // === JOB OFFER (original data) ===\n    job_offer: {\n      id: originalJobs[index].json.id,\n      title: originalJobs[index].json.title,\n      description: originalJobs[index].json.description,\n      job_url: originalJobs[index].json.job_url,\n      \n      location: originalJobs[index].json.location,\n      country_code: originalJobs[index].json.country_code,\n      work_remote_allowed: originalJobs[index].json.work_remote_allowed,\n      workplace_types: originalJobs[index].json.workplace_types,\n      \n      level: originalJobs[index].json.level,\n      employment_status: originalJobs[index].json.employment_status,\n      salary: originalJobs[index].json.salary,\n      industries: originalJobs[index].json.industries,\n      job_functions: originalJobs[index].json.job_functions,\n      \n      company_name: originalJobs[index].json.company_name,\n      company_description: originalJobs[index].json.company_description,\n      company_size: originalJobs[index].json.company_size,\n      company_industries: originalJobs[index].json.company_industries,\n      company_url: originalJobs[index].json.company_url,\n      company_id: originalJobs[index].json.company_id\n    },\n    \n    // === SHEETS-READY (flat) ===\n    sheets: {\n      id: originalJobs[index].json.id,\n      title: originalJobs[index].json.title,\n      company_name: originalJobs[index].json.company_name,\n      company_url: originalJobs[index].json.company_url,\n      job_url: originalJobs[index].json.job_url,\n      location: originalJobs[index].json.location,\n      remote: originalJobs[index].json.work_remote_allowed ? 'Yes' : 'No',\n      level: originalJobs[index].json.level || 'Not specified',\n      salary: originalJobs[index].json.salary?.salary_exists \n        ? `${originalJobs[index].json.salary.min_salary}-${originalJobs[index].json.salary.max_salary} ${originalJobs[index].json.salary.currency}`\n        : 'Not specified',\n      score: item.json.output.score,\n      cv_recommended: item.json.output.cv_recommended || 'DEFAULT',\n      one_liner: item.json.output.one_liner,\n      fit_reasons: item.json.output.fit_reasons.join(' | '),\n      red_flags: item.json.output.red_flags.length > 0 \n        ? item.json.output.red_flags.join(' | ') \n        : 'None',\n      status: 'new',\n      date_added: new Date().toISOString().split('T')[0],\n      cover_letter: '',\n      notes: ''\n    }\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        -128
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.scoring.score }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1600,
+        -112
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate the Cover Letter based on the following data:\n\n=== 1. TARGET JOB & COMPANY ===\n**Role:** {{ $('Code in JavaScript2').item.json.job_offer.title }}\n**Company:** {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\n**Industry:** {{ $('Code in JavaScript2').item.json.job_offer.industries ? $('Code in JavaScript2').item.json.job_offer.industries.join(', ') : 'Not specified' }}\n**Size:** {{ $('Code in JavaScript2').item.json.job_offer.company_size }} employees\n\n**Company Description:**\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.company_description }}\n\"\"\"\n\n**Job Description:**\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== 2. COMPANY DEEP DIVE (Research) ===\nUse these facts to personalize the intro. Do not copy-paste, but reference specific news, strategy, or tech stack to show I did my homework.\n\"\"\"\n{{ $('Message a model').item.json.choices[0].message.content }}\n\"\"\"\n\n=== 3. CANDIDATE PROFILE (Use this persona) ===\n\"\"\"\n# WIKTOR POTAPCZYK - CAREER PROFILE FOR JOB SEARCH AUTOMATION\n\n## 1. CANDIDATE SNAPSHOT\n\n**Name:** Wiktor Potapczyk  \n**Location:** Warsaw, Poland (cannot relocate)  \n**Education:** Computer Science, Warsaw University of Technology (graduating May 2027)  \n**Total Professional Experience:** ~4 years (including non-tech roles that built soft skills)  \n**Tech-focused Experience:** ~3.5 years  \n**Languages:** Polish (native), English (fluent/C2), German (conversational/C1)  \n\n**One-liner:** Career pivoter from Enterprise IT Operations (Banking/Insurance) to modern AI Automation & GTM Engineering. Combines process discipline with hands-on technical building.\n\n---\n\n## 2. PROFESSIONAL IDENTITY\n\n### Primary Archetype: AI Automation Builder\nI design and build automated workflows that replace manual work. My tools are n8n, Clay, Python, and LLMs. I connect systems via APIs, implement AI agents for research/outreach, and create self-healing data pipelines.\n\n### Secondary Archetype: Enterprise Operations Specialist  \nI come from a regulated environment (PKO Ubezpieczenia - insurance). I understand release management, vendor SLAs, Jira administration, and cross-team coordination. I know how to work within strict procedures while still delivering.\n\n### Unique Value Proposition\nI bridge the gap between \"startup velocity\" (ship fast, automate everything) and \"enterprise rigor\" (governance, stability, documentation). Most candidates have one or the other. I have both.\n\n---\n\n## 3. TECHNICAL SKILLS (KEYWORD BANK)\n\n### A. Automation & Workflow Orchestration\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| n8n | Advanced | Core tool - custom JS nodes, error handling, webhooks, binary data |\n| Clay.com | Advanced | Complex waterfalls, Claygent, HTTP integrations |\n| HubSpot | Advanced | CRM architecture, custom objects, workflows, API |\n| Relevance.ai | Intermediate-Advanced | AI workflow automation |\n| Apify | Intermediate-Advanced | Web scraping, actors |\n| RapidAPI | Intermediate-Advanced | API marketplace integration |\n| Phantombuster | Intermediate-Advanced | LinkedIn automation, scrapers |\n\n### B. Outreach & Sales Tech\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| HeyReach | Intermediate-Advanced | LinkedIn outreach sequences |\n| Apollo.io | Intermediate-Advanced | Prospecting, enrichment |\n| Instantly | Intermediate-Advanced | Cold email at scale |\n| Lemlist | Intermediate-Advanced | Email sequences, personalization |\n| Crunchbase | Intermediate-Advanced | Company research, funding data |\n| LinkedIn Scrapers | Intermediate-Advanced | Custom scraping solutions |\n\n### C. AI & LLM Engineering\n| Tool/Skill | Proficiency | Context |\n|------------|-------------|---------|\n| OpenAI API (GPT-4) | Advanced | Prompt engineering, structured outputs, function calling |\n| Anthropic (Claude) | Advanced | API integration |\n| Google Gemini | Advanced | Prompt engineering, structured outputs, function calling, Vertex AI finetuning |\n| Perplexity API | Intermediate | Real-time web research |\n| LangChain | Basic-Intermediate | RAG concepts, chains |\n| RAG (Retrieval-Augmented Generation) | Intermediate | Conceptual + practical implementation |\n| Prompt Engineering | Advanced | System prompts, CoT, JSON enforcement |\n| Agentic Workflows | Advanced | Autonomous decision loops |\n\n### D. Programming & Scripting\n| Skill | Proficiency | Context |\n|-------|-------------|---------|\n| Python | Intermediate | FastAPI, Asyncio, APIs, automation |\n| JavaScript/TypeScript | Intermediate | Logic in n8n, Node.js basics |\n| SQL | Intermediate | Data querying across Oracle, MSSQL, PostgreSQL |\n| REST APIs | Advanced | Design, consumption, debugging |\n| JSON/Webhooks | Advanced | Data transformation, event handling, JSON Schema validation |\n\n### E. DevOps & Infrastructure\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| Git/GitLab | Intermediate | Version control, repository management |\n| Jenkins | Intermediate | CI/CD pipeline monitoring, build execution |\n| Docker | Basic-Intermediate | Container usage, basic Dockerfile |\n| Kubernetes | Basic | Pod management, basic kubectl |\n| Kafka | Basic-Intermediate | Message streaming, event-driven architecture |\n| RabbitMQ | Basic-Intermediate | Message queues |\n| Redis | Intermediate | Queue/Cache implementation |\n\n### F. Databases\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| PostgreSQL | Intermediate | Primary SQL experience |\n| Oracle | Basic-Intermediate | Enterprise context at PKO |\n| MS SQL Server | Basic-Intermediate | Enterprise context at PKO |\n\n### G. Monitoring & Observability\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| Grafana | Intermediate | Dashboard creation, alerting |\n| Prometheus | Intermediate | Metrics collection |\n\n### H. Enterprise Platforms & ITSM\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| Jira | Advanced | Admin: workflows, permissions, automation rules, issue types |\n| Confluence | Advanced | Knowledge base architecture, space management |\n| OpenText BPMS | Intermediate | Business process management, workflow design |\n\n### I. Methodologies & Frameworks\n| Skill | Proficiency | Context |\n|-------|-------------|---------|\n| Agile/Scrum | Advanced | Daily practice in enterprise |\n| Kanban | Advanced | Board management |\n| ITIL | Intermediate | Change management, incident handling |\n| SDLC | Advanced | Full lifecycle experience |\n| Microservices Architecture | Basic-Intermediate | Conceptual understanding, worked with |\n| Release Management | Advanced | Production calendars, service windows, zero-downtime |\n| Vendor Management | Advanced | SLA enforcement, contract negotiation, RFPs |\n\n---\n\n## 4. PROFESSIONAL EXPERIENCE SUMMARY\n\n### Current: Backpack AI | GTM Engineer (AI Automation) | Aug 2025 - Present\n*Remote startup focused on AI-powered revenue tools*\n\n**What I build:**\n- **System Architecture & Orchestration:** Autonomous revenue operations infrastructure using n8n and Clay to orchestrate data flows between CRM, enrichment sources, and outreach platforms\n- **Middleware Engineering:** Python/FastAPI middleware layers for high-volume API interactions with rate-limit compliance, error recovery, and Redis caching\n- **AI Pipeline Implementation:** Integration of LLMs (OpenAI, Gemini, Anthropic) into production processes with prompt modularity, JSON Schema validation, and cost optimization\n- **Data Integrity & Logic Design:** Waterfall validation systems that prevent hallucinations and ensure high-quality data ingestion\n\n**Tech used:** n8n, Clay, HubSpot, HeyReach, Apollo, Instantly, Lemlist, Phantombuster, Apify, RapidAPI, Crunchbase, Relevance.ai, OpenAI, Gemini, Anthropic, Perplexity, Python, FastAPI, Redis, Docker\n\n**Keywords from this role:** GTM, outbound automation, lead enrichment, CRM integration, AI agents, data pipelines, sales automation, middleware, agentic workflows\n\n---\n\n### Previous: PKO Ubezpieczenia | Vendor & Release Manager | Nov 2022 - Nov 2025 (3 years)\n*Insurance/Banking Group - regulated enterprise environment*\n\n**Key responsibilities:**\n- **Release Governance:** End-to-end production release lifecycle for mission-critical insurance systems, zero-downtime deployment strategies\n- **Vendor Management:** Technical relationships with IT providers (Comarch, Asseco), SLA enforcement, contract compliance, technical estimation validation\n- **Process Engineering:** Jira workflows, automation rules, permission schemes across multiple Scrum teams\n- **Cross-Functional Coordination:** Primary liaison between DevOps, Business, QA, and Security teams\n- **Technical Procurement:** RFP processes, vendor proposal evaluation, requirements translation\n\n**Key Achievements:**\n- Core System Upgrade Project (2025): Cross-team coordination for major system upgrade\n- IT & Security Strategy Implementation (2023-2025): Two annual strategy cycles\n- External Contractor Access Management (2023): Automated permission renewal process\n- Jira Workflow Optimization (2022-2025): Multiple workflow improvements throughout tenure\n\n**Tech used:** Jira, Confluence, Jenkins, GitLab, Grafana, Prometheus, Oracle, MS SQL, PostgreSQL, Docker, Kubernetes, Kafka, RabbitMQ, OpenText BPMS\n\n**Keywords from this role:** Release management, vendor management, Jira admin, SLA, regulated environment, insurance, banking, SDLC, change management, CI/CD, monitoring\n\n---\n\n### Earlier: VikingCloud | Bilingual PCI Compliance Associate | Feb 2022 - Sep 2022 (7 months)\n- PCI DSS compliance processes for international clients\n- Bilingual technical communication (English/Polish)\n- Coordination with technical teams and auditors\n\n---\n\n## 5. KEY PROJECTS (from CV)\n\n### AI-Powered B2B Decision Engine | Clay, System Prompting, JSON Schema | 2025\n- Logic-gated qualification pipeline coordinating specialized AI agents (Legal, Cultural, Operational)\n- Chain-of-Thought prompting with 99% reliability in automated decision-making\n\n### High-Volume Data Ingestion Middleware | Python, FastAPI, Redis, Docker | 2025\n- Asynchronous proxy service for unstable third-party APIs\n- Intelligent queue worker with exponential backoff and error recovery\n\n### Influencer-Based Lead Acquisition Engine | n8n, Apify, Audience Intelligence | 2024\n- Prospecting channel using influencers as \"topic proxies\" for high-intent audiences\n- Automated ICP qualification pipeline\n\n---\n\n## 6. TARGET ROLES (SEARCH SCOPE)\n\n### Bucket A: Modern Builder Roles (PRIMARY INTEREST)\nThese are roles where I build automated systems, integrate tools, and work with AI.\n\n| Role Title | Common Variants |\n|------------|-----------------|\n| GTM Engineer | Growth Engineer, Revenue Engineer, RevOps Engineer, Go-to-Market Engineer |\n| Automation Engineer | Process Automation Engineer, Workflow Automation Engineer, Integration Engineer, n8n Developer |\n| AI Engineer | AI Solutions Engineer, LLM Engineer, Applied AI Engineer, AI Ops |\n| RevOps Specialist | Revenue Operations Specialist, Sales Operations Engineer, Marketing Operations |\n| Internal Tools Developer | Platform Engineer (Internal), Tools Engineer, Productivity Engineer |\n| Solutions Engineer | Technical Solutions Engineer, Pre-Sales Engineer, Implementation Engineer |\n| Implementation Consultant | Technical Consultant, Automation Consultant, CRM Consultant, Systems Consultant |\n| Integration Developer | API Developer, Middleware Developer, iPaaS Developer |\n| Data Engineer | ETL Developer, Data Pipeline Engineer (junior) |\n\n### Bucket B: Enterprise Bridge Roles (SECONDARY INTEREST)\nThese leverage my PKO background more directly.\n\n| Role Title | Common Variants |\n|------------|-----------------|\n| Technical Product Owner | Technical PM, Platform Product Manager |\n| Business Analyst | Technical Business Analyst, Systems Analyst, IT Business Analyst |\n| Requirements Engineer | Requirements Analyst, Functional Analyst |\n| Systems Analyst | Application Analyst, IT Systems Analyst |\n| IT Project Coordinator | Junior IT PM, Project Specialist, Scrum Master |\n| DevOps Engineer | Junior DevOps, Platform Engineer, SRE (junior) |\n\n### Bucket C: Operations Roles (FALLBACK)\nI can do these, but prefer Bucket A.\n\n| Role Title | Common Variants |\n|------------|-----------------|\n| Release Manager | Delivery Manager, Deployment Manager, Release Coordinator, Release Engineer |\n| Vendor Manager | IT Vendor Manager, Supplier Manager, Partner Operations |\n| IT Operations Specialist | Application Support, Production Support, L2/L3 Support |\n\n---\n\n## 7. SEARCH GENERATION GUIDE\n\n### A. Role Keywords (OR blocks)\nUse these exact strings in Boolean OR blocks:\n\n**Primary (Bucket A):**\n```\n\"GTM Engineer\" OR \"Growth Engineer\" OR \"Revenue Engineer\" OR \"RevOps\" OR \"Automation Engineer\" OR \"Process Automation\" OR \"Workflow Engineer\" OR \"Integration Engineer\" OR \"AI Engineer\" OR \"Solutions Engineer\" OR \"Internal Tools\" OR \"Data Engineer\" OR \"Implementation Consultant\" OR \"Technical Consultant\" OR \"CRM Consultant\"\n```\n\n**Secondary (Bucket B):**\n```\n\"Product Owner\" OR \"Business Analyst\" OR \"Technical Business Analyst\" OR \"Systems Analyst\" OR \"Requirements Engineer\" OR \"IT Project\" OR \"DevOps Engineer\" OR \"Scrum Master\"\n```\n\n**Fallback (Bucket C):**\n```\n\"Release Manager\" OR \"Delivery Manager\" OR \"Vendor Manager\" OR \"IT Operations\"\n```\n\n### B. Seniority Modifiers\n\n**INCLUDE (no modifier or these prefixes):**\n- (no prefix) - e.g., \"Automation Engineer\"\n- Junior\n- Associate  \n- Entry-level\n\n**EXCLUDE (use NOT operator):**\n- Senior\n- Lead\n- Principal\n- Staff\n- Head of\n- Director\n- VP\n- Chief\n- C-Level\n\n**Reasoning:** With ~3.5 years tech experience and pivot to new domain, targeting Junior-to-Mid level roles is realistic. Senior roles typically require 5+ years in specific domain.\n\n### C. Tool Keywords (High-Signal for Modern Companies)\n\n**Tier 1 - GTM/Automation Stack (Strong signal - I use these daily):**\n```\n\"n8n\" OR \"Clay\" OR \"HubSpot\" OR \"Apollo\" OR \"Instantly\" OR \"Lemlist\" OR \"HeyReach\" OR \"Phantombuster\" OR \"Apify\"\n```\n\n**Tier 2 - AI/LLM (Good signal):**\n```\n\"OpenAI\" OR \"LangChain\" OR \"Anthropic\" OR \"Claude\" OR \"RAG\" OR \"Agentic\" OR \"LLM\" OR \"GPT\" OR \"Gemini\" OR \"Perplexity\"\n```\n\n**Tier 3 - Enterprise/DevOps (Signals mature company):**\n```\n\"Jira\" OR \"Confluence\" OR \"Jenkins\" OR \"GitLab\" OR \"Kubernetes\" OR \"Kafka\" OR \"Grafana\" OR \"Prometheus\"\n```\n\n**Tier 4 - General Tech:**\n```\n\"Python\" OR \"API\" OR \"JavaScript\" OR \"SQL\" OR \"PostgreSQL\" OR \"Docker\" OR \"Redis\" OR \"FastAPI\"\n```\n\n**Tier 5 - Generic/Broad (Catch-all for job descriptions):**\n```\n\"automation\" OR \"CRM\" OR \"AI\" OR \"workflow\" OR \"low-code\" OR \"no-code\" OR \"iPaaS\" OR \"integration\" OR \"process automation\" OR \"data pipeline\" OR \"business automation\"\n```\n\n### D. Negative Keywords (Exclude or Deprioritize)\n\n**Hard Exclude from Search:**\n```\nNOT (\"Director\" OR \"VP\" OR \"Head of\" OR \"Chief\" OR \"C-Level\" OR \"Principal\" OR \"Staff Engineer\" OR \"Senior Staff\")\n```\n\n**Soft Exclude (deprioritize in scoring, not search):**\n- \"10+ years experience\"\n- \"7+ years experience\"  \n- \"Lead a team of\"\n- \"Manage direct reports\"\n- \"PhD required\"\n- \"Security clearance required\"\n\n**Company Type Red Flags (for scoring):**\n- Outsourcing/body-leasing companies (Sii, Luxoft, Capgemini - unless interesting project)\n- \"Fast-paced\" without \"remote\" often means crunch culture\n- \"Like a family\" - boundary issues\n\n### E. Geographic & Work Mode Parameters\n\n**Work Mode Priority:**\n1. Remote (EU timezone compatible)\n2. Hybrid Warsaw (max 2-3 days/week onsite)\n3. Hybrid Poland (willing to travel occasionally)\n\n**NOT acceptable:**\n- On-site only (anywhere)\n- Relocation required\n- US timezone requirement (incompatible with EU life)\n\n**Target Markets by Language:**\n| Market | Language | Notes |\n|--------|----------|-------|\n| Poland | Polish/English | Primary market |\n| DACH (Germany, Austria, Switzerland) | German/English | German language advantage |\n| EU Remote | English | Growing market |\n| UK | English | Post-Brexit visa complexity, but remote OK |\n| US (Remote) | English | Only if async-friendly, no timezone sync required |\n\n**LinkedIn GeoIDs for reference:**\n- Poland: 105072130\n- Warsaw: 105076658\n- Germany: 101282230\n- European Union: 91000000 (if available)\n- Remote: use `remote` filter parameter in API\n\n---\n\n## 8. DOMAIN KNOWLEDGE & CONTEXT\n\n### Industries Where I Have Direct Experience:\n- **Insurance** (PKO Ubezpieczenia) - understand regulatory constraints, product complexity\n- **Banking** (PKO Group context) - familiar with security requirements, compliance\n- **FinTech** - natural extension of above\n- **B2B SaaS** (Backpack AI) - understand GTM motions, sales tech stack\n- **PCI/Compliance** (VikingCloud) - basic security compliance exposure\n\n### Industries I'm Interested In:\n- AI/ML companies (building with AI is my current focus)\n- RevTech / Sales Tech (natural fit for GTM Engineer role)\n- Developer Tools (interest in automation tooling)\n- MarTech (overlap with outbound/CRM work)\n- Legal Tech (relevant for consulting roles like Swans)\n\n### Industries I'd Accept But Not Prioritize:\n- E-commerce (no specific interest)\n- Healthcare (heavy compliance, slower pace)\n- Government/Public Sector (bureaucracy)\n\n---\n\n## 9. CERTIFICATIONS & CREDENTIALS\n\n| Certification | Issuer | Date | Relevance |\n|--------------|--------|------|-----------|\n| Clay AI Skills Certification | Clay | Jan 2026 | Validates Clay expertise |\n| AgilePM® Foundation | APMG International | Feb 2024 | Agile methodology |\n| Cambridge English: Advanced (CAE) | Cambridge Assessment | C1/C2 | English proficiency |\n| Deutsches Sprachdiplom II (DSD II) | KMK | C1 | German proficiency |\n| CS Degree (in progress) | Warsaw University of Technology | May 2027 | Formal CS education |\n\n---\n\n## 10. SEARCH STRING TEMPLATES\n\n### Template 1: Broad Modern Roles (Bucket A focus)\n```\n(\"GTM Engineer\" OR \"Growth Engineer\" OR \"Automation Engineer\" OR \"RevOps\" OR \"Integration Engineer\" OR \"AI Engineer\" OR \"Solutions Engineer\" OR \"Implementation Consultant\" OR \"Technical Consultant\") AND (\"n8n\" OR \"Clay\" OR \"HubSpot\" OR \"Apollo\" OR \"Instantly\" OR \"Python\" OR \"API\" OR \"LLM\" OR \"automation\" OR \"CRM\" OR \"AI\" OR \"workflow\") NOT (\"Senior\" OR \"Lead\" OR \"Director\" OR \"VP\" OR \"Head of\" OR \"Principal\")\n```\n\n### Template 2: Enterprise Bridge (Bucket B focus)\n```\n(\"Product Owner\" OR \"Business Analyst\" OR \"Systems Analyst\" OR \"Requirements Engineer\" OR \"IT Project\" OR \"DevOps\" OR \"Scrum Master\") AND (\"Jira\" OR \"Agile\" OR \"Jenkins\" OR \"Confluence\" OR \"API\" OR \"SQL\" OR \"Python\" OR \"Kubernetes\" OR \"automation\" OR \"workflow\") NOT (\"Senior\" OR \"Lead\" OR \"Director\" OR \"10+ years\")\n```\n\n### Template 3: All Buckets Combined (Maximum Reach)\n```\n(\"GTM Engineer\" OR \"Growth Engineer\" OR \"Automation Engineer\" OR \"RevOps\" OR \"Product Owner\" OR \"Business Analyst\" OR \"Systems Analyst\" OR \"Release Manager\" OR \"Consultant\" OR \"Implementation\") AND (\"n8n\" OR \"Clay\" OR \"Python\" OR \"API\" OR \"Jira\" OR \"HubSpot\" OR \"LLM\" OR \"Agile\" OR \"automation\" OR \"CRM\" OR \"AI\" OR \"workflow\") NOT (\"Director\" OR \"VP\" OR \"Head of\" OR \"Chief\" OR \"C-Level\" OR \"Principal\")\n```\n\n### Template 4: Tool-First Search (Find Companies Using Modern Stack)\n```\n(\"n8n\" OR \"Clay\" OR \"Apollo\" OR \"Instantly\" OR \"HeyReach\") AND (\"Engineer\" OR \"Specialist\" OR \"Developer\" OR \"Consultant\") NOT (\"Senior\" OR \"Lead\" OR \"Director\")\n```\n\n### Template 5: DevOps/Platform Focus\n```\n(\"DevOps Engineer\" OR \"Platform Engineer\" OR \"SRE\" OR \"Release Engineer\") AND (\"Jenkins\" OR \"Kubernetes\" OR \"Docker\" OR \"GitLab\" OR \"Kafka\" OR \"Grafana\") NOT (\"Senior\" OR \"Lead\" OR \"Principal\" OR \"Staff\")\n```\n\n---\n\n## 11. NOTES FOR LLM SEARCH GENERATION\n\nWhen generating Boolean search strings from this profile:\n\n1. **Prioritize Bucket A roles** unless specifically asked otherwise\n2. **Always include seniority exclusions** (NOT Senior, Lead, Director, etc.)\n3. **Balance specificity vs. reach** - too specific = 0 results, too broad = noise\n4. **Tool keywords are high-signal** - if you have to choose, prefer tool-based filtering over role-title-based\n5. **Include Tier 5 generic keywords** - \"automation\", \"CRM\", \"AI\", \"workflow\" catch roles that don't mention specific tools\n6. **Include \"Consultant\" variants** - Implementation Consultant, Technical Consultant, CRM Consultant\n7. **Consider the API limitations** - LinkedIn may truncate very long Boolean strings\n8. **Generate multiple search variants** if possible - one per bucket, or one broad + one specific\n9. **Polish market** uses English job titles predominantly in tech, but occasionally Polish terms appear:\n   - \"Analityk biznesowy\" = Business Analyst\n   - \"Inżynier automatyzacji\" = Automation Engineer\n   - \"Kierownik projektu\" = Project Manager\n   - \"Konsultant wdrożeniowy\" = Implementation Consultant\n\n10. **Tool combinations that signal good fit:**\n    - n8n + HubSpot + AI = perfect GTM Engineer match\n    - Jira + Jenkins + Kubernetes = enterprise DevOps/Release\n    - Clay + Apollo + Instantly = modern sales tech company\n    - Python + API + LLM = AI automation focus\n    - CRM + automation + consulting = Implementation Consultant\n\n11. **Candidate has German language** - can target DACH market (Germany, Austria, Switzerland) which typically pays higher than Polish market\n\n12. **Candidate is still a student** (graduating May 2027) - some companies may see this as positive (fresh knowledge) or negative (availability concerns). Worth mentioning if relevant.\n\n---\n\n## 12. CV SELECTION LOGIC (for workflow)\n\n| Role Type | CV to Use | Indicators |\n|-----------|-----------|------------|\n| **Tech CV** | cv-tech-012026.pdf | GTM Engineer, Automation Engineer, AI Engineer, Solutions Engineer, Integration Developer, Data Engineer, any role mentioning n8n/Clay/LLM/API |\n| **Management CV** | cv-mgmt-012026.pdf | Product Owner, Business Analyst, Project Manager, Scrum Master, Release Manager, Vendor Manager, any role emphasizing stakeholder management/governance |\n\n**Default:** If unclear, use Tech CV (primary archetype).\n\n---\n\n*Profile version: 4.0*  \n*Last updated: January 2026*  \n*Verified against: cv-tech-012026.pdf, cv-mgmt-012026.pdf*  \n*Purpose: Input for LLM-based job search automation (n8n workflow)*\n\n\"\"\"\n\n=== 4. KEY MATCHING POINTS (Why this candidate fits) ===\n**Fit Reasons detected:** {{ $('Code in JavaScript2').item.json.scoring.fit_reasons.join(', ') }}\n\n---\n**ACTION:** Write the Cover Letter now.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# ROLE & OBJECTIVE\nYou are an expert Career Copywriter acting on behalf of the **CANDIDATE** provided in the context. Your goal is to write a **hyper-personalized Cover Letter** for the **TARGET JOB**.\n\nYou must adopt the CANDIDATE'S voice, experience, and specific skills. You are NOT an AI assistant; you write in the first person (\"I\", \"my\") as if you are the CANDIDATE.\n\n# DYNAMIC LANGUAGE RULE\n**Analyze the language of the \"Job Description\" provided by the user.**\n- IF the Job Description is in **Polish** → Write the entire Cover Letter in **Polish**.\n- IF the Job Description is in **English** → Write the entire Cover Letter in **English**.\n- IF mixed → Use the dominant language of the offer.\n\n# WRITING GUIDELINES\n1. **The Hook:** Do NOT start with \"I am applying for...\". Start by connecting the CANDIDATE'S specific background (industry, unique mix of skills) to the COMPANY'S domain or problem.\n2. **The Bridge:** Explicitly link the CANDIDATE'S past experience (e.g., corporate/enterprise) with their new direction (e.g., automation/startup), showing why this mix is valuable.\n3. **The Proof:** Mention specific tools/technologies found in the Job Description ONLY if they exist in the CANDIDATE PROFILE.\n4. **Tone:** Professional, confident, concise. No fluff.\n5. **Length:** Strictly under 200 words.\n\n# FORMATTING\n- Plain text only.\n- No placeholders like [Date], [Address], [Manager Name].\n- Sign off with the CANDIDATE'S Name found in the profile."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2448,
+        -16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain2"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model2",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=Act as a Recruitment Researcher. I am preparing a job application for the following company.\nPerform a deep-dive research to find specific, recent, and actionable details that show I've done my homework.\n\n--- COMPANY DATA ---\nName: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nIndustry:  $('Code in JavaScript2').item.json.job_offer.industries }}\nURL: {{ $('Code in JavaScript2').item.json.job_offer.company_url }}\nDescription Provided: \"{{ $('Code in JavaScript2').item.json.job_offer.company_description }}\"\n\n--- RESEARCH OBJECTIVES ---\nUsing the company name and context, search the web for the following (focus on the last 12 months):\n\n1. **Recent News & Wins:** New partnerships (specific client names), product launches, or awards.\n2. **Financial Status:** Recent funding rounds (Series A/B/C, amount, date), investors, or growth metrics.\n3. **Strategic Focus:** What is their current main challenge or goal? (e.g., Expansion to US market, releasing a mobile app, automating internal ops).\n4. **Engineering Culture:** Search for their engineering blog, GitHub, or tech talks. Do they use specific obscure stacks? Do they contribute to open source?\n\n--- OUTPUT FORMAT ---\nReturn a concise summary (bullet points) containing ONLY facts I can use in a cover letter.\nFormat:\n- **News:** [Fact]\n- **Funding:** [Fact]\n- **Strategy:** [Fact]\n- **Tech Vibe:** [Fact]\n\nIf no info is found for a category, write \"N/A\"."
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        -16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Message a model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please generate the Intelligence Brief based on this data:\n\n=== 1. THE JOB (Target) ===\nRole: {{ $('Code in JavaScript2').item.json.job_offer.title }}\nCompany: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nJob Description:\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== 2. INTELLIGENCE REPORT (Perplexity Research) ===\n\"\"\"\n{{ $('Message a model').item.json.choices[0].message.content }}\n\"\"\"\n\n=== 3. CANDIDATE PROFILE ===\n\"\"\"\n# WIKTOR POTAPCZYK - CAREER PROFILE FOR JOB SEARCH AUTOMATION\n\n## 1. CANDIDATE SNAPSHOT\n\n**Name:** Wiktor Potapczyk  \n**Location:** Warsaw, Poland (cannot relocate)  \n**Education:** Computer Science, Warsaw University of Technology (graduating May 2027)  \n**Total Professional Experience:** ~4 years (including non-tech roles that built soft skills)  \n**Tech-focused Experience:** ~3.5 years  \n**Languages:** Polish (native), English (fluent/C2), German (conversational/C1)  \n\n**One-liner:** Career pivoter from Enterprise IT Operations (Banking/Insurance) to modern AI Automation & GTM Engineering. Combines process discipline with hands-on technical building.\n\n---\n\n## 2. PROFESSIONAL IDENTITY\n\n### Primary Archetype: AI Automation Builder\nI design and build automated workflows that replace manual work. My tools are n8n, Clay, Python, and LLMs. I connect systems via APIs, implement AI agents for research/outreach, and create self-healing data pipelines.\n\n### Secondary Archetype: Enterprise Operations Specialist  \nI come from a regulated environment (PKO Ubezpieczenia - insurance). I understand release management, vendor SLAs, Jira administration, and cross-team coordination. I know how to work within strict procedures while still delivering.\n\n### Unique Value Proposition\nI bridge the gap between \"startup velocity\" (ship fast, automate everything) and \"enterprise rigor\" (governance, stability, documentation). Most candidates have one or the other. I have both.\n\n---\n\n## 3. TECHNICAL SKILLS (KEYWORD BANK)\n\n### A. Automation & Workflow Orchestration\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| n8n | Advanced | Core tool - custom JS nodes, error handling, webhooks, binary data |\n| Clay.com | Advanced | Complex waterfalls, Claygent, HTTP integrations |\n| HubSpot | Advanced | CRM architecture, custom objects, workflows, API |\n| Relevance.ai | Intermediate-Advanced | AI workflow automation |\n| Apify | Intermediate-Advanced | Web scraping, actors |\n| RapidAPI | Intermediate-Advanced | API marketplace integration |\n| Phantombuster | Intermediate-Advanced | LinkedIn automation, scrapers |\n\n### B. Outreach & Sales Tech\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| HeyReach | Intermediate-Advanced | LinkedIn outreach sequences |\n| Apollo.io | Intermediate-Advanced | Prospecting, enrichment |\n| Instantly | Intermediate-Advanced | Cold email at scale |\n| Lemlist | Intermediate-Advanced | Email sequences, personalization |\n| Crunchbase | Intermediate-Advanced | Company research, funding data |\n| LinkedIn Scrapers | Intermediate-Advanced | Custom scraping solutions |\n\n### C. AI & LLM Engineering\n| Tool/Skill | Proficiency | Context |\n|------------|-------------|---------|\n| OpenAI API (GPT-4) | Advanced | Prompt engineering, structured outputs, function calling |\n| Anthropic (Claude) | Advanced | API integration |\n| Google Gemini | Advanced | Prompt engineering, structured outputs, function calling, Vertex AI finetuning |\n| Perplexity API | Intermediate | Real-time web research |\n| LangChain | Basic-Intermediate | RAG concepts, chains |\n| RAG (Retrieval-Augmented Generation) | Intermediate | Conceptual + practical implementation |\n| Prompt Engineering | Advanced | System prompts, CoT, JSON enforcement |\n| Agentic Workflows | Advanced | Autonomous decision loops |\n\n### D. Programming & Scripting\n| Skill | Proficiency | Context |\n|-------|-------------|---------|\n| Python | Intermediate | FastAPI, Asyncio, APIs, automation |\n| JavaScript/TypeScript | Intermediate | Logic in n8n, Node.js basics |\n| SQL | Intermediate | Data querying across Oracle, MSSQL, PostgreSQL |\n| REST APIs | Advanced | Design, consumption, debugging |\n| JSON/Webhooks | Advanced | Data transformation, event handling, JSON Schema validation |\n\n### E. DevOps & Infrastructure\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| Git/GitLab | Intermediate | Version control, repository management |\n| Jenkins | Intermediate | CI/CD pipeline monitoring, build execution |\n| Docker | Basic-Intermediate | Container usage, basic Dockerfile |\n| Kubernetes | Basic | Pod management, basic kubectl |\n| Kafka | Basic-Intermediate | Message streaming, event-driven architecture |\n| RabbitMQ | Basic-Intermediate | Message queues |\n| Redis | Intermediate | Queue/Cache implementation |\n\n### F. Databases\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| PostgreSQL | Intermediate | Primary SQL experience |\n| Oracle | Basic-Intermediate | Enterprise context at PKO |\n| MS SQL Server | Basic-Intermediate | Enterprise context at PKO |\n\n### G. Monitoring & Observability\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| Grafana | Intermediate | Dashboard creation, alerting |\n| Prometheus | Intermediate | Metrics collection |\n\n### H. Enterprise Platforms & ITSM\n| Tool | Proficiency | Context |\n|------|-------------|---------|\n| Jira | Advanced | Admin: workflows, permissions, automation rules, issue types |\n| Confluence | Advanced | Knowledge base architecture, space management |\n| OpenText BPMS | Intermediate | Business process management, workflow design |\n\n### I. Methodologies & Frameworks\n| Skill | Proficiency | Context |\n|-------|-------------|---------|\n| Agile/Scrum | Advanced | Daily practice in enterprise |\n| Kanban | Advanced | Board management |\n| ITIL | Intermediate | Change management, incident handling |\n| SDLC | Advanced | Full lifecycle experience |\n| Microservices Architecture | Basic-Intermediate | Conceptual understanding, worked with |\n| Release Management | Advanced | Production calendars, service windows, zero-downtime |\n| Vendor Management | Advanced | SLA enforcement, contract negotiation, RFPs |\n\n---\n\n## 4. PROFESSIONAL EXPERIENCE SUMMARY\n\n### Current: Backpack AI | GTM Engineer (AI Automation) | Aug 2025 - Present\n*Remote startup focused on AI-powered revenue tools*\n\n**What I build:**\n- **System Architecture & Orchestration:** Autonomous revenue operations infrastructure using n8n and Clay to orchestrate data flows between CRM, enrichment sources, and outreach platforms\n- **Middleware Engineering:** Python/FastAPI middleware layers for high-volume API interactions with rate-limit compliance, error recovery, and Redis caching\n- **AI Pipeline Implementation:** Integration of LLMs (OpenAI, Gemini, Anthropic) into production processes with prompt modularity, JSON Schema validation, and cost optimization\n- **Data Integrity & Logic Design:** Waterfall validation systems that prevent hallucinations and ensure high-quality data ingestion\n\n**Tech used:** n8n, Clay, HubSpot, HeyReach, Apollo, Instantly, Lemlist, Phantombuster, Apify, RapidAPI, Crunchbase, Relevance.ai, OpenAI, Gemini, Anthropic, Perplexity, Python, FastAPI, Redis, Docker\n\n**Keywords from this role:** GTM, outbound automation, lead enrichment, CRM integration, AI agents, data pipelines, sales automation, middleware, agentic workflows\n\n---\n\n### Previous: PKO Ubezpieczenia | Vendor & Release Manager | Nov 2022 - Nov 2025 (3 years)\n*Insurance/Banking Group - regulated enterprise environment*\n\n**Key responsibilities:**\n- **Release Governance:** End-to-end production release lifecycle for mission-critical insurance systems, zero-downtime deployment strategies\n- **Vendor Management:** Technical relationships with IT providers (Comarch, Asseco), SLA enforcement, contract compliance, technical estimation validation\n- **Process Engineering:** Jira workflows, automation rules, permission schemes across multiple Scrum teams\n- **Cross-Functional Coordination:** Primary liaison between DevOps, Business, QA, and Security teams\n- **Technical Procurement:** RFP processes, vendor proposal evaluation, requirements translation\n\n**Key Achievements:**\n- Core System Upgrade Project (2025): Cross-team coordination for major system upgrade\n- IT & Security Strategy Implementation (2023-2025): Two annual strategy cycles\n- External Contractor Access Management (2023): Automated permission renewal process\n- Jira Workflow Optimization (2022-2025): Multiple workflow improvements throughout tenure\n\n**Tech used:** Jira, Confluence, Jenkins, GitLab, Grafana, Prometheus, Oracle, MS SQL, PostgreSQL, Docker, Kubernetes, Kafka, RabbitMQ, OpenText BPMS\n\n**Keywords from this role:** Release management, vendor management, Jira admin, SLA, regulated environment, insurance, banking, SDLC, change management, CI/CD, monitoring\n\n---\n\n### Earlier: VikingCloud | Bilingual PCI Compliance Associate | Feb 2022 - Sep 2022 (7 months)\n- PCI DSS compliance processes for international clients\n- Bilingual technical communication (English/Polish)\n- Coordination with technical teams and auditors\n\n---\n\n## 5. KEY PROJECTS (from CV)\n\n### AI-Powered B2B Decision Engine | Clay, System Prompting, JSON Schema | 2025\n- Logic-gated qualification pipeline coordinating specialized AI agents (Legal, Cultural, Operational)\n- Chain-of-Thought prompting with 99% reliability in automated decision-making\n\n### High-Volume Data Ingestion Middleware | Python, FastAPI, Redis, Docker | 2025\n- Asynchronous proxy service for unstable third-party APIs\n- Intelligent queue worker with exponential backoff and error recovery\n\n### Influencer-Based Lead Acquisition Engine | n8n, Apify, Audience Intelligence | 2024\n- Prospecting channel using influencers as \"topic proxies\" for high-intent audiences\n- Automated ICP qualification pipeline\n\n---\n\n## 6. TARGET ROLES (SEARCH SCOPE)\n\n### Bucket A: Modern Builder Roles (PRIMARY INTEREST)\nThese are roles where I build automated systems, integrate tools, and work with AI.\n\n| Role Title | Common Variants |\n|------------|-----------------|\n| GTM Engineer | Growth Engineer, Revenue Engineer, RevOps Engineer, Go-to-Market Engineer |\n| Automation Engineer | Process Automation Engineer, Workflow Automation Engineer, Integration Engineer, n8n Developer |\n| AI Engineer | AI Solutions Engineer, LLM Engineer, Applied AI Engineer, AI Ops |\n| RevOps Specialist | Revenue Operations Specialist, Sales Operations Engineer, Marketing Operations |\n| Internal Tools Developer | Platform Engineer (Internal), Tools Engineer, Productivity Engineer |\n| Solutions Engineer | Technical Solutions Engineer, Pre-Sales Engineer, Implementation Engineer |\n| Implementation Consultant | Technical Consultant, Automation Consultant, CRM Consultant, Systems Consultant |\n| Integration Developer | API Developer, Middleware Developer, iPaaS Developer |\n| Data Engineer | ETL Developer, Data Pipeline Engineer (junior) |\n\n### Bucket B: Enterprise Bridge Roles (SECONDARY INTEREST)\nThese leverage my PKO background more directly.\n\n| Role Title | Common Variants |\n|------------|-----------------|\n| Technical Product Owner | Technical PM, Platform Product Manager |\n| Business Analyst | Technical Business Analyst, Systems Analyst, IT Business Analyst |\n| Requirements Engineer | Requirements Analyst, Functional Analyst |\n| Systems Analyst | Application Analyst, IT Systems Analyst |\n| IT Project Coordinator | Junior IT PM, Project Specialist, Scrum Master |\n| DevOps Engineer | Junior DevOps, Platform Engineer, SRE (junior) |\n\n### Bucket C: Operations Roles (FALLBACK)\nI can do these, but prefer Bucket A.\n\n| Role Title | Common Variants |\n|------------|-----------------|\n| Release Manager | Delivery Manager, Deployment Manager, Release Coordinator, Release Engineer |\n| Vendor Manager | IT Vendor Manager, Supplier Manager, Partner Operations |\n| IT Operations Specialist | Application Support, Production Support, L2/L3 Support |\n\n---\n\n## 7. SEARCH GENERATION GUIDE\n\n### A. Role Keywords (OR blocks)\nUse these exact strings in Boolean OR blocks:\n\n**Primary (Bucket A):**\n```\n\"GTM Engineer\" OR \"Growth Engineer\" OR \"Revenue Engineer\" OR \"RevOps\" OR \"Automation Engineer\" OR \"Process Automation\" OR \"Workflow Engineer\" OR \"Integration Engineer\" OR \"AI Engineer\" OR \"Solutions Engineer\" OR \"Internal Tools\" OR \"Data Engineer\" OR \"Implementation Consultant\" OR \"Technical Consultant\" OR \"CRM Consultant\"\n```\n\n**Secondary (Bucket B):**\n```\n\"Product Owner\" OR \"Business Analyst\" OR \"Technical Business Analyst\" OR \"Systems Analyst\" OR \"Requirements Engineer\" OR \"IT Project\" OR \"DevOps Engineer\" OR \"Scrum Master\"\n```\n\n**Fallback (Bucket C):**\n```\n\"Release Manager\" OR \"Delivery Manager\" OR \"Vendor Manager\" OR \"IT Operations\"\n```\n\n### B. Seniority Modifiers\n\n**INCLUDE (no modifier or these prefixes):**\n- (no prefix) - e.g., \"Automation Engineer\"\n- Junior\n- Associate  \n- Entry-level\n\n**EXCLUDE (use NOT operator):**\n- Senior\n- Lead\n- Principal\n- Staff\n- Head of\n- Director\n- VP\n- Chief\n- C-Level\n\n**Reasoning:** With ~3.5 years tech experience and pivot to new domain, targeting Junior-to-Mid level roles is realistic. Senior roles typically require 5+ years in specific domain.\n\n### C. Tool Keywords (High-Signal for Modern Companies)\n\n**Tier 1 - GTM/Automation Stack (Strong signal - I use these daily):**\n```\n\"n8n\" OR \"Clay\" OR \"HubSpot\" OR \"Apollo\" OR \"Instantly\" OR \"Lemlist\" OR \"HeyReach\" OR \"Phantombuster\" OR \"Apify\"\n```\n\n**Tier 2 - AI/LLM (Good signal):**\n```\n\"OpenAI\" OR \"LangChain\" OR \"Anthropic\" OR \"Claude\" OR \"RAG\" OR \"Agentic\" OR \"LLM\" OR \"GPT\" OR \"Gemini\" OR \"Perplexity\"\n```\n\n**Tier 3 - Enterprise/DevOps (Signals mature company):**\n```\n\"Jira\" OR \"Confluence\" OR \"Jenkins\" OR \"GitLab\" OR \"Kubernetes\" OR \"Kafka\" OR \"Grafana\" OR \"Prometheus\"\n```\n\n**Tier 4 - General Tech:**\n```\n\"Python\" OR \"API\" OR \"JavaScript\" OR \"SQL\" OR \"PostgreSQL\" OR \"Docker\" OR \"Redis\" OR \"FastAPI\"\n```\n\n**Tier 5 - Generic/Broad (Catch-all for job descriptions):**\n```\n\"automation\" OR \"CRM\" OR \"AI\" OR \"workflow\" OR \"low-code\" OR \"no-code\" OR \"iPaaS\" OR \"integration\" OR \"process automation\" OR \"data pipeline\" OR \"business automation\"\n```\n\n### D. Negative Keywords (Exclude or Deprioritize)\n\n**Hard Exclude from Search:**\n```\nNOT (\"Director\" OR \"VP\" OR \"Head of\" OR \"Chief\" OR \"C-Level\" OR \"Principal\" OR \"Staff Engineer\" OR \"Senior Staff\")\n```\n\n**Soft Exclude (deprioritize in scoring, not search):**\n- \"10+ years experience\"\n- \"7+ years experience\"  \n- \"Lead a team of\"\n- \"Manage direct reports\"\n- \"PhD required\"\n- \"Security clearance required\"\n\n**Company Type Red Flags (for scoring):**\n- Outsourcing/body-leasing companies (Sii, Luxoft, Capgemini - unless interesting project)\n- \"Fast-paced\" without \"remote\" often means crunch culture\n- \"Like a family\" - boundary issues\n\n### E. Geographic & Work Mode Parameters\n\n**Work Mode Priority:**\n1. Remote (EU timezone compatible)\n2. Hybrid Warsaw (max 2-3 days/week onsite)\n3. Hybrid Poland (willing to travel occasionally)\n\n**NOT acceptable:**\n- On-site only (anywhere)\n- Relocation required\n- US timezone requirement (incompatible with EU life)\n\n**Target Markets by Language:**\n| Market | Language | Notes |\n|--------|----------|-------|\n| Poland | Polish/English | Primary market |\n| DACH (Germany, Austria, Switzerland) | German/English | German language advantage |\n| EU Remote | English | Growing market |\n| UK | English | Post-Brexit visa complexity, but remote OK |\n| US (Remote) | English | Only if async-friendly, no timezone sync required |\n\n**LinkedIn GeoIDs for reference:**\n- Poland: 105072130\n- Warsaw: 105076658\n- Germany: 101282230\n- European Union: 91000000 (if available)\n- Remote: use `remote` filter parameter in API\n\n---\n\n## 8. DOMAIN KNOWLEDGE & CONTEXT\n\n### Industries Where I Have Direct Experience:\n- **Insurance** (PKO Ubezpieczenia) - understand regulatory constraints, product complexity\n- **Banking** (PKO Group context) - familiar with security requirements, compliance\n- **FinTech** - natural extension of above\n- **B2B SaaS** (Backpack AI) - understand GTM motions, sales tech stack\n- **PCI/Compliance** (VikingCloud) - basic security compliance exposure\n\n### Industries I'm Interested In:\n- AI/ML companies (building with AI is my current focus)\n- RevTech / Sales Tech (natural fit for GTM Engineer role)\n- Developer Tools (interest in automation tooling)\n- MarTech (overlap with outbound/CRM work)\n- Legal Tech (relevant for consulting roles like Swans)\n\n### Industries I'd Accept But Not Prioritize:\n- E-commerce (no specific interest)\n- Healthcare (heavy compliance, slower pace)\n- Government/Public Sector (bureaucracy)\n\n---\n\n## 9. CERTIFICATIONS & CREDENTIALS\n\n| Certification | Issuer | Date | Relevance |\n|--------------|--------|------|-----------|\n| Clay AI Skills Certification | Clay | Jan 2026 | Validates Clay expertise |\n| AgilePM® Foundation | APMG International | Feb 2024 | Agile methodology |\n| Cambridge English: Advanced (CAE) | Cambridge Assessment | C1/C2 | English proficiency |\n| Deutsches Sprachdiplom II (DSD II) | KMK | C1 | German proficiency |\n| CS Degree (in progress) | Warsaw University of Technology | May 2027 | Formal CS education |\n\n---\n\n## 10. SEARCH STRING TEMPLATES\n\n### Template 1: Broad Modern Roles (Bucket A focus)\n```\n(\"GTM Engineer\" OR \"Growth Engineer\" OR \"Automation Engineer\" OR \"RevOps\" OR \"Integration Engineer\" OR \"AI Engineer\" OR \"Solutions Engineer\" OR \"Implementation Consultant\" OR \"Technical Consultant\") AND (\"n8n\" OR \"Clay\" OR \"HubSpot\" OR \"Apollo\" OR \"Instantly\" OR \"Python\" OR \"API\" OR \"LLM\" OR \"automation\" OR \"CRM\" OR \"AI\" OR \"workflow\") NOT (\"Senior\" OR \"Lead\" OR \"Director\" OR \"VP\" OR \"Head of\" OR \"Principal\")\n```\n\n### Template 2: Enterprise Bridge (Bucket B focus)\n```\n(\"Product Owner\" OR \"Business Analyst\" OR \"Systems Analyst\" OR \"Requirements Engineer\" OR \"IT Project\" OR \"DevOps\" OR \"Scrum Master\") AND (\"Jira\" OR \"Agile\" OR \"Jenkins\" OR \"Confluence\" OR \"API\" OR \"SQL\" OR \"Python\" OR \"Kubernetes\" OR \"automation\" OR \"workflow\") NOT (\"Senior\" OR \"Lead\" OR \"Director\" OR \"10+ years\")\n```\n\n### Template 3: All Buckets Combined (Maximum Reach)\n```\n(\"GTM Engineer\" OR \"Growth Engineer\" OR \"Automation Engineer\" OR \"RevOps\" OR \"Product Owner\" OR \"Business Analyst\" OR \"Systems Analyst\" OR \"Release Manager\" OR \"Consultant\" OR \"Implementation\") AND (\"n8n\" OR \"Clay\" OR \"Python\" OR \"API\" OR \"Jira\" OR \"HubSpot\" OR \"LLM\" OR \"Agile\" OR \"automation\" OR \"CRM\" OR \"AI\" OR \"workflow\") NOT (\"Director\" OR \"VP\" OR \"Head of\" OR \"Chief\" OR \"C-Level\" OR \"Principal\")\n```\n\n### Template 4: Tool-First Search (Find Companies Using Modern Stack)\n```\n(\"n8n\" OR \"Clay\" OR \"Apollo\" OR \"Instantly\" OR \"HeyReach\") AND (\"Engineer\" OR \"Specialist\" OR \"Developer\" OR \"Consultant\") NOT (\"Senior\" OR \"Lead\" OR \"Director\")\n```\n\n### Template 5: DevOps/Platform Focus\n```\n(\"DevOps Engineer\" OR \"Platform Engineer\" OR \"SRE\" OR \"Release Engineer\") AND (\"Jenkins\" OR \"Kubernetes\" OR \"Docker\" OR \"GitLab\" OR \"Kafka\" OR \"Grafana\") NOT (\"Senior\" OR \"Lead\" OR \"Principal\" OR \"Staff\")\n```\n\n---\n\n## 11. NOTES FOR LLM SEARCH GENERATION\n\nWhen generating Boolean search strings from this profile:\n\n1. **Prioritize Bucket A roles** unless specifically asked otherwise\n2. **Always include seniority exclusions** (NOT Senior, Lead, Director, etc.)\n3. **Balance specificity vs. reach** - too specific = 0 results, too broad = noise\n4. **Tool keywords are high-signal** - if you have to choose, prefer tool-based filtering over role-title-based\n5. **Include Tier 5 generic keywords** - \"automation\", \"CRM\", \"AI\", \"workflow\" catch roles that don't mention specific tools\n6. **Include \"Consultant\" variants** - Implementation Consultant, Technical Consultant, CRM Consultant\n7. **Consider the API limitations** - LinkedIn may truncate very long Boolean strings\n8. **Generate multiple search variants** if possible - one per bucket, or one broad + one specific\n9. **Polish market** uses English job titles predominantly in tech, but occasionally Polish terms appear:\n   - \"Analityk biznesowy\" = Business Analyst\n   - \"Inżynier automatyzacji\" = Automation Engineer\n   - \"Kierownik projektu\" = Project Manager\n   - \"Konsultant wdrożeniowy\" = Implementation Consultant\n\n10. **Tool combinations that signal good fit:**\n    - n8n + HubSpot + AI = perfect GTM Engineer match\n    - Jira + Jenkins + Kubernetes = enterprise DevOps/Release\n    - Clay + Apollo + Instantly = modern sales tech company\n    - Python + API + LLM = AI automation focus\n    - CRM + automation + consulting = Implementation Consultant\n\n11. **Candidate has German language** - can target DACH market (Germany, Austria, Switzerland) which typically pays higher than Polish market\n\n12. **Candidate is still a student** (graduating May 2027) - some companies may see this as positive (fresh knowledge) or negative (availability concerns). Worth mentioning if relevant.\n\n---\n\n## 12. CV SELECTION LOGIC (for workflow)\n\n| Role Type | CV to Use | Indicators |\n|-----------|-----------|------------|\n| **Tech CV** | cv-tech-012026.pdf | GTM Engineer, Automation Engineer, AI Engineer, Solutions Engineer, Integration Developer, Data Engineer, any role mentioning n8n/Clay/LLM/API |\n| **Management CV** | cv-mgmt-012026.pdf | Product Owner, Business Analyst, Project Manager, Scrum Master, Release Manager, Vendor Manager, any role emphasizing stakeholder management/governance |\n\n**Default:** If unclear, use Tech CV (primary archetype).\n\n---\n\n*Profile version: 4.0*  \n*Last updated: January 2026*  \n*Verified against: cv-tech-012026.pdf, cv-mgmt-012026.pdf*  \n*Purpose: Input for LLM-based job search automation (n8n workflow)*\n\n\"\"\"\n\n=== 4. FIT ANALYSIS ===\nScore: {{ $('Code in JavaScript2').item.json.scoring.score }}/10\nFit Reasons: {{ $('Code in JavaScript2').item.json.scoring.fit_reasons.join(', ') }}\nRed Flags/Gaps: {{ $('Code in JavaScript2').item.json.scoring.red_flags.join(', ') }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# ROLE\nYou are a Senior Technical Recruiter and Career Mentor. Your client is the **CANDIDATE** (profile provided in input).\nYour goal is NOT to write a sales pitch, but to create a **Internal Intelligence Brief (Knowledge Base)**.\nThe candidate hates reciting scripts. He needs hard facts, context, and a technical refresher to feel confident and natural during the conversation.\n\n# OBJECTIVE\nSynthesize the Job Description, Perplexity Research, and Candidate Profile into a concise \"Readiness Sheet\" to be reviewed 15 minutes before the interview.\n\n# OUTPUT FORMAT\nGenerate a Markdown document following exactly this structure:\n\n# 🧠 INTERVIEW INTELLIGENCE: [Target Company Name]\n\n## 1. COMPANY & BUSINESS CONTEXT\n*Summarize the Perplexity research into facts relevant to an engineer/PM.*\n* **Core Product/Mission:** [What do they actually do/sell?]\n* **Current State:** [Recent funding, new market expansion, technical challenges mentioned in news]\n* **Key Numbers:** [Size, Revenue, Funding - if available]\n\n## 2. THE ROLE DECODED\n*Translate the Job Description into reality.*\n* **Primary Responsibility:** [In one sentence: What will I actually be doing day-to-day?]\n* **The \"Hidden\" Need:** [What problem are they likely trying to solve hiring for this role? e.g. \"They have scaling issues\" or \"They need to clean up messy data\"]\n\n## 3. TECHNICAL REFRESHER (What to review)\n*List specific tools, concepts, or methodologies from the Job Description that the candidate should quickly Google/review before the call.*\n* **Critical Stack:** [e.g. \"Review FastAPI async concepts\", \"Check their API docs if public\"]\n* **Domain Concepts:** [e.g. \"Refresh knowledge on RAG vector databases\", \"Review Scrum artifacts\"]\n\n## 4. GAP ANALYSIS & STRATEGY\n*Identify where the candidate lacks experience (Red Flags) and suggest a LOGICAL connection to existing skills (not a script).*\n* **Gap:** [Missing skill/experience]\n* **Strategy:** [Mental note: \"Connect this to my experience in Project X where I solved a similar problem using Y\"]\n\n## 5. INVESTIGATIVE QUESTIONS\n*3 deep, non-generic questions to ask the interviewer to uncover the truth about the team/tech.*\n1. [Question about technical maturity/legacy code]\n2. [Question about business goals/roadmap]\n3. [Question about team autonomy/processes]\n\n# LANGUAGE RULES\n- **CRITICAL:** Detect the language of the **Job Description**.\n- IF Job Description is in **Polish** -> Output the ENTIRE Brief in **Polish**.\n- IF Job Description is in **English** -> Output the ENTIRE Brief in **English**."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2960,
+        -16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain3"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        2960,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model3",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Analyze the following JOB DESCRIPTION to create my application checklist.\n\n=== JOB DESCRIPTION ===\n\"\"\"\n{{ $('Code in JavaScript2').item.json.job_offer.description }}\n\"\"\"\n\n=== INSTRUCTIONS ===\nDetermine if I should include my GitHub or Video based on the keywords in the text. Also extract special instructions and the tech stack.\n\nReturn ONLY this list (keep reasons under 5 words):\n\n[GITHUB]: YES/NO - (Reason)\n[VIDEO]: YES/NO - (Reason)\n[CUSTOM]: (Look for specific subject lines, \"secret words\", or \"apply to email\". If none, write \"None\")\n[STACK]: (List top 3 tools mentioned, comma separated)",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a Job Application Sniper. Your ONLY goal is to analyze job descriptions and output a strict, logic-based checklist for the applicant.  You have NO personality. You do NOT chat. You only output the requested data in the requested format.  Your analysis is based on the candidate having two specific assets: 1. A GitHub Portfolio (Automation code, n8n workflows, Python). 2. A Loom Video (Walkthrough of automation tools).  RULES: - If the text mentions \"code\", \"repo\", \"portfolio\", \"github\", \"samples\" -> GITHUB: YES. - If the text mentions \"video\", \"loom\", \"recording\", \"intro yourself\", \"why you\" -> VIDEO: YES. - Keep the output extremely concise. No bolding, no headers."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        3536,
+        -16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        3536,
+        144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "DeepSeek Chat Model4",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2032,
+        -128
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4112,
+        -144
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Code in JavaScript2').item.json.job_offer.id }}",
+            "Cover letter": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Listed At",
+              "displayName": "Listed At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company URL",
+              "displayName": "Company URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job URL",
+              "displayName": "Job URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Remote",
+              "displayName": "Remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Level",
+              "displayName": "Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CV Recommended",
+              "displayName": "CV Recommended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "One liner",
+              "displayName": "One liner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Fit Reasons",
+              "displayName": "Fit Reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Red flags",
+              "displayName": "Red flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date added",
+              "displayName": "Date added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cover letter",
+              "displayName": "Cover letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2768,
+        -16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Update row in sheet",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Code in JavaScript2').item.json.job_offer.id }}",
+            "Notes": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Listed At",
+              "displayName": "Listed At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company URL",
+              "displayName": "Company URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job URL",
+              "displayName": "Job URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Remote",
+              "displayName": "Remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Level",
+              "displayName": "Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CV Recommended",
+              "displayName": "CV Recommended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "One liner",
+              "displayName": "One liner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Fit Reasons",
+              "displayName": "Fit Reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Red flags",
+              "displayName": "Red flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date added",
+              "displayName": "Date added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cover letter",
+              "displayName": "Cover letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3296,
+        -16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Checklist": "={{ $json.text }}",
+            "ID": "={{ $('Code in JavaScript2').item.json.job_offer.id }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Listed At",
+              "displayName": "Listed At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company URL",
+              "displayName": "Company URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job URL",
+              "displayName": "Job URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Remote",
+              "displayName": "Remote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Level",
+              "displayName": "Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CV Recommended",
+              "displayName": "CV Recommended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "One liner",
+              "displayName": "One liner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Fit Reasons",
+              "displayName": "Fit Reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Red flags",
+              "displayName": "Red flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date added",
+              "displayName": "Date added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cover letter",
+              "displayName": "Cover letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Checklist",
+              "displayName": "Checklist",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3872,
+        -16
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -128
+      ],
+      "id": "REDACTED-UUID",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED-POSSIBLE-SECRET",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          },
+          "cachedResultUrl": {
+            "_redacted": true
+          }
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Score",
+              "lookupValue": "7"
+            },
+            {
+              "lookupColumn": "Score",
+              "lookupValue": "8"
+            },
+            {
+              "lookupColumn": "Score",
+              "lookupValue": "9"
+            },
+            {
+              "lookupColumn": "Score",
+              "lookupValue": "10"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        528,
+        48
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Get row(s) in sheet1",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json['Cover letter'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        736,
+        48
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "job_offer.id",
+              "field2": "id"
+            }
+          ]
+        },
+        "outputDataFrom": "input1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1344,
+        -112
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "id",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        944,
+        48
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain2": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain3": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain4": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-01T14:18:26.213Z",
+      "createdAt": "2026-02-01T14:18:26.213Z",
+      "role": "workflow:owner",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-02-01T15:00:18.086Z"
+  }
+}
