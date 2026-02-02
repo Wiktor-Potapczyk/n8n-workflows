@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-01T13:37:37.590Z",
+  "updatedAt": "2026-02-02T12:09:36.943Z",
   "createdAt": "2026-01-30T15:15:46.564Z",
   "id": "pfrYMKwymwJzEpRAPujXr",
   "name": "Job offers scrape & scoring",
@@ -28,7 +28,7 @@
             },
             {
               "name": "date_posted",
-              "value": "past_month"
+              "value": "past_24_hours"
             }
           ]
         },
@@ -50,7 +50,7 @@
                 ]
               },
               "limitPagesFetched": true,
-              "maxRequests": 30,
+              "maxRequests": 10,
               "requestInterval": 3500
             }
           }
@@ -444,7 +444,7 @@
       "typeVersion": 1.9,
       "position": [
         -928,
-        1136
+        944
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain1"
@@ -457,7 +457,7 @@
       "typeVersion": 1,
       "position": [
         -928,
-        1312
+        1120
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model1",
@@ -473,7 +473,7 @@
       "typeVersion": 1.3,
       "position": [
         -784,
-        1312
+        1120
       ],
       "id": "REDACTED-UUID",
       "name": "Structured Output Parser"
@@ -486,7 +486,7 @@
       "typeVersion": 2,
       "position": [
         -592,
-        1136
+        944
       ],
       "id": "REDACTED-UUID",
       "name": "Code in JavaScript2"
@@ -758,7 +758,7 @@
       "typeVersion": 4.7,
       "position": [
         -176,
-        1248
+        1056
       ],
       "id": "REDACTED-UUID",
       "name": "Append or update row in sheet",
@@ -797,7 +797,7 @@
       "typeVersion": 2.3,
       "position": [
         32,
-        1136
+        944
       ],
       "id": "REDACTED-UUID",
       "name": "If1"
@@ -818,8 +818,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -384,
-        1824
+        -512,
+        1584
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain2"
@@ -832,8 +832,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        -384,
-        1984
+        -512,
+        1744
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model2",
@@ -938,8 +938,8 @@
       "type": "n8n-nodes-base.perplexity",
       "typeVersion": 1,
       "position": [
-        -592,
-        1824
+        -720,
+        1584
       ],
       "id": "REDACTED-UUID",
       "name": "Message a model",
@@ -963,8 +963,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        128,
-        1824
+        0,
+        1584
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain3"
@@ -977,8 +977,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        128,
-        1984
+        0,
+        1744
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model3",
@@ -1002,8 +1002,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        704,
-        1824
+        576,
+        1584
       ],
       "id": "REDACTED-UUID",
       "name": "Basic LLM Chain4"
@@ -1015,8 +1015,8 @@
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1,
       "position": [
-        704,
-        1984
+        576,
+        1744
       ],
       "id": "REDACTED-UUID",
       "name": "DeepSeek Chat Model4",
@@ -1031,8 +1031,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -800,
-        1712
+        -928,
+        1472
       ],
       "id": "REDACTED-UUID",
       "name": "Loop Over Items"
@@ -1044,8 +1044,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1280,
-        1696
+        1152,
+        1456
       ],
       "id": "REDACTED-UUID",
       "name": "Edit Fields2"
@@ -1283,8 +1283,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -64,
-        1824
+        -192,
+        1584
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet",
@@ -1525,8 +1525,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        464,
-        1824
+        336,
+        1584
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet1",
@@ -1777,8 +1777,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1040,
-        1824
+        912,
+        1584
       ],
       "id": "REDACTED-UUID",
       "name": "Update row in sheet2",
@@ -1864,7 +1864,7 @@
       "typeVersion": 3,
       "position": [
         -352,
-        1136
+        944
       ],
       "id": "REDACTED-UUID",
       "name": "Loop Over Items2"
@@ -1877,7 +1877,7 @@
       "typeVersion": 1.1,
       "position": [
         16,
-        1344
+        1152
       ],
       "id": "REDACTED-UUID",
       "name": "Wait1",
@@ -2357,6 +2357,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-01T14:00:18.937Z"
+    "timestamp": "2026-02-02T13:00:18.839Z"
   }
 }
