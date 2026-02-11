@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-10T21:01:22.405Z",
+  "updatedAt": "2026-02-11T09:37:39.288Z",
   "createdAt": "2026-02-10T21:00:34.058Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "INFUSE",
@@ -19,57 +19,26 @@
     },
     {
       "parameters": {
-        "documentId": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
+        "assignments": {
+          "assignments": [
+            {
+              "id": "REDACTED-UUID",
+              "name": "target_company_domain",
+              "value": "Sentinelone.com",
+              "type": "string"
+            }
+          ]
         },
-        "sheetName": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        }
+        "options": {}
       },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
         208,
         0
       ],
       "id": "REDACTED-UUID",
-      "name": "Get row(s) in sheet",
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
-        "batching": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        416,
-        0
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Basic LLM Chain"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "REDACTED-POSSIBLE-SECRET",
-      "typeVersion": 1,
-      "position": [
-        416,
-        160
-      ],
-      "id": "REDACTED-UUID",
-      "name": "DeepSeek Chat Model",
-      "credentials": {
-        "_redacted": true
-      }
+      "name": "Edit Fields"
     }
   ],
   "connections": {
@@ -77,30 +46,8 @@
       "main": [
         [
           {
-            "node": "Get row(s) in sheet",
+            "node": "Edit Fields",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get row(s) in sheet": {
-      "main": [
-        [
-          {
-            "node": "Basic LLM Chain",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DeepSeek Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -136,6 +83,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-10T22:00:19.205Z"
+    "timestamp": "2026-02-11T10:00:22.845Z"
   }
 }
