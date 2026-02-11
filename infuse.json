@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-11T09:37:39.288Z",
+  "updatedAt": "2026-02-11T10:27:35.778Z",
   "createdAt": "2026-02-10T21:00:34.058Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "INFUSE",
@@ -39,6 +39,106 @@
       ],
       "id": "REDACTED-UUID",
       "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": "sonar-pro",
+        "messages": {
+          "message": [
+            {
+              "content": "You are a Brand Identity Specialist. Your goal is to extract the exact messaging used by the target company on their website. Do not summarize; use their exact words where possible.",
+              "role": "system"
+            },
+            {
+              "content": "=Analyze the website for domain: {{$json.target_company_domain}}\n\nExtract the following **Brand Identity** details. Focus strictly on how the company describes itself.\n\n1. **Tagline:** The main headline from the homepage.\n2. **Value Proposition:** A single sentence explaining their core benefit.\n3. **Positioning:**\n   - **Key Messages:** Extract 3 strategic pillars or themes they highlight (e.g., \"Zero-infrastructure\", \"Fastest deployment\").\n   - **Unique Selling Points:** Specific features or claims they emphasize to stand out.\n4. **Core Capabilities:** List their main technical features.\n   *Constraint: Provide a brief explanation for each capability.*\n\n**OUTPUT FORMAT:**\nReturn strictly valid JSON. If data is missing, use \"Not Available\".\n\n{\n  \"company_name\": \"string\",\n  \"product_name\": \"string\",\n  \"category\": \"string\",\n  \"tagline\": \"string\",\n  \"value_proposition\": \"string\",\n  \"positioning_json\": {\n    \"key_messages\": [\"string\"],\n    \"unique_selling_points\": [\"string\"]\n  },\n  \"core_capabilities\": \"string (paragraph form with explanations)\"\n}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Message a model",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "model": "sonar-pro",
+        "messages": {
+          "message": [
+            {
+              "content": "You are a B2B Market Analyst. You must find external market context, competitors, and quantitative proof points that the company might not explicitly list on their main landing page.",
+              "role": "system"
+            },
+            {
+              "content": "=Perform a deep market analysis for: {{ $('Edit Fields').item.json.target_company_domain }}\n**Search Strategy:**\n1. Search for \"{{ $('Edit Fields').item.json.target_company_domain }} competitors\" and \"alternatives\" to find direct rivals.\n2. Search for \"{{ $('Edit Fields').item.json.target_company_domain }} case studies\" or \"success stories\" to find specific metrics.\n3. Search for \"{{ $('Edit Fields').item.json.target_company_domain }} reviews\" to find pain points.\n\n**Extract the following Intelligence:**\n1. **Top 3 Direct Competitors:** Companies that offer the exact same solution.\n2. **5+ Other Competitors:** Secondary or indirect competitors.\n3. **Key Differentiators:** How does this company specifically beat the competitors listed above?\n   *Constraint: Include direct competitor comparisons where possible.*\n4. **Success Metrics:** Find 3 specific numbers (e.g., \"ROI increased by 50%\", \"Used by 5000+ companies\", \"Setup in 5 minutes\") from customer stories.\n5. **Target Audience:**\n   - **Roles:** Job titles of the decision-makers.\n   - **Industries:** Specific verticals they focus on.\n   - **Company Sizes:** SMB, Mid-Market, or Enterprise?\n6. **Key Pain Points:** What specific market problems do they claim to solve?\n\n**OUTPUT FORMAT:**\nReturn strictly valid JSON. If data is missing, use \"Not Available\".\n\n{\n  \"top_competitors\": \"string (list top 3)\",\n  \"other_competitors\": \"string (list 5+ others)\",\n  \"key_differentiators\": \"string (paragraph form)\",\n  \"success_metrics\": \"string (bullet points)\",\n  \"target_roles\": \"string\",\n  \"target_industries\": \"string\",\n  \"company_sizes\": \"string\",\n  \"key_pain_points\": \"string\",\n  \"other_icp_notes\": \"string (any extra details on budget, compliance, or adoption triggers)\"\n}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Message a model1",
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the raw response from the FIRST Perplexity node (Identity/Branding Data)\n// We access the node named 'Message a model'\nconst identityResponse = $('Message a model').first().json;\n\n// 2. Get the raw response from the SECOND Perplexity node (Market Data)\n// We access the direct input to this node\nconst marketResponse = $input.first().json;\n\n// 3. Extract the actual content strings (where the JSON lives)\n// We use optional chaining (?.) to prevent crashing if a field is missing\nconst identityContentString = identityResponse.choices?.[0]?.message?.content || \"{}\";\nconst marketContentString = marketResponse.choices?.[0]?.message?.content || \"{}\";\n\n// 4. Parse the strings into actual JSON objects\n// We wrap this in a try/catch block to handle any \"markdown formatting\" errors\nlet identityData = {};\nlet marketData = {};\n\ntry {\n  // Sometimes models wrap JSON in markdown (```json ... ```). We clean that here.\n  const cleanIdentity = identityContentString.replace(/```json\\n?|```/g, '');\n  const cleanMarket = marketContentString.replace(/```json\\n?|```/g, '');\n\n  identityData = JSON.parse(cleanIdentity);\n  marketData = JSON.parse(cleanMarket);\n} catch (error) {\n  // If parsing fails, we return the raw text so you can debug it manually\n  identityData = { _error: \"Failed to parse Identity JSON\", raw: identityContentString };\n  marketData = { _error: \"Failed to parse Market JSON\", raw: marketContentString };\n}\n\n// 5. Extract citations for your Google Sheet (Quality Assurance)\n// We only really need citations from the Market research (Node 2)\nconst citations = marketResponse.citations || [];\n\n// 6. Return the Merged Object\nreturn {\n  json: {\n    // Basic Info from the Trigger\n    domain: $('Trigger').first().json.target_company_domain, // Adjust 'Trigger' name if needed\n    \n    // Spread the Identity Data (Tagline, Positioning, etc.)\n    ...identityData,\n    \n    // Spread the Market Data (Competitors, Metrics, etc.)\n    ...marketData,\n    \n    // Metadata for Storage (NOT for the AI Agent)\n    _source_urls: citations.join(\", \"),\n    _generated_at: new Date().toISOString()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        976,
+        0
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "REDACTED-POSSIBLE-SECRET",
+      "typeVersion": 1,
+      "position": [
+        912,
+        208
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "_redacted": true
+      }
     }
   ],
   "connections": {
@@ -48,6 +148,61 @@
           {
             "node": "Edit Fields",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -83,6 +238,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-11T10:00:22.845Z"
+    "timestamp": "2026-02-11T11:00:20.282Z"
   }
 }
