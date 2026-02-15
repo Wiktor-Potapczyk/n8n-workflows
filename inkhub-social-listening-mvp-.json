@@ -1,0 +1,334 @@
+{
+  "updatedAt": "2026-02-15T18:35:03.000Z",
+  "createdAt": "2026-02-15T18:35:03.216Z",
+  "id": "1TNNXNhzTZ3kcYiQ5OUh_",
+  "name": "INKHUB Social Listening (MVP)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "REDACTED-UUID",
+      "name": "Every 1 Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.reddit.com/r/marketing+content_marketing+SaaS/search.rss?q=AI+personalization+OR+content+marketing+pain&sort=new&t=week",
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Reddit RSS Monitor",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "notes": "Monitors r/marketing, r/content_marketing, r/SaaS for keywords."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "authentication": "REDACTED",
+        "genericAuthType": "REDACTED",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED-API-KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "queries",
+              "value": "content personalization OR AI copywriting pain points"
+            },
+            {
+              "name": "maxItems",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "LinkedIn Scraper (Apify)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        0,
+        208
+      ],
+      "notes": "Requires Apify Token. Uses 'LinkedIn Search Scraper' actor."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Deduplication Logic (Mock)\n// In production, connect this to Google Sheets 'Lookup' node.\n\n// Returns items only if they are NEW.\n// For now, we pass all items through.\n\nreturn items.map(item => {\n  return {\n    json: {\n      ...item.json,\n      is_new: true // Mock flag\n    }\n  }\n});"
+      },
+      "id": "REDACTED-UUID",
+      "name": "Deduplication (Mock)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "prompt": "You are a Content Analyst for INKHUB (B2B personalized whitepapers).\n\nAnalyze this social media post:\n\"{{ $json.content || $json.title }} - {{ $json.description || '' }}\"\n\nIs this post relevant to:\n1. Direct Need: Asking for personalization tools?\n2. Pain Point: Complaining about generic AI content?\n3. Strategic Discussion: Scaling ABM content?\n\nIgnore: Generic news, job posts, spam.\n\nReturn ONLY a JSON object:\n{\n  \"relevant\": boolean,\n  \"reason\": \"short explanation\",\n  \"topic\": \"personalization_need\" | \"ai_pain_point\" | \"strategy_discussion\" | \"irrelevant\"\n}",
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "AI Relevance Scoring",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        464,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.relevant }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "REDACTED-UUID",
+      "name": "Filter: Is Relevant?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        688,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "text": "🚨 *New Opportunity Found!* 🚨\n\n*Topic:* {{ $json.topic }}\n*Reason:* {{ $json.reason }}\n*Source:* {{ $json.link || $json.url }}\n\n> {{ $json.content || $json.title }}",
+        "otherOptions": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Slack Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.1,
+      "position": [
+        912,
+        0
+      ],
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "list",
+          "cachedResultName": {
+            "_redacted": true
+          }
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date().toISOString() }}",
+            "Source": "={{ $json.link || $json.url }}",
+            "Topic": "={{ $json.topic }}",
+            "Reason": "={{ $json.reason }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Log to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.1,
+      "position": [
+        912,
+        208
+      ]
+    }
+  ],
+  "connections": {
+    "Every 1 Hour": {
+      "main": [
+        [
+          {
+            "node": "Reddit RSS Monitor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "LinkedIn Scraper (Apify)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit RSS Monitor": {
+      "main": [
+        [
+          {
+            "node": "Deduplication (Mock)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn Scraper (Apify)": {
+      "main": [
+        [
+          {
+            "node": "Deduplication (Mock)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduplication (Mock)": {
+      "main": [
+        [
+          {
+            "node": "AI Relevance Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Relevance Scoring": {
+      "main": [
+        [
+          {
+            "node": "Filter: Is Relevant?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: Is Relevant?": {
+      "main": [
+        [
+          {
+            "node": "Slack Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-15T18:35:03.220Z",
+      "createdAt": "2026-02-15T18:35:03.220Z",
+      "role": "workflow:owner",
+      "workflowId": "1TNNXNhzTZ3kcYiQ5OUh_",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-02-15T19:00:14.804Z"
+  }
+}
