@@ -1,0 +1,331 @@
+{
+  "updatedAt": "2026-02-17T16:54:43.205Z",
+  "createdAt": "2026-02-17T16:08:43.371Z",
+  "id": "REDACTED-POSSIBLE-SECRET",
+  "name": "Social Monitoring Automation",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Cron Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        176
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "url": "https://www.reddit.com/search.rss?q=(\"AI\" OR \"ChatGPT\") AND (\"sucks\" OR \"hate\" OR \"fail\" OR \"robotic\")&sort=new",
+        "options": {}
+      },
+      "name": "Reddit RSS 1 (Pain Points)",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        272
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "url": "https://www.reddit.com/search.rss?q=(\"personalization\" OR \"dynamic content\") AND (\"marketing\" OR \"tool\")&sort=new",
+        "options": {}
+      },
+      "name": "Reddit RSS 2 (Marketing)",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        464
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {},
+      "name": "Merge Searches",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -1232,
+        176
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Map LinkedIn and Reddit items to a common structure\nreturn items.map(item => {\n  const json = item.json;\n  let output = {};\n  \n  // Check for LinkedIn data (SaleLeads API structure)\n  // The API returns data in 'data' array but n8n HTTP Request node flattens it if 'Split Into Items' is on.\n  // Assuming n8n returns individual items.\n  // SaleLeads uses 'id', 'url', 'title' (which is the post snippet/content), 'created_at', 'author'.\n  if (json.url && json.url.includes('linkedin.com')) {\n    output = {\n      id: json.id,\n      platform: 'LinkedIn',\n      author: json.author?.name || 'Unknown',\n      content: json.title || json.snippet || 'No content',\n      link: json.url,\n      date: new Date().toISOString() // API gives '16m', '2h' etc. easier to safeguard with current time for now\n    };\n  } else { // Reddit RSS\n    output = {\n      id: json.guid || json.id,\n      platform: 'Reddit',\n      author: json.author || 'Unknown',\n      content: json.contentSnippet || json.content,\n      link: json.link,\n      date: json.isoDate || new Date().toISOString()\n    };\n  }\n  \n  return { json: output };\n});"
+      },
+      "name": "Normalization",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1008,
+        176
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "name": "Read Existing IDs",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -784,
+        248
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "mode": "removeKeyMatches",
+        "options": {}
+      },
+      "name": "Deduplication",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        176
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "options": {},
+        "requestOptions": {}
+      },
+      "name": "AI Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        176
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.relevance }}",
+              "value2": "High"
+            }
+          ]
+        }
+      },
+      "name": "Filter High Relevance",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        176
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "name": "Save to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        112,
+        80
+      ],
+      "id": "REDACTED-UUID"
+    },
+    {
+      "parameters": {
+        "text": "🚨 *High Relevance Lead Detected!*\n\n*Platform:* {{ $json.platform }}\n*Author:* {{ $json.author }}\n*Reason:* {{ $json.reason }}\n\n<{{ $json.link }}|View Post>\n\n> {{ $json.content.slice(0, 200) }}...",
+        "otherOptions": {}
+      },
+      "name": "Slack Notification",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [
+        112,
+        272
+      ],
+      "id": "REDACTED-UUID",
+      "webhookId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "connections": {
+    "Cron Trigger": {
+      "main": [
+        [
+          {
+            "node": "Reddit RSS 1 (Pain Points)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reddit RSS 2 (Marketing)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Searches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit RSS 1 (Pain Points)": {
+      "main": [
+        [
+          {
+            "node": "Merge Searches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit RSS 2 (Marketing)": {
+      "main": [
+        [
+          {
+            "node": "Merge Searches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Searches": {
+      "main": [
+        [
+          {
+            "node": "Normalization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalization": {
+      "main": [
+        [
+          {
+            "node": "Deduplication",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read Existing IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Existing IDs": {
+      "main": [
+        [
+          {
+            "node": "Deduplication",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Deduplication": {
+      "main": [
+        [
+          {
+            "node": "AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Filter High Relevance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter High Relevance": {
+      "main": [
+        [
+          {
+            "node": "Save to Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Slack Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-17T16:08:43.375Z",
+      "createdAt": "2026-02-17T16:08:43.375Z",
+      "role": "workflow:owner",
+      "workflowId": "REDACTED-POSSIBLE-SECRET",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-02-17T17:00:20.178Z"
+  }
+}
