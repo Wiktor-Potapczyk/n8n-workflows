@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-18T00:59:42.916Z",
+  "updatedAt": "2026-02-18T01:36:20.865Z",
   "createdAt": "2026-02-17T16:08:43.371Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "INFUSE - HOME TASK",
@@ -248,7 +248,13 @@
     },
     {
       "parameters": {
-        "text": "🚨 *High Relevance Lead Detected!*\n\n*Platform:* {{ $json.platform }}\n*Author:* {{ $json.author }}\n*Reason:* {{ $json.reason }}\n\n<{{ $json.link }}|View Post>\n\n> {{ $json.content.slice(0, 200) }}...",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "=C0AF2RK37RU",
+          "mode": "id"
+        },
+        "text": "=🎯 *New Lead Signal*\n\n*Platform:* {{ $('Normalization').item.json.platform }}  |  *Type:* {{ $json.output.type === 'pain' ? '🔴 Pain' : '🟢 Intent' }}  |  *Author:* {{ $('Normalization').item.json.author }}\n*AI Reason:* {{ $json.output.reason }}\n\n💬 _{{ $json.output.quote }}_\n\n>>> {{ $('Normalization').item.json.content.substring(0, 300) }}{{ $('Normalization').item.json.content.length > 300 ? '...' : '' }}\n\n🔗 <{{ $('Normalization').item.json.link }}|View Original Post>",
         "otherOptions": {}
       },
       "name": "Slack Notification",
@@ -262,7 +268,9 @@
       "webhookId": {
         "_redacted": true
       },
-      "disabled": true
+      "credentials": {
+        "_redacted": true
+      }
     },
     {
       "parameters": {
@@ -311,8 +319,7 @@
         -112
       ],
       "id": "REDACTED-UUID",
-      "name": "LinkedIn Sync - Pain Points",
-      "disabled": true
+      "name": "LinkedIn Sync - Pain Points"
     },
     {
       "parameters": {
@@ -374,8 +381,7 @@
         272
       ],
       "id": "REDACTED-UUID",
-      "name": "XML to JSON",
-      "disabled": true
+      "name": "XML to JSON"
     },
     {
       "parameters": {
@@ -401,8 +407,7 @@
         464
       ],
       "id": "REDACTED-UUID",
-      "name": "XML to JSON1",
-      "disabled": true
+      "name": "XML to JSON1"
     },
     {
       "parameters": {
@@ -412,7 +417,7 @@
         "messages": {
           "messageValues": [
             {
-              "message": "You are a Lead Qualification Agent for INKHUB — a B2B tool that personalizes marketing whitepapers, case studies, and sales collateral for individual prospects at scale.  TARGET CUSTOMER (ICP): - B2B marketers, SDRs, GTM engineers, content teams at tech companies - People frustrated with: static PDFs, manual content editing, generic collateral, AI that sounds robotic, expensive ABM tools (Mutiny, Turtl, Uberflip, Seismic, PathFactory) - People searching for: content personalization, whitepaper tools, sales enablement, ABM content, lead magnets, repurposing content  CLASSIFY as HIGH relevance if: - Direct buying intent for content personalization, ABM, sales collateral, or lead magnet tools - Frustration with a specific competitor tool (Jasper, Mutiny, Turtl, Uberflip, Seismic, PathFactory) - Pain with scaling personalized content, manual editing of whitepapers/decks, or AI content quality for B2B - Pain with organizing, finding, or personalizing sales collateral, proposals, or case studies during the sales process - Struggling with content sprawl, version control of sales materials, or delivering the right content at the right time  CLASSIFY as MEDIUM if: - General marketing/content pain that INKHUB could solve, but no urgency or tool search - Discussing content strategy challenges tangentially related to personalization - Discussing ABM, lead magnets, or sales enablement in general terms without a specific tool need  CLASSIFY as LOW if: - Self-promotion (someone showcasing their own SaaS/tool/agency) - General SaaS advice, career/burnout posts, hiring, news - Voice AI, chatbots, robotics, non-content-related tools - Consumer/B2C marketing (Instagram growth, TikTok, influencer marketing) - General app-building or SaaS development unrelated to content creation/personalization - Cold email strategy, outbound tactics, or CRM discussions without content personalization angle - SEO/AEO strategy posts that don't mention content collateral or personalization  Output valid JSON only: {   \"relevance\": \"High\" | \"Medium\" | \"Low\",   \"type\": \"pain\" | \"intent\" | \"noise\",   \"reason\": \"Short explanation (max 15 words)\",   \"quote\": \"Extract the specific sentence triggering the decision\" }"
+              "message": "You are a Lead Qualification Agent for INKHUB — a B2B tool that personalizes marketing whitepapers, case studies, and sales collateral for individual prospects at scale.  TARGET CUSTOMER (ICP): - B2B marketers, SDRs, GTM engineers, content teams at tech companies - People frustrated with: static PDFs, manual content editing, generic collateral, AI that sounds robotic, expensive ABM tools (Mutiny, Turtl, Uberflip, Seismic, PathFactory) - People searching for: content personalization, whitepaper tools, sales enablement, ABM content, lead magnets, repurposing content  CLASSIFY as HIGH relevance if: - Direct buying intent for content personalization, ABM, sales collateral, or lead magnet tools - Frustration with a specific competitor tool (Jasper, Mutiny, Turtl, Uberflip, Seismic, PathFactory) - Pain with scaling personalized content, manual editing of whitepapers/decks, or AI content quality for B2B - Pain with organizing, finding, or personalizing sales collateral, proposals, or case studies during the sales process - Struggling with content sprawl, version control of sales materials, or delivering the right content at the right time - Actively comparing or evaluating sales enablement / content personalization tools  CLASSIFY as MEDIUM if: - General marketing/content pain that INKHUB could solve, but no urgency or tool search - Discussing content strategy challenges tangentially related to personalization - Discussing ABM, lead magnets, or sales enablement in general terms without a specific tool need  CLASSIFY as LOW if: - Self-promotion (someone showcasing their own SaaS/tool/agency) - General SaaS advice, career/burnout posts, hiring, news - Voice AI, chatbots, robotics, non-content-related tools - Consumer/B2C marketing (Instagram growth, TikTok, influencer marketing) - General app-building or SaaS development unrelated to content creation/personalization - Cold email strategy, outbound tactics, or CRM discussions without content personalization angle - SEO/AEO strategy posts that don't mention content collateral or personalization - Posts where monitored keywords (whitepaper, lead magnet, case study, ABM, sales deck, etc.) appear only as a passing mention, example, or sub-point — not as the main topic of discussion  Output valid JSON only: {   \"relevance\": \"High\" | \"Medium\" | \"Low\",   \"type\": \"pain\" | \"intent\" | \"noise\",   \"reason\": \"Short explanation (max 15 words)\",   \"quote\": \"Extract the specific sentence triggering the decision\" }"
             }
           ]
         },
@@ -505,7 +510,7 @@
     },
     {
       "parameters": {
-        "url": "https://www.reddit.com/r/marketing+digital_marketing+content_marketing+b2bmarketing+SaaS+Entrepreneur+smallbusiness+marketing_automation+sales+b2bsaas/search.rss?q=(\"whitepaper\" OR \"one-pager\" OR \"case study\" OR \"lead magnet\" OR \"sales deck\" OR \"sales enablement\" OR \"ABM\" OR \"content personalization\" OR \"marketing collateral\" OR \"sales collateral\" OR \"gated content\" OR \"personalize content\" OR \"repurpose content\" OR \"Jasper\" OR \"Mutiny\" OR \"Turtl\" OR \"Uberflip\" OR \"Seismic\" OR \"PathFactory\" OR \"Highspot\" OR \"Showpad\") -stock -crypto -invest&restrict_sr=1&sort=new&limit=100",
+        "url": "https://www.reddit.com/r/marketing+digital_marketing+content_marketing+b2bmarketing+SaaS+Entrepreneur+smallbusiness+marketing_automation+sales+b2bsaas/search.rss?q=\"whitepaper\" OR \"one-pager\" OR \"case study\" OR \"lead magnet\" OR \"sales deck\" OR \"sales enablement\" OR \"ABM\" OR \"content personalization\" OR \"marketing collateral\" OR \"sales collateral\" OR \"gated content\" OR \"personalize content\" OR \"repurpose content\"&restrict_sr=1&sort=new&limit=100",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -524,8 +529,7 @@
         272
       ],
       "id": "REDACTED-UUID",
-      "name": "Reddit RSS - Pain Points",
-      "disabled": true
+      "name": "Reddit RSS - Pain Points"
     },
     {
       "parameters": {
@@ -554,7 +558,8 @@
         512
       ],
       "id": "REDACTED-UUID",
-      "name": "Edit Fields"
+      "name": "Edit Fields",
+      "disabled": true
     },
     {
       "parameters": {
@@ -568,7 +573,8 @@
         512
       ],
       "id": "REDACTED-UUID",
-      "name": "Split Out"
+      "name": "Split Out",
+      "disabled": true
     },
     {
       "parameters": {
@@ -597,7 +603,8 @@
         512
       ],
       "id": "REDACTED-UUID",
-      "name": "Edit Fields1"
+      "name": "Edit Fields1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -620,8 +627,7 @@
         464
       ],
       "id": "REDACTED-UUID",
-      "name": "Reddit RSS - Buying Intent",
-      "disabled": true
+      "name": "Reddit RSS - Buying Intent"
     },
     {
       "parameters": {
@@ -921,6 +927,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-18T01:00:20.708Z"
+    "timestamp": "2026-02-18T02:00:20.990Z"
   }
 }
