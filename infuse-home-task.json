@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-17T22:59:34.263Z",
+  "updatedAt": "2026-02-17T23:41:04.927Z",
   "createdAt": "2026-02-17T16:08:43.371Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "INFUSE - HOME TASK",
@@ -501,7 +501,7 @@
     },
     {
       "parameters": {
-        "url": "https://www.reddit.com/search.rss?q=(\"AI\" OR \"GenAI\" OR \"marketing\" OR \"content\" OR \"leads\" OR \"growth\" OR \"automation\" OR \"personalization\")  -stock -crypto -invest -trading -forex -subreddit:marketing -subreddit:entrepreneurs -subreddit:SocialMediaMarketing -subreddit:b2bsaas -subreddit:programming -subreddit:digital_marketing -subreddit:content_marketing -subreddit:b2bmarketing -subreddit:SaaS -subreddit:Entrepreneur -subreddit:smallbusiness -subreddit:marketing_automation&sort=new&limit=1000",
+        "url": "https://www.reddit.com/r/marketing+digital_marketing+DigitalMarketin+AiAutomations+content_marketing+b2bmarketing+SaaS+Entrepreneur+smallbusiness+marketing_automation+sales+b2bsaas/search.rss?q=(\"looking for a tool\" OR \"recommend a tool\" OR \"what tool\" OR \"anyone use\" OR \"alternative to\" OR \"switched from\" OR \"tired of\" OR \"too expensive\" OR \"better than\" OR \"struggling with\" OR \"HubSpot\" OR \"Salesforce\" OR \"Mailchimp\" OR \"ActiveCampaign\" OR \"Apollo\" OR \"Jasper\" OR \"Copy.ai\" OR \"Pipedrive\" OR \"Klaviyo\" OR \"ZoomInfo\") -stock -crypto -invest&restrict_sr=1&sort=new&limit=100",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -916,6 +916,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-17T23:00:20.824Z"
+    "timestamp": "2026-02-18T00:00:23.244Z"
   }
 }
