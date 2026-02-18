@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-17T23:41:04.927Z",
+  "updatedAt": "2026-02-18T00:59:42.916Z",
   "createdAt": "2026-02-17T16:08:43.371Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "INFUSE - HOME TASK",
@@ -129,7 +129,8 @@
             "Link": "={{ $('Normalization').item.json.link }}",
             "Quote": "={{ $json.output.quote }}",
             "AI_Relevance": "={{ $json.output.relevance }}",
-            "AI_Summary": "={{ $json.output.reason }}"
+            "AI_Summary": "={{ $json.output.reason }}",
+            "Type": "={{ $json.output.type }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -216,6 +217,16 @@
               "type": "string",
               "canBeUsedToMatch": true,
               "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -227,7 +238,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        352,
+        560,
         96
       ],
       "id": "REDACTED-UUID",
@@ -244,7 +255,7 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2,
       "position": [
-        352,
+        560,
         256
       ],
       "id": "REDACTED-UUID",
@@ -300,7 +311,8 @@
         -112
       ],
       "id": "REDACTED-UUID",
-      "name": "LinkedIn Sync - Pain Points"
+      "name": "LinkedIn Sync - Pain Points",
+      "disabled": true
     },
     {
       "parameters": {
@@ -327,8 +339,8 @@
         "bodyParameters": {
           "parameters": [
             {
-              "name": "search_input",
-              "value": "(\"looking for\" OR recommend) AND (\"AI writing tool\" OR \"content generator\")"
+              "name": "keyword",
+              "value": "\"sales enablement\" OR \"content personalization\" OR \"whitepaper\" OR \"sales deck\" OR \"Seismic\" OR \"Highspot\""
             },
             {
               "name": "posted_at",
@@ -336,7 +348,7 @@
             },
             {
               "name": "limit",
-              "value": "={{10}}"
+              "value": "={{50}}"
             }
           ]
         },
@@ -362,7 +374,8 @@
         272
       ],
       "id": "REDACTED-UUID",
-      "name": "XML to JSON"
+      "name": "XML to JSON",
+      "disabled": true
     },
     {
       "parameters": {
@@ -388,7 +401,8 @@
         464
       ],
       "id": "REDACTED-UUID",
-      "name": "XML to JSON1"
+      "name": "XML to JSON1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -398,7 +412,7 @@
         "messages": {
           "messageValues": [
             {
-              "message": "You are an expert Lead Qualification Agent for a B2B SaaS Agency.\nYour goal is to analyze social media posts (from Reddit and LinkedIn) and determine if they represent a valid business opportunity (either a PAIN POINT or BUYING INTENT).\n\nCRITERIA:\n1. PAIN POINT: User is frustrated with a process/tool (e.g., \"I hate writing docs\", \"X is too expensive\").\n2. BUYING INTENT: User is looking for a solution/recommendation (e.g., \"Looking for a tool\", \"Best alternative?\").\n\nOutput valid JSON only:\n{\n  \"relevance\": \"High\" | \"Medium\" | \"Low\",\n  \"reason\": \"Short explanation (max 15 words). MUST include a direct quote from the text that proves the relevance.\",\n  \"quote\": \"Extract the specific sentence triggering the decision here.\"\n}\n\nRules for 'relevance':\n- HIGH: Direct buying intent OR severe specific pain point.\n- MEDIUM: General discussion about a problem but no urgency.\n- LOW: Spam, news, hiring posts, self-promotion, or unrelated topics."
+              "message": "You are a Lead Qualification Agent for INKHUB — a B2B tool that personalizes marketing whitepapers, case studies, and sales collateral for individual prospects at scale.  TARGET CUSTOMER (ICP): - B2B marketers, SDRs, GTM engineers, content teams at tech companies - People frustrated with: static PDFs, manual content editing, generic collateral, AI that sounds robotic, expensive ABM tools (Mutiny, Turtl, Uberflip, Seismic, PathFactory) - People searching for: content personalization, whitepaper tools, sales enablement, ABM content, lead magnets, repurposing content  CLASSIFY as HIGH relevance if: - Direct buying intent for content personalization, ABM, sales collateral, or lead magnet tools - Frustration with a specific competitor tool (Jasper, Mutiny, Turtl, Uberflip, Seismic, PathFactory) - Pain with scaling personalized content, manual editing of whitepapers/decks, or AI content quality for B2B - Pain with organizing, finding, or personalizing sales collateral, proposals, or case studies during the sales process - Struggling with content sprawl, version control of sales materials, or delivering the right content at the right time  CLASSIFY as MEDIUM if: - General marketing/content pain that INKHUB could solve, but no urgency or tool search - Discussing content strategy challenges tangentially related to personalization - Discussing ABM, lead magnets, or sales enablement in general terms without a specific tool need  CLASSIFY as LOW if: - Self-promotion (someone showcasing their own SaaS/tool/agency) - General SaaS advice, career/burnout posts, hiring, news - Voice AI, chatbots, robotics, non-content-related tools - Consumer/B2C marketing (Instagram growth, TikTok, influencer marketing) - General app-building or SaaS development unrelated to content creation/personalization - Cold email strategy, outbound tactics, or CRM discussions without content personalization angle - SEO/AEO strategy posts that don't mention content collateral or personalization  Output valid JSON only: {   \"relevance\": \"High\" | \"Medium\" | \"Low\",   \"type\": \"pain\" | \"intent\" | \"noise\",   \"reason\": \"Short explanation (max 15 words)\",   \"quote\": \"Extract the specific sentence triggering the decision\" }"
             }
           ]
         },
@@ -411,20 +425,10 @@
         176
       ],
       "id": "REDACTED-UUID",
-      "name": "Basic LLM Chain"
-    },
-    {
-      "parameters": {
-        "maxItems": 30
-      },
-      "type": "n8n-nodes-base.limit",
-      "typeVersion": 1,
-      "position": [
-        -672,
-        80
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Limit"
+      "name": "Basic LLM Chain",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 3000
     },
     {
       "parameters": {
@@ -444,7 +448,7 @@
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"relevance\": \"High\",\n  \"reason\": \"Short explanation (max 15 words). MUST include a direct quote from the text that proves the relevance.\",\n  \"quote\": \"Extract the specific sentence triggering the decision here.\"\n}"
+        "jsonSchemaExample": "{\n  \"relevance\": \"High\",\n  \"type\": \"pain\",\n  \"reason\": \"Short explanation (max 15 words)\",\n  \"quote\": \"Extract the specific sentence triggering the decision\"\n}"
       },
       "type": "REDACTED-POSSIBLE-SECRET",
       "typeVersion": 1.3,
@@ -478,7 +482,7 @@
             {
               "id": "REDACTED-UUID",
               "leftValue": "={{ $json.output.relevance }}",
-              "rightValue": "M",
+              "rightValue": "Medium",
               "operator": {
                 "type": "string",
                 "operation": "equals",
@@ -493,7 +497,7 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        96,
+        320,
         176
       ],
       "id": "REDACTED-UUID",
@@ -501,7 +505,7 @@
     },
     {
       "parameters": {
-        "url": "https://www.reddit.com/r/marketing+digital_marketing+DigitalMarketin+AiAutomations+content_marketing+b2bmarketing+SaaS+Entrepreneur+smallbusiness+marketing_automation+sales+b2bsaas/search.rss?q=(\"looking for a tool\" OR \"recommend a tool\" OR \"what tool\" OR \"anyone use\" OR \"alternative to\" OR \"switched from\" OR \"tired of\" OR \"too expensive\" OR \"better than\" OR \"struggling with\" OR \"HubSpot\" OR \"Salesforce\" OR \"Mailchimp\" OR \"ActiveCampaign\" OR \"Apollo\" OR \"Jasper\" OR \"Copy.ai\" OR \"Pipedrive\" OR \"Klaviyo\" OR \"ZoomInfo\") -stock -crypto -invest&restrict_sr=1&sort=new&limit=100",
+        "url": "https://www.reddit.com/r/marketing+digital_marketing+content_marketing+b2bmarketing+SaaS+Entrepreneur+smallbusiness+marketing_automation+sales+b2bsaas/search.rss?q=(\"whitepaper\" OR \"one-pager\" OR \"case study\" OR \"lead magnet\" OR \"sales deck\" OR \"sales enablement\" OR \"ABM\" OR \"content personalization\" OR \"marketing collateral\" OR \"sales collateral\" OR \"gated content\" OR \"personalize content\" OR \"repurpose content\" OR \"Jasper\" OR \"Mutiny\" OR \"Turtl\" OR \"Uberflip\" OR \"Seismic\" OR \"PathFactory\" OR \"Highspot\" OR \"Showpad\") -stock -crypto -invest&restrict_sr=1&sort=new&limit=100",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -520,30 +524,8 @@
         272
       ],
       "id": "REDACTED-UUID",
-      "name": "Reddit RSS - Pain Points"
-    },
-    {
-      "parameters": {
-        "url": "https://www.reddit.com/r/marketing+SaaS+Entrepreneur+digital_marketing+content_marketing+copywriting/search.rss?q=(\"AI\" OR \"ChatGPT\") AND (\"looking for\" OR \"recommend\" OR \"alternative\" OR \"expensive\")&restrict_sr=1&sort=new&limit=100",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "User-Agent",
-              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        -1808,
-        464
-      ],
-      "id": "REDACTED-UUID",
-      "name": "Reddit RSS - Buying Intent"
+      "name": "Reddit RSS - Pain Points",
+      "disabled": true
     },
     {
       "parameters": {
@@ -619,26 +601,60 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
+        "url": "https://www.reddit.com/r/marketing+SaaS+Entrepreneur+digital_marketing+content_marketing+copywriting/search.rss?q=(\"AI\" OR \"ChatGPT\") AND (\"looking for\" OR \"recommend\" OR \"alternative\" OR \"expensive\")&restrict_sr=1&sort=new&limit=100",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
             {
-              "id": "REDACTED-UUID",
-              "name": "subreddit",
-              "value": "={{ $json.subreddit }}",
-              "type": "string"
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
           ]
         },
         "options": {}
       },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
       "position": [
-        -784,
-        512
+        -1808,
+        464
       ],
       "id": "REDACTED-UUID",
-      "name": "Edit Fields2"
+      "name": "Reddit RSS - Buying Intent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.output.type }}",
+              "rightValue": "n",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        112,
+        176
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Filter1"
     }
   ],
   "connections": {
@@ -677,7 +693,7 @@
             "index": 0
           },
           {
-            "node": "Limit",
+            "node": "Deduplication",
             "type": "main",
             "index": 0
           }
@@ -770,18 +786,7 @@
       "main": [
         [
           {
-            "node": "Filter",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Limit": {
-      "main": [
-        [
-          {
-            "node": "Deduplication",
+            "node": "Filter1",
             "type": "main",
             "index": 0
           }
@@ -837,17 +842,6 @@
         ]
       ]
     },
-    "Reddit RSS - Buying Intent": {
-      "main": [
-        [
-          {
-            "node": "XML to JSON1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Edit Fields": {
       "main": [
         [
@@ -872,18 +866,29 @@
     },
     "Edit Fields1": {
       "main": [
+        []
+      ]
+    },
+    "Reddit RSS - Buying Intent": {
+      "main": [
         [
           {
-            "node": "Edit Fields2",
+            "node": "XML to JSON1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Edit Fields2": {
+    "Filter1": {
       "main": [
-        []
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
@@ -916,6 +921,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-18T00:00:23.244Z"
+    "timestamp": "2026-02-18T01:00:20.708Z"
   }
 }
