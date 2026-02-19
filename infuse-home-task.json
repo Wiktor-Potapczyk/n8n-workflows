@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-18T01:36:20.865Z",
+  "updatedAt": "2026-02-19T20:50:11.740Z",
   "createdAt": "2026-02-17T16:08:43.371Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "INFUSE - HOME TASK",
@@ -298,7 +298,7 @@
           "parameters": [
             {
               "name": "search_input",
-              "value": "(AI OR ChatGPT) AND (struggle OR pain)"
+              "value": "(\"manual\" OR \"tedious\" OR \"time-consuming\" OR \"mess\" OR \"nightmare\" OR \"outdated\") AND (\"whitepapers\" OR \"sales decks\" OR \"case studies\" OR \"sales collateral\" OR \"PDFs\" OR \"proposals\")"
             },
             {
               "name": "posted_at",
@@ -347,7 +347,7 @@
           "parameters": [
             {
               "name": "keyword",
-              "value": "\"sales enablement\" OR \"content personalization\" OR \"whitepaper\" OR \"sales deck\" OR \"Seismic\" OR \"Highspot\""
+              "value": "(\"looking for\" OR \"recommend\" OR \"suggestion\" OR \"alternative to\" OR \"vs\") AND (\"sales enablement\" OR \"document generation\" OR \"content personalization\" OR \"Seismic\" OR \"Highspot\" OR \"Turtl\" OR \"Uberflip\" OR \"PathFactory\")"
             },
             {
               "name": "posted_at",
@@ -510,7 +510,7 @@
     },
     {
       "parameters": {
-        "url": "https://www.reddit.com/r/marketing+digital_marketing+content_marketing+b2bmarketing+SaaS+Entrepreneur+smallbusiness+marketing_automation+sales+b2bsaas/search.rss?q=\"whitepaper\" OR \"one-pager\" OR \"case study\" OR \"lead magnet\" OR \"sales deck\" OR \"sales enablement\" OR \"ABM\" OR \"content personalization\" OR \"marketing collateral\" OR \"sales collateral\" OR \"gated content\" OR \"personalize content\" OR \"repurpose content\"&restrict_sr=1&sort=new&limit=100",
+        "url": "https://www.reddit.com/r/marketing+digital_marketing+content_marketing+b2bmarketing+SaaS+Entrepreneur+smallbusiness+marketing_automation+sales+b2bsaas/search.rss?q=(\"hate\" OR \"annoying\" OR \"hard\" OR \"manual\" OR \"struggle\") AND (\"whitepaper\" OR \"sales deck\" OR \"PDF\" OR \"formatting\" OR \"indesign\" OR \"marketing collateral\")&restrict_sr=1&sort=new&limit=100",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -608,7 +608,7 @@
     },
     {
       "parameters": {
-        "url": "https://www.reddit.com/r/marketing+SaaS+Entrepreneur+digital_marketing+content_marketing+copywriting/search.rss?q=(\"AI\" OR \"ChatGPT\") AND (\"looking for\" OR \"recommend\" OR \"alternative\" OR \"expensive\")&restrict_sr=1&sort=new&limit=100",
+        "url": "https://www.reddit.com/r/marketing+SaaS+Entrepreneur+digital_marketing+content_marketing+copywriting+sales/search.rss?q=(\"looking for\" OR \"recommend\" OR \"best tool\" OR \"software\" OR \"alternative\") AND (\"whitepaper\" OR \"sales deck\" OR \"brochure\" OR \"proposal\" OR \"personalization\" OR \"abm content\")&restrict_sr=1&sort=new&limit=100",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -661,6 +661,19 @@
       ],
       "id": "REDACTED-UUID",
       "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "maxItems": 50
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        160
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Limit"
     }
   ],
   "connections": {
@@ -699,7 +712,7 @@
             "index": 0
           },
           {
-            "node": "Deduplication",
+            "node": "Limit",
             "type": "main",
             "index": 0
           }
@@ -896,6 +909,17 @@
           }
         ]
       ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Deduplication",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -927,6 +951,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-18T02:00:20.990Z"
+    "timestamp": "2026-02-19T21:00:20.156Z"
   }
 }
