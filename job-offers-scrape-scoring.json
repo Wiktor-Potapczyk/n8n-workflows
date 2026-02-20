@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-02T12:09:36.943Z",
+  "updatedAt": "2026-02-20T16:50:39.950Z",
   "createdAt": "2026-01-30T15:15:46.564Z",
   "id": "pfrYMKwymwJzEpRAPujXr",
   "name": "Job offers scrape & scoring",
@@ -258,7 +258,7 @@
       "typeVersion": 1.1,
       "position": [
         0,
-        384
+        400
       ],
       "id": "REDACTED-UUID",
       "name": "Extract from File2"
@@ -363,8 +363,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        400,
-        640
+        384,
+        656
       ],
       "id": "REDACTED-UUID",
       "name": "Edit Fields"
@@ -402,7 +402,7 @@
       "typeVersion": 4.3,
       "position": [
         608,
-        640
+        656
       ],
       "id": "REDACTED-UUID",
       "name": "HTTP Request1",
@@ -421,7 +421,7 @@
       "typeVersion": 2,
       "position": [
         832,
-        640
+        656
       ],
       "id": "REDACTED-UUID",
       "name": "Code in JavaScript1"
@@ -927,6 +927,10 @@
       "parameters": {
         "messages": {
           "message": [
+            {
+              "content": "Act as a Recruitment Researcher.",
+              "role": "system"
+            },
             {
               "content": "=Act as a Recruitment Researcher. I am preparing a job application for the following company.\nPerform a deep-dive research to find specific, recent, and actionable details that show I've done my homework.\n\n--- COMPANY DATA ---\nName: {{ $('Code in JavaScript2').item.json.job_offer.company_name }}\nIndustry:  $('Code in JavaScript2').item.json.job_offer.industries }}\nURL: {{ $('Code in JavaScript2').item.json.job_offer.company_url }}\nDescription Provided: \"{{ $('Code in JavaScript2').item.json.job_offer.company_description }}\"\n\n--- RESEARCH OBJECTIVES ---\nUsing the company name and context, search the web for the following (focus on the last 12 months):\n\n1. **Recent News & Wins:** New partnerships (specific client names), product launches, or awards.\n2. **Financial Status:** Recent funding rounds (Series A/B/C, amount, date), investors, or growth metrics.\n3. **Strategic Focus:** What is their current main challenge or goal? (e.g., Expansion to US market, releasing a mobile app, automating internal ops).\n4. **Engineering Culture:** Search for their engineering blog, GitHub, or tech talks. Do they use specific obscure stacks? Do they contribute to open source?\n\n--- OUTPUT FORMAT ---\nReturn a concise summary (bullet points) containing ONLY facts I can use in a cover letter.\nFormat:\n- **News:** [Fact]\n- **Funding:** [Fact]\n- **Strategy:** [Fact]\n- **Tech Vibe:** [Fact]\n\nIf no info is found for a category, write \"N/A\"."
             }
@@ -2357,6 +2361,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-02T13:00:18.839Z"
+    "timestamp": "2026-02-20T17:00:19.600Z"
   }
 }
