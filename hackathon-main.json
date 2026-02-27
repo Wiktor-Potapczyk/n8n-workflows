@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-02-27T21:52:38.873Z",
+  "updatedAt": "2026-02-27T22:13:57.936Z",
   "createdAt": "2026-02-27T21:04:01.940Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "hackathon main",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -31,8 +31,6 @@
       "parameters": {
         "method": "POST",
         "url": "REDACTED-POSSIBLE-SECRET",
-        "authentication": "REDACTED",
-        "genericAuthType": "REDACTED",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "{\"contents\": [{\"parts\": [{\"text\": \"You are an expert at extracting structured data from NYC Police Accident Reports (MV-104AN form).\\n\\nAnalyze the provided police report image and extract ALL available information into a structured JSON object.\\nBe precise and extract the data exactly as it appears in the document. Pay careful attention to handwritten fields.\\n\\nReturn ONLY a valid JSON object with this structure:\\n\\n{\\n  \\\"report_number\\\": \\\"string\\\",\\n  \\\"accident_date\\\": \\\"YYYY-MM-DD\\\",\\n  \\\"accident_day_of_week\\\": \\\"string\\\",\\n  \\\"accident_time\\\": \\\"HH:MM\\\",\\n  \\\"num_vehicles\\\": 0,\\n  \\\"num_injured\\\": 0,\\n  \\\"num_killed\\\": 0,\\n  \\\"vehicle1_driver\\\": {\\n    \\\"full_name\\\": \\\"LAST, FIRST\\\",\\n    \\\"first_name\\\": \\\"string\\\",\\n    \\\"last_name\\\": \\\"string\\\",\\n    \\\"license_number\\\": \\\"string\\\",\\n    \\\"license_state\\\": \\\"string\\\",\\n    \\\"date_of_birth\\\": \\\"YYYY-MM-DD\\\",\\n    \\\"sex\\\": \\\"M or F\\\",\\n    \\\"address\\\": \\\"string\\\",\\n    \\\"city\\\": \\\"string\\\",\\n    \\\"state\\\": \\\"string\\\",\\n    \\\"zip_code\\\": \\\"string\\\"\\n  },\\n  \\\"vehicle1\\\": {\\n    \\\"plate_number\\\": \\\"string\\\",\\n    \\\"plate_state\\\": \\\"string\\\",\\n    \\\"year\\\": \\\"string\\\",\\n    \\\"make\\\": \\\"string\\\",\\n    \\\"type\\\": \\\"string\\\"\\n  },\\n  \\\"vehicle2_driver\\\": {\\n    \\\"full_name\\\": \\\"LAST, FIRST\\\",\\n    \\\"first_name\\\": \\\"string\\\",\\n    \\\"last_name\\\": \\\"string\\\",\\n    \\\"sex\\\": \\\"M or F\\\",\\n    \\\"address\\\": \\\"string\\\",\\n    \\\"city\\\": \\\"string\\\",\\n    \\\"state\\\": \\\"string\\\"\\n  },\\n  \\\"vehicle2\\\": {\\n    \\\"plate_number\\\": \\\"string or null\\\",\\n    \\\"type\\\": \\\"SEDAN/VAN/BIKE/PEDESTRIAN etc.\\\"\\n  },\\n  \\\"accident_location\\\": {\\n    \\\"borough\\\": \\\"string\\\",\\n    \\\"road\\\": \\\"string\\\",\\n    \\\"intersecting_street\\\": \\\"string or null\\\",\\n    \\\"full_location\\\": \\\"road at intersecting_street, borough\\\"\\n  },\\n  \\\"accident_description\\\": \\\"Full text from Officer Notes\\\",\\n  \\\"officer\\\": {\\\"name\\\": \\\"string\\\", \\\"precinct\\\": \\\"string\\\"},\\n  \\\"computed\\\": {\\n    \\\"client_name_display\\\": \\\"First Last\\\",\\n    \\\"defendant_name_display\\\": \\\"First Last\\\",\\n    \\\"client_pronoun\\\": \\\"his or her\\\",\\n    \\\"statute_of_limitations_date\\\": \\\"YYYY-MM-DD (accident_date + 8 years)\\\",\\n    \\\"has_injuries\\\": true,\\n    \\\"accident_date_formatted\\\": \\\"Month Day, Year\\\"\\n  }\\n}\\n\\nRULES: Return ONLY valid JSON. Use null for missing fields. Vehicle 1 = plaintiff/client.\"}, {\"inline_data\": {\"mime_type\": \"image/png\", \"data\": \"={{ $json.body.pdf_base64 }}\"}}]}], \"generationConfig\": {\"temperature\": 0.1, \"maxOutputTokens\": 4096, \"responseMimeType\": \"application/json\"}}",
@@ -401,7 +399,8 @@
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false,
-    "callerPolicy": "workflowsFromSameOwner"
+    "callerPolicy": "workflowsFromSameOwner",
+    "saveDataSuccessExecution": "all"
   },
   "staticData": null,
   "meta": {
@@ -411,8 +410,8 @@
     "_redacted": true
   },
   "versionId": "REDACTED-UUID",
-  "activeVersionId": null,
-  "triggerCount": 0,
+  "activeVersionId": "REDACTED-UUID",
+  "triggerCount": 2,
   "shared": [
     {
       "updatedAt": "2026-02-27T21:04:01.947Z",
@@ -424,10 +423,410 @@
       }
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2026-02-27T22:04:23.939Z",
+    "createdAt": "2026-02-27T22:04:23.939Z",
+    "versionId": "REDACTED-UUID",
+    "workflowId": "REDACTED-POSSIBLE-SECRET",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "upload-police-report",
+          "httpMethod": "POST",
+          "responseMode": "responseNode",
+          "options": {
+            "rawBody": true
+          }
+        },
+        "id": "webhook-upload",
+        "name": "Webhook - Upload PDF",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "webhookId": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "REDACTED-POSSIBLE-SECRET",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\"contents\": [{\"parts\": [{\"text\": \"You are an expert at extracting structured data from NYC Police Accident Reports (MV-104AN form).\\n\\nAnalyze the provided police report image and extract ALL available information into a structured JSON object.\\nBe precise and extract the data exactly as it appears in the document. Pay careful attention to handwritten fields.\\n\\nReturn ONLY a valid JSON object with this structure:\\n\\n{\\n  \\\"report_number\\\": \\\"string\\\",\\n  \\\"accident_date\\\": \\\"YYYY-MM-DD\\\",\\n  \\\"accident_day_of_week\\\": \\\"string\\\",\\n  \\\"accident_time\\\": \\\"HH:MM\\\",\\n  \\\"num_vehicles\\\": 0,\\n  \\\"num_injured\\\": 0,\\n  \\\"num_killed\\\": 0,\\n  \\\"vehicle1_driver\\\": {\\n    \\\"full_name\\\": \\\"LAST, FIRST\\\",\\n    \\\"first_name\\\": \\\"string\\\",\\n    \\\"last_name\\\": \\\"string\\\",\\n    \\\"license_number\\\": \\\"string\\\",\\n    \\\"license_state\\\": \\\"string\\\",\\n    \\\"date_of_birth\\\": \\\"YYYY-MM-DD\\\",\\n    \\\"sex\\\": \\\"M or F\\\",\\n    \\\"address\\\": \\\"string\\\",\\n    \\\"city\\\": \\\"string\\\",\\n    \\\"state\\\": \\\"string\\\",\\n    \\\"zip_code\\\": \\\"string\\\"\\n  },\\n  \\\"vehicle1\\\": {\\n    \\\"plate_number\\\": \\\"string\\\",\\n    \\\"plate_state\\\": \\\"string\\\",\\n    \\\"year\\\": \\\"string\\\",\\n    \\\"make\\\": \\\"string\\\",\\n    \\\"type\\\": \\\"string\\\"\\n  },\\n  \\\"vehicle2_driver\\\": {\\n    \\\"full_name\\\": \\\"LAST, FIRST\\\",\\n    \\\"first_name\\\": \\\"string\\\",\\n    \\\"last_name\\\": \\\"string\\\",\\n    \\\"sex\\\": \\\"M or F\\\",\\n    \\\"address\\\": \\\"string\\\",\\n    \\\"city\\\": \\\"string\\\",\\n    \\\"state\\\": \\\"string\\\"\\n  },\\n  \\\"vehicle2\\\": {\\n    \\\"plate_number\\\": \\\"string or null\\\",\\n    \\\"type\\\": \\\"SEDAN/VAN/BIKE/PEDESTRIAN etc.\\\"\\n  },\\n  \\\"accident_location\\\": {\\n    \\\"borough\\\": \\\"string\\\",\\n    \\\"road\\\": \\\"string\\\",\\n    \\\"intersecting_street\\\": \\\"string or null\\\",\\n    \\\"full_location\\\": \\\"road at intersecting_street, borough\\\"\\n  },\\n  \\\"accident_description\\\": \\\"Full text from Officer Notes\\\",\\n  \\\"officer\\\": {\\\"name\\\": \\\"string\\\", \\\"precinct\\\": \\\"string\\\"},\\n  \\\"computed\\\": {\\n    \\\"client_name_display\\\": \\\"First Last\\\",\\n    \\\"defendant_name_display\\\": \\\"First Last\\\",\\n    \\\"client_pronoun\\\": \\\"his or her\\\",\\n    \\\"statute_of_limitations_date\\\": \\\"YYYY-MM-DD (accident_date + 8 years)\\\",\\n    \\\"has_injuries\\\": true,\\n    \\\"accident_date_formatted\\\": \\\"Month Day, Year\\\"\\n  }\\n}\\n\\nRULES: Return ONLY valid JSON. Use null for missing fields. Vehicle 1 = plaintiff/client.\"}, {\"inline_data\": {\"mime_type\": \"image/png\", \"data\": \"={{ $json.body.pdf_base64 }}\"}}]}], \"generationConfig\": {\"temperature\": 0.1, \"maxOutputTokens\": 4096, \"responseMimeType\": \"application/json\"}}",
+          "options": {}
+        },
+        "id": "llm-extract",
+        "name": "LLM - Extract Data from PDF",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          220,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "// Parse Gemini response\nconst response = $input.item.json;\nlet content;\ntry {\n  content = response.candidates[0].content.parts[0].text;\n} catch (e) {\n  return { json: { error: 'Failed to read Gemini response', raw: JSON.stringify(response).substring(0, 500) } };\n}\n\nlet extracted;\ntry {\n  let jsonStr = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  extracted = JSON.parse(jsonStr);\n} catch (e) {\n  return { json: { error: 'Failed to parse JSON', raw: content } };\n}\n\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\nlet accidentSummary = extracted.computed && extracted.computed.has_injuries\n  ? 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.'\n  : 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n\nreturn {\n  json: {\n    ...extracted,\n    client_first_name: extracted.vehicle1_driver?.first_name || '',\n    client_last_name: extracted.vehicle1_driver?.last_name || '',\n    client_full_name: extracted.computed?.client_name_display || '',\n    defendant_name: extracted.computed?.defendant_name_display || '',\n    accident_date_formatted: extracted.computed?.accident_date_formatted || extracted.accident_date,\n    accident_location: extracted.accident_location?.full_location || '',\n    client_plate: extracted.vehicle1?.plate_number || '',\n    client_pronoun: extracted.computed?.client_pronoun || 'his',\n    sol_date: extracted.computed?.statute_of_limitations_date || '',\n    has_injuries: extracted.computed?.has_injuries || false,\n    num_injured: extracted.num_injured || 0,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    accident_summary: accidentSummary,\n    _raw_extraction: extracted\n  }\n};\n"
+        },
+        "id": "parse-response",
+        "name": "Parse LLM Response",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          440,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          },
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify($json) }}"
+        },
+        "id": "respond-upload",
+        "name": "Respond - Extracted Data",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          660,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "path": "process-validated-data",
+          "httpMethod": "POST",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "webhook-validated",
+        "name": "Webhook - Validated Data",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          300
+        ],
+        "webhookId": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://eu.app.clio.com/api/v4/matters/{{ $json.body.matter_id }}.json",
+          "authentication": "REDACTED",
+          "genericAuthType": "REDACTED",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"data\": {\n    \"custom_field_values\": [\n      {\n        \"custom_field\": { \"id\": {{ $json.body.custom_field_ids.accident_date }} },\n        \"value\": \"{{ $json.body.accident_date }}\"\n      },\n      {\n        \"custom_field\": { \"id\": {{ $json.body.custom_field_ids.defendant_name }} },\n        \"value\": \"{{ $json.body.defendant_name }}\"\n      },\n      {\n        \"custom_field\": { \"id\": {{ $json.body.custom_field_ids.accident_location }} },\n        \"value\": \"{{ $json.body.accident_location }}\"\n      },\n      {\n        \"custom_field\": { \"id\": {{ $json.body.custom_field_ids.client_plate }} },\n        \"value\": \"{{ $json.body.client_plate }}\"\n      },\n      {\n        \"custom_field\": { \"id\": {{ $json.body.custom_field_ids.sol_date }} },\n        \"value\": \"{{ $json.body.sol_date }}\"\n      },\n      {\n        \"custom_field\": { \"id\": {{ $json.body.custom_field_ids.num_injured }} },\n        \"value\": {{ $json.body.num_injured }}\n      },\n      {\n        \"custom_field\": { \"id\": {{ $json.body.custom_field_ids.client_pronoun }} },\n        \"value\": \"{{ $json.body.client_pronoun }}\"\n      }\n    ]\n  }\n}",
+          "options": {}
+        },
+        "id": "clio-update-matter",
+        "name": "Clio - Update Matter",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          220,
+          300
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "REDACTED-POSSIBLE-SECRET",
+          "authentication": "REDACTED",
+          "genericAuthType": "REDACTED",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $json.body.client_full_name }}\",\n    \"description\": \"Statute of limitations deadline for {{ $json.body.client_full_name }} v. {{ $json.body.defendant_name }}. Accident date: {{ $json.body.accident_date }}.\",\n    \"start_at\": \"{{ $json.body.sol_date }}T09:00:00-05:00\",\n    \"end_at\": \"{{ $json.body.sol_date }}T10:00:00-05:00\",\n    \"all_day\": true,\n    \"matter\": { \"id\": {{ $json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $json.body.attorney_id }} }\n  }\n}",
+          "options": {}
+        },
+        "id": "clio-calendar",
+        "name": "Clio - Calendar Entry (SOL)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          440,
+          300
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "REDACTED-POSSIBLE-SECRET",
+          "authentication": "REDACTED",
+          "genericAuthType": "REDACTED",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"data\": {\n    \"matter\": { \"id\": {{ $json.body.matter_id }} },\n    \"document_template\": { \"id\": {{ $json.body.template_id }} }\n  }\n}",
+          "options": {}
+        },
+        "id": "clio-doc-automation",
+        "name": "Clio - Generate Retainer",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          660,
+          300
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "amount": 5,
+          "unit": "seconds"
+        },
+        "id": "wait-doc",
+        "name": "Wait - Document Generation",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          880,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "GET",
+          "url": "=https://eu.app.clio.com/api/v4/documents/{{ $('Clio - Generate Retainer').item.json.data.document.id }}.json",
+          "authentication": "REDACTED",
+          "genericAuthType": "REDACTED",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "id": "clio-get-document",
+        "name": "Clio - Get Retainer PDF",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1100,
+          300
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "// Prepare email data\nconst body = $('Webhook - Validated Data').item.json.body;\n\n// Determine seasonal booking link\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\n// Build injury summary\nlet injurySummary;\nif (body.num_injured > 0) {\n  injurySummary = 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.';\n} else {\n  injurySummary = 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n}\n\nreturn {\n  json: {\n    to_email: body.client_email || 'REDACTED@email.com',\n    subject: 'Retainer Agreement for Your Review – Richards & Law',\n    client_first_name: body.client_first_name,\n    client_full_name: body.client_full_name,\n    defendant_name: body.defendant_name,\n    accident_date_formatted: body.accident_date_formatted,\n    accident_location: body.accident_location,\n    injury_summary: injurySummary,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    retainer_filename: body.client_full_name.replace(/\\s+/g, '_') + '_Retainer_Agreement.pdf'\n  }\n};\n"
+        },
+        "id": "prepare-email",
+        "name": "Prepare Email Data",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1320,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "sendTo": "={{ $json.to_email }}",
+          "subject": "={{ $json.subject }}",
+          "emailType": "html",
+          "message": "=<div style=\"font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px;\">\n<p>Dear {{ $json.client_first_name }},</p>\n\n<p>Thank you for reaching out to Richards & Law regarding the car accident that took place on <strong>{{ $json.accident_date_formatted }}</strong>. I've had a chance to review the details of your case, and I want to assure you that you're in capable hands.</p>\n\n<p>From what I understand, the incident occurred on <strong>{{ $json.accident_location }}</strong> involving <strong>{{ $json.defendant_name }}</strong>. {{ $json.injury_summary }}</p>\n\n<p>I have prepared a Retainer Agreement for your review. This agreement outlines the terms of our representation and what you can expect from our team. Please find the agreement attached to this email as a PDF document.</p>\n\n<p>Could you please review and sign the attached Retainer Agreement at your earliest convenience? Once we receive the signed agreement, we can begin working on your case immediately.</p>\n\n<p>I would also love to schedule a <strong>{{ $json.consultation_type }}</strong> to discuss your case in more detail. Please feel free to book a time that works for you using the following link:</p>\n\n<p style=\"text-align: center;\">\n<a href=\"{{ $json.booking_link }}\" style=\"background-color: #1a365d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 16px;\">Book Your Consultation</a>\n</p>\n\n<p>Please don't hesitate to reach out if you have any questions or concerns in the meantime. We're here to help you through this process every step of the way.</p>\n\n<p>Warm regards,<br>\n<strong>Andrew Richards</strong><br>\nManaging Partner<br>\nRichards & Law</p>\n</div>",
+          "options": {
+            "attachments": "={{ $json.retainer_filename }}"
+          }
+        },
+        "id": "send-email",
+        "name": "Send Email - Client",
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          1540,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "respondWith": "json",
+          "responseBody": "={\"success\": true, \"message\": \"Processing complete. Retainer sent to {{ $json.to_email }}\"}"
+        },
+        "id": "respond-validated",
+        "name": "Respond - Success",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1760,
+          300
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook - Upload PDF": {
+        "main": [
+          [
+            {
+              "node": "LLM - Extract Data from PDF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "LLM - Extract Data from PDF": {
+        "main": [
+          [
+            {
+              "node": "Parse LLM Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse LLM Response": {
+        "main": [
+          [
+            {
+              "node": "Respond - Extracted Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook - Validated Data": {
+        "main": [
+          [
+            {
+              "node": "Clio - Update Matter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clio - Update Matter": {
+        "main": [
+          [
+            {
+              "node": "Clio - Calendar Entry (SOL)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clio - Calendar Entry (SOL)": {
+        "main": [
+          [
+            {
+              "node": "Clio - Generate Retainer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clio - Generate Retainer": {
+        "main": [
+          [
+            {
+              "node": "Wait - Document Generation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait - Document Generation": {
+        "main": [
+          [
+            {
+              "node": "Clio - Get Retainer PDF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clio - Get Retainer PDF": {
+        "main": [
+          [
+            {
+              "node": "Prepare Email Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Email Data": {
+        "main": [
+          [
+            {
+              "node": "Send Email - Client",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Email - Client": {
+        "main": [
+          [
+            {
+              "node": "Respond - Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "REDACTED",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-27T22:00:15.683Z"
+    "timestamp": "2026-02-27T23:00:16.183Z"
   }
 }
