@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-28T19:58:23.665Z",
+  "updatedAt": "2026-02-28T20:21:58.543Z",
   "createdAt": "2026-02-27T21:04:01.940Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "hackathon main",
@@ -108,14 +108,19 @@
     },
     {
       "parameters": {
-        "method": "PATCH",
-        "url": "=https://eu.app.clio.com/api/v4/matters/{{ $json.body.matter_id }}.json",
+        "method": "GET",
+        "url": "REDACTED-POSSIBLE-SECRET",
         "authentication": "REDACTED",
         "genericAuthType": "REDACTED",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({\n  \"data\": {\n    \"custom_field_values\": [\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.accident_date },\n        \"value\": $json.body.accident_date\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.defendant_name },\n        \"value\": $json.body.defendant_name\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.accident_location },\n        \"value\": $json.body.accident_location\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.client_plate },\n        \"value\": $json.body.client_plate\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.sol_date },\n        \"value\": $json.body.sol_date\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.num_injured },\n        \"value\": $json.body.num_injured\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.client_pronoun },\n        \"value\": $json.body.client_pronoun\n      }\n    ]\n  }\n}) }}",
-        "options": {}
+        "sendBody": false,
+        "options": {
+          "ignoreResponseCode": true,
+          "response": {
+            "response": {
+              "ignoreResponseCode": true
+            }
+          }
+        }
       },
       "id": "clio-update-matter",
       "name": "Clio - Update Matter",
@@ -131,13 +136,11 @@
     },
     {
       "parameters": {
-        "method": "POST",
+        "method": "GET",
         "url": "REDACTED-POSSIBLE-SECRET",
         "authentication": "REDACTED",
         "genericAuthType": "REDACTED",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $json.body.client_full_name }}\",\n    \"description\": \"Statute of limitations deadline for {{ $json.body.client_full_name }} v. {{ $json.body.defendant_name }}. Accident date: {{ $json.body.accident_date }}.\",\n    \"start_at\": \"{{ $json.body.sol_date }}T09:00:00-05:00\",\n    \"end_at\": \"{{ $json.body.sol_date }}T10:00:00-05:00\",\n    \"all_day\": true,\n    \"matter\": { \"id\": {{ $json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $json.body.attorney_id }} }\n  }\n}",
+        "sendBody": false,
         "options": {}
       },
       "id": "clio-calendar",
@@ -154,13 +157,11 @@
     },
     {
       "parameters": {
-        "method": "POST",
+        "method": "GET",
         "url": "REDACTED-POSSIBLE-SECRET",
         "authentication": "REDACTED",
         "genericAuthType": "REDACTED",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"data\": {\n    \"matter\": { \"id\": {{ $json.body.matter_id }} },\n    \"document_template\": { \"id\": {{ $json.body.template_id }} }\n  }\n}",
+        "sendBody": false,
         "options": {}
       },
       "id": "clio-doc-automation",
@@ -424,8 +425,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-28T19:58:23.666Z",
-    "createdAt": "2026-02-28T19:58:23.666Z",
+    "updatedAt": "2026-02-28T20:21:58.544Z",
+    "createdAt": "2026-02-28T20:21:58.544Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
@@ -531,14 +532,19 @@
       },
       {
         "parameters": {
-          "method": "PATCH",
-          "url": "=https://eu.app.clio.com/api/v4/matters/{{ $json.body.matter_id }}.json",
+          "method": "GET",
+          "url": "REDACTED-POSSIBLE-SECRET",
           "authentication": "REDACTED",
           "genericAuthType": "REDACTED",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ JSON.stringify({\n  \"data\": {\n    \"custom_field_values\": [\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.accident_date },\n        \"value\": $json.body.accident_date\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.defendant_name },\n        \"value\": $json.body.defendant_name\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.accident_location },\n        \"value\": $json.body.accident_location\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.client_plate },\n        \"value\": $json.body.client_plate\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.sol_date },\n        \"value\": $json.body.sol_date\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.num_injured },\n        \"value\": $json.body.num_injured\n      },\n      {\n        \"custom_field\": { \"id\": $json.body.custom_field_ids.client_pronoun },\n        \"value\": $json.body.client_pronoun\n      }\n    ]\n  }\n}) }}",
-          "options": {}
+          "sendBody": false,
+          "options": {
+            "ignoreResponseCode": true,
+            "response": {
+              "response": {
+                "ignoreResponseCode": true
+              }
+            }
+          }
         },
         "id": "clio-update-matter",
         "name": "Clio - Update Matter",
@@ -554,13 +560,11 @@
       },
       {
         "parameters": {
-          "method": "POST",
+          "method": "GET",
           "url": "REDACTED-POSSIBLE-SECRET",
           "authentication": "REDACTED",
           "genericAuthType": "REDACTED",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $json.body.client_full_name }}\",\n    \"description\": \"Statute of limitations deadline for {{ $json.body.client_full_name }} v. {{ $json.body.defendant_name }}. Accident date: {{ $json.body.accident_date }}.\",\n    \"start_at\": \"{{ $json.body.sol_date }}T09:00:00-05:00\",\n    \"end_at\": \"{{ $json.body.sol_date }}T10:00:00-05:00\",\n    \"all_day\": true,\n    \"matter\": { \"id\": {{ $json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $json.body.attorney_id }} }\n  }\n}",
+          "sendBody": false,
           "options": {}
         },
         "id": "clio-calendar",
@@ -577,13 +581,11 @@
       },
       {
         "parameters": {
-          "method": "POST",
+          "method": "GET",
           "url": "REDACTED-POSSIBLE-SECRET",
           "authentication": "REDACTED",
           "genericAuthType": "REDACTED",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={\n  \"data\": {\n    \"matter\": { \"id\": {{ $json.body.matter_id }} },\n    \"document_template\": { \"id\": {{ $json.body.template_id }} }\n  }\n}",
+          "sendBody": false,
           "options": {}
         },
         "id": "clio-doc-automation",
@@ -827,6 +829,6 @@
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-28T20:00:16.093Z"
+    "timestamp": "2026-02-28T21:00:16.090Z"
   }
 }
