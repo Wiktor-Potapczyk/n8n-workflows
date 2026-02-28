@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-28T12:51:58.613Z",
+  "updatedAt": "2026-02-28T18:45:55.618Z",
   "createdAt": "2026-02-27T21:04:01.940Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "hackathon main",
@@ -8,8 +8,8 @@
   "nodes": [
     {
       "parameters": {
-        "path": "upload-police-report",
         "httpMethod": "POST",
+        "path": "upload-police-report",
         "responseMode": "responseNode",
         "options": {
           "rawBody": true
@@ -41,7 +41,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        220,
+        224,
         0
       ]
     },
@@ -55,12 +55,14 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        440,
+        448,
         0
       ]
     },
     {
       "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
         "options": {
           "responseHeaders": {
             "entries": [
@@ -74,23 +76,21 @@
               }
             ]
           }
-        },
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}"
+        }
       },
       "id": "respond-upload",
       "name": "Respond - Extracted Data",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        660,
+        672,
         0
       ]
     },
     {
       "parameters": {
-        "path": "process-validated-data",
         "httpMethod": "POST",
+        "path": "process-validated-data",
         "responseMode": "responseNode",
         "options": {}
       },
@@ -100,7 +100,7 @@
       "typeVersion": 2,
       "position": [
         0,
-        300
+        304
       ],
       "webhookId": {
         "_redacted": true
@@ -122,8 +122,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        220,
-        300
+        224,
+        304
       ],
       "credentials": {
         "_redacted": true
@@ -145,8 +145,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        440,
-        300
+        448,
+        304
       ],
       "credentials": {
         "_redacted": true
@@ -168,30 +168,29 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        660,
-        300
+        672,
+        304
       ],
       "credentials": {
         "_redacted": true
       }
     },
     {
-      "parameters": {
-        "amount": 5,
-        "unit": "seconds"
-      },
+      "parameters": {},
       "id": "wait-doc",
       "name": "Wait - Document Generation",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
         880,
-        300
-      ]
+        304
+      ],
+      "webhookId": {
+        "_redacted": true
+      }
     },
     {
       "parameters": {
-        "method": "GET",
         "url": "=https://eu.app.clio.com/api/v4/documents/{{ $('Clio - Generate Retainer').item.json.data.document.id }}.json",
         "authentication": "REDACTED",
         "genericAuthType": "REDACTED",
@@ -208,8 +207,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1100,
-        300
+        1104,
+        304
       ],
       "credentials": {
         "_redacted": true
@@ -225,16 +224,13 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1320,
-        300
+        1328,
+        304
       ]
     },
     {
       "parameters": {
-        "sendTo": "={{ $json.to_email }}",
         "subject": "={{ $json.subject }}",
-        "emailType": "html",
-        "message": "=<div style=\"font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px;\">\n<p>Dear {{ $json.client_first_name }},</p>\n\n<p>Thank you for reaching out to Richards & Law regarding the car accident that took place on <strong>{{ $json.accident_date_formatted }}</strong>. I've had a chance to review the details of your case, and I want to assure you that you're in capable hands.</p>\n\n<p>From what I understand, the incident occurred on <strong>{{ $json.accident_location }}</strong> involving <strong>{{ $json.defendant_name }}</strong>. {{ $json.injury_summary }}</p>\n\n<p>I have prepared a Retainer Agreement for your review. This agreement outlines the terms of our representation and what you can expect from our team. Please find the agreement attached to this email as a PDF document.</p>\n\n<p>Could you please review and sign the attached Retainer Agreement at your earliest convenience? Once we receive the signed agreement, we can begin working on your case immediately.</p>\n\n<p>I would also love to schedule a <strong>{{ $json.consultation_type }}</strong> to discuss your case in more detail. Please feel free to book a time that works for you using the following link:</p>\n\n<p style=\"text-align: center;\">\n<a href=\"{{ $json.booking_link }}\" style=\"background-color: #1a365d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 16px;\">Book Your Consultation</a>\n</p>\n\n<p>Please don't hesitate to reach out if you have any questions or concerns in the meantime. We're here to help you through this process every step of the way.</p>\n\n<p>Warm regards,<br>\n<strong>Andrew Richards</strong><br>\nManaging Partner<br>\nRichards & Law</p>\n</div>",
         "options": {
           "attachments": "={{ $json.retainer_filename }}"
         }
@@ -244,12 +240,18 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1540,
-        300
-      ]
+        1552,
+        304
+      ],
+      "webhookId": {
+        "_redacted": true
+      },
+      "disabled": true
     },
     {
       "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"success\": true, \"message\": \"Processing complete. Retainer sent to {{ $json.to_email }}\"}",
         "options": {
           "responseHeaders": {
             "entries": [
@@ -259,9 +261,7 @@
               }
             ]
           }
-        },
-        "respondWith": "json",
-        "responseBody": "={\"success\": true, \"message\": \"Processing complete. Retainer sent to {{ $json.to_email }}\"}"
+        }
       },
       "id": "respond-validated",
       "name": "Respond - Success",
@@ -269,7 +269,7 @@
       "typeVersion": 1.1,
       "position": [
         1760,
-        300
+        304
       ]
     }
   ],
@@ -424,15 +424,15 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-28T12:51:07.244Z",
-    "createdAt": "2026-02-28T12:51:07.244Z",
+    "updatedAt": "2026-02-28T18:45:57.000Z",
+    "createdAt": "2026-02-28T18:45:55.621Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
       {
         "parameters": {
-          "path": "upload-police-report",
           "httpMethod": "POST",
+          "path": "upload-police-report",
           "responseMode": "responseNode",
           "options": {
             "rawBody": true
@@ -464,7 +464,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          220,
+          224,
           0
         ]
       },
@@ -478,12 +478,14 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          440,
+          448,
           0
         ]
       },
       {
         "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify($json) }}",
           "options": {
             "responseHeaders": {
               "entries": [
@@ -497,23 +499,21 @@
                 }
               ]
             }
-          },
-          "respondWith": "json",
-          "responseBody": "={{ JSON.stringify($json) }}"
+          }
         },
         "id": "respond-upload",
         "name": "Respond - Extracted Data",
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.1,
         "position": [
-          660,
+          672,
           0
         ]
       },
       {
         "parameters": {
-          "path": "process-validated-data",
           "httpMethod": "POST",
+          "path": "process-validated-data",
           "responseMode": "responseNode",
           "options": {}
         },
@@ -523,7 +523,7 @@
         "typeVersion": 2,
         "position": [
           0,
-          300
+          304
         ],
         "webhookId": {
           "_redacted": true
@@ -545,8 +545,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          220,
-          300
+          224,
+          304
         ],
         "credentials": {
           "_redacted": true
@@ -568,8 +568,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          440,
-          300
+          448,
+          304
         ],
         "credentials": {
           "_redacted": true
@@ -591,30 +591,29 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          660,
-          300
+          672,
+          304
         ],
         "credentials": {
           "_redacted": true
         }
       },
       {
-        "parameters": {
-          "amount": 5,
-          "unit": "seconds"
-        },
+        "parameters": {},
         "id": "wait-doc",
         "name": "Wait - Document Generation",
         "type": "n8n-nodes-base.wait",
         "typeVersion": 1.1,
         "position": [
           880,
-          300
-        ]
+          304
+        ],
+        "webhookId": {
+          "_redacted": true
+        }
       },
       {
         "parameters": {
-          "method": "GET",
           "url": "=https://eu.app.clio.com/api/v4/documents/{{ $('Clio - Generate Retainer').item.json.data.document.id }}.json",
           "authentication": "REDACTED",
           "genericAuthType": "REDACTED",
@@ -631,8 +630,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          1100,
-          300
+          1104,
+          304
         ],
         "credentials": {
           "_redacted": true
@@ -648,16 +647,13 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          1320,
-          300
+          1328,
+          304
         ]
       },
       {
         "parameters": {
-          "sendTo": "={{ $json.to_email }}",
           "subject": "={{ $json.subject }}",
-          "emailType": "html",
-          "message": "=<div style=\"font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px;\">\n<p>Dear {{ $json.client_first_name }},</p>\n\n<p>Thank you for reaching out to Richards & Law regarding the car accident that took place on <strong>{{ $json.accident_date_formatted }}</strong>. I've had a chance to review the details of your case, and I want to assure you that you're in capable hands.</p>\n\n<p>From what I understand, the incident occurred on <strong>{{ $json.accident_location }}</strong> involving <strong>{{ $json.defendant_name }}</strong>. {{ $json.injury_summary }}</p>\n\n<p>I have prepared a Retainer Agreement for your review. This agreement outlines the terms of our representation and what you can expect from our team. Please find the agreement attached to this email as a PDF document.</p>\n\n<p>Could you please review and sign the attached Retainer Agreement at your earliest convenience? Once we receive the signed agreement, we can begin working on your case immediately.</p>\n\n<p>I would also love to schedule a <strong>{{ $json.consultation_type }}</strong> to discuss your case in more detail. Please feel free to book a time that works for you using the following link:</p>\n\n<p style=\"text-align: center;\">\n<a href=\"{{ $json.booking_link }}\" style=\"background-color: #1a365d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 16px;\">Book Your Consultation</a>\n</p>\n\n<p>Please don't hesitate to reach out if you have any questions or concerns in the meantime. We're here to help you through this process every step of the way.</p>\n\n<p>Warm regards,<br>\n<strong>Andrew Richards</strong><br>\nManaging Partner<br>\nRichards & Law</p>\n</div>",
           "options": {
             "attachments": "={{ $json.retainer_filename }}"
           }
@@ -667,12 +663,18 @@
         "type": "n8n-nodes-base.emailSend",
         "typeVersion": 2.1,
         "position": [
-          1540,
-          300
-        ]
+          1552,
+          304
+        ],
+        "webhookId": {
+          "_redacted": true
+        },
+        "disabled": true
       },
       {
         "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\"success\": true, \"message\": \"Processing complete. Retainer sent to {{ $json.to_email }}\"}",
           "options": {
             "responseHeaders": {
               "entries": [
@@ -682,9 +684,7 @@
                 }
               ]
             }
-          },
-          "respondWith": "json",
-          "responseBody": "={\"success\": true, \"message\": \"Processing complete. Retainer sent to {{ $json.to_email }}\"}"
+          }
         },
         "id": "respond-validated",
         "name": "Respond - Success",
@@ -692,7 +692,7 @@
         "typeVersion": 1.1,
         "position": [
           1760,
-          300
+          304
         ]
       }
     ],
@@ -820,13 +820,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": null,
-    "description": null,
+    "name": "Version ba26431d",
+    "description": "",
     "autosaved": false
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-02-28T13:00:16.141Z"
+    "timestamp": "2026-02-28T19:00:16.133Z"
   }
 }
