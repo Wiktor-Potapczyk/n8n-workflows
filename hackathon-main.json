@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-02T16:59:34.884Z",
+  "updatedAt": "2026-03-02T17:00:31.836Z",
   "createdAt": "2026-02-27T21:04:01.940Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "hackathon main",
@@ -232,7 +232,7 @@
         "genericAuthType": "REDACTED",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $('Webhook - Validated Data').item.json.body.client_full_name }}\",\n    \"description\": \"SOL deadline for {{ $('Webhook - Validated Data').item.json.body.client_full_name }} v. {{ $('Webhook - Validated Data').item.json.body.defendant_name }}. Accident: {{ $('Webhook - Validated Data').item.json.body.accident_date }}.\",\n    \"start_at\": \"={{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T09:00:00Z'; })() }}\",\n    \"end_at\": \"={{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T10:00:00Z'; })() }}\",\n    \"matter\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.calendar_id }} }\n  }\n}\n",
+        "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $('Webhook - Validated Data').item.json.body.client_full_name }}\",\n    \"description\": \"SOL deadline for {{ $('Webhook - Validated Data').item.json.body.client_full_name }} v. {{ $('Webhook - Validated Data').item.json.body.defendant_name }}. Accident: {{ $('Webhook - Validated Data').item.json.body.accident_date }}.\",\n    \"start_at\": \"{{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T09:00:00Z'; })() }}\",\n    \"end_at\": \"{{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T10:00:00Z'; })() }}\",\n    \"matter\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.calendar_id }} }\n  }\n}\n",
         "options": {}
       },
       "id": "REDACTED-UUID",
@@ -586,8 +586,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-02T16:59:36.000Z",
-    "createdAt": "2026-03-02T16:59:34.887Z",
+    "updatedAt": "2026-03-02T17:00:35.000Z",
+    "createdAt": "2026-03-02T17:00:31.837Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
@@ -817,7 +817,7 @@
           "genericAuthType": "REDACTED",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $('Webhook - Validated Data').item.json.body.client_full_name }}\",\n    \"description\": \"SOL deadline for {{ $('Webhook - Validated Data').item.json.body.client_full_name }} v. {{ $('Webhook - Validated Data').item.json.body.defendant_name }}. Accident: {{ $('Webhook - Validated Data').item.json.body.accident_date }}.\",\n    \"start_at\": \"={{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T09:00:00Z'; })() }}\",\n    \"end_at\": \"={{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T10:00:00Z'; })() }}\",\n    \"matter\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.calendar_id }} }\n  }\n}\n",
+          "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $('Webhook - Validated Data').item.json.body.client_full_name }}\",\n    \"description\": \"SOL deadline for {{ $('Webhook - Validated Data').item.json.body.client_full_name }} v. {{ $('Webhook - Validated Data').item.json.body.defendant_name }}. Accident: {{ $('Webhook - Validated Data').item.json.body.accident_date }}.\",\n    \"start_at\": \"{{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T09:00:00Z'; })() }}\",\n    \"end_at\": \"{{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T10:00:00Z'; })() }}\",\n    \"matter\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.calendar_id }} }\n  }\n}\n",
           "options": {}
         },
         "id": "REDACTED-UUID",
@@ -1144,13 +1144,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": "Version 8d37ac74",
+    "name": "Version c6484651",
     "description": "",
     "autosaved": true
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-03-02T17:00:16.364Z"
+    "timestamp": "2026-03-02T18:00:16.484Z"
   }
 }
