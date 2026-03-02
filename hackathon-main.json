@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-02T15:52:07.974Z",
+  "updatedAt": "2026-03-02T16:59:34.884Z",
   "createdAt": "2026-02-27T21:04:01.940Z",
   "id": "REDACTED-POSSIBLE-SECRET",
   "name": "hackathon main",
@@ -48,7 +48,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Parse Gemini response\nconst response = $input.item.json;\nlet content;\ntry {\n  content = response.candidates[0].content.parts[0].text;\n} catch (e) {\n  return { json: { error: 'Failed to read Gemini response', raw: JSON.stringify(response).substring(0, 500) } };\n}\n\nlet extracted;\ntry {\n  let jsonStr = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  extracted = JSON.parse(jsonStr);\n} catch (e) {\n  return { json: { error: 'Failed to parse JSON', raw: content } };\n}\n\n// Seasonal booking link\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\n// Accident summary\nconst accidentSummary = extracted.num_injured > 0\n  ? 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.'\n  : 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n\n// SOL date (8 years from accident)\nlet solDate = '';\nif (extracted.accident_date) {\n  const d = new Date(extracted.accident_date);\n  if (!isNaN(d.getTime())) {\n    d.setFullYear(d.getFullYear() + 8);\n    solDate = d.toISOString().split('T')[0];\n  }\n}\n\n// Resolve nested accident_location\nconst accidentLocation = (typeof extracted.accident_location === 'object' && extracted.accident_location !== null)\n  ? (extracted.accident_location.full_location || JSON.stringify(extracted.accident_location))\n  : (extracted.accident_location || '');\n\n// Plate number\nconst clientPlate = (extracted.vehicle1 && extracted.vehicle1.plate_number)\n  ? extracted.vehicle1.plate_number\n  : (extracted.client_plate || '');\n\n// Client name\nconst clientFirstName = extracted.client_first_name || (extracted.vehicle1_driver && extracted.vehicle1_driver.first_name) || '';\nconst clientLastName = extracted.client_last_name || (extracted.vehicle1_driver && extracted.vehicle1_driver.last_name) || '';\n\n// Defendant name\nconst defendantName = extracted.defendant_name || '';\n\nreturn {\n  json: {\n    client_first_name: clientFirstName,\n    client_last_name: clientLastName,\n    client_full_name: (clientFirstName + ' ' + clientLastName).trim(),\n    defendant_name: defendantName,\n    accident_date: extracted.accident_date || '',\n    accident_date_formatted: extracted.accident_date || '',\n    accident_location: accidentLocation,\n    client_plate: clientPlate,\n    client_pronoun: extracted.client_pronoun || 'they',\n    sol_date: solDate,\n    has_injuries: (extracted.num_injured || 0) > 0,\n    num_injured: extracted.num_injured || 0,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    accident_summary: accidentSummary,\n    accident_description: extracted.accident_description || '',\n    _raw_extraction: extracted\n  }\n};\n"
+        "jsCode": "// Parse Gemini response\nconst response = $input.item.json;\nlet content;\ntry {\n  content = response.candidates[0].content.parts[0].text;\n} catch (e) {\n  return { json: { error: 'Failed to read Gemini response', raw: JSON.stringify(response).substring(0, 500) } };\n}\n\nlet extracted;\ntry {\n  let jsonStr = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  extracted = JSON.parse(jsonStr);\n} catch (e) {\n  return { json: { error: 'Failed to parse JSON', raw: content } };\n}\n\n// Seasonal booking link\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\n// Accident summary\nconst accidentSummary = extracted.num_injured > 0\n  ? 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.'\n  : 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n\n// SOL date (3 years from accident)\nlet solDate = '';\nif (extracted.accident_date) {\n  const d = new Date(extracted.accident_date);\n  if (!isNaN(d.getTime())) {\n    d.setFullYear(d.getFullYear() + 3);\n    solDate = d.toISOString().split('T')[0];\n  }\n}\n\n// Resolve nested accident_location\nconst accidentLocation = (typeof extracted.accident_location === 'object' && extracted.accident_location !== null)\n  ? (extracted.accident_location.full_location || JSON.stringify(extracted.accident_location))\n  : (extracted.accident_location || '');\n\n// Plate number\nconst clientPlate = (extracted.vehicle1 && extracted.vehicle1.plate_number)\n  ? extracted.vehicle1.plate_number\n  : (extracted.client_plate || '');\n\n// Client name\nconst clientFirstName = extracted.client_first_name || '';\nconst clientLastName = extracted.client_last_name || '';\n\n// Defendant name\nconst defendantName = extracted.defendant_name || '';\n\nreturn {\n  json: {\n    client_first_name: clientFirstName,\n    client_last_name: clientLastName,\n    client_full_name: (clientFirstName + ' ' + clientLastName).trim(),\n    defendant_name: defendantName,\n    accident_date: extracted.accident_date || '',\n    accident_date_formatted: extracted.accident_date || '',\n    accident_location: accidentLocation,\n    client_plate: clientPlate,\n    client_pronoun: extracted.client_pronoun || 'they',\n    sol_date: solDate,\n    has_injuries: (extracted.num_injured || 0) > 0,\n    num_injured: extracted.num_injured || 0,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    accident_summary: accidentSummary,\n    accident_description: extracted.accident_description || '',\n    _raw_extraction: extracted\n  }\n};\n"
       },
       "id": "parse-response",
       "name": "Parse LLM Response",
@@ -113,8 +113,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1088,
-        304
+        1248,
+        432
       ],
       "webhookId": {
         "_redacted": true
@@ -164,61 +164,32 @@
     },
     {
       "parameters": {
-        "url": "=https://eu.app.clio.com/api/v4/documents/{{ $('Clio - Generate Retainer').item.json.data.document.id }}/download",
-        "authentication": "REDACTED",
-        "genericAuthType": "REDACTED",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "file"
-            }
-          }
-        }
-      },
-      "id": "REDACTED-UUID",
-      "name": "Clio - Get Retainer PDF",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1296,
-        304
-      ],
-      "credentials": {
-        "_redacted": true
-      }
-    },
-    {
-      "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Prepare email data\nconst body = $('Webhook - Validated Data').item.json.body;\n\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\nlet injurySummary;\nif (body.num_injured > 0) {\n  injurySummary = 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.';\n} else {\n  injurySummary = 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n}\n\nreturn {\n  json: {\n    to_email: body.client_email || 'REDACTED@email.com',\n    subject: 'Retainer Agreement for Your Review – Richards & Law',\n    client_first_name: body.client_first_name,\n    client_full_name: body.client_full_name,\n    defendant_name: body.defendant_name,\n    accident_date_formatted: body.accident_date_formatted || body.accident_date,\n    accident_location: body.accident_location,\n    injury_summary: injurySummary,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    retainer_filename: body.client_full_name.replace(/\\s+/g, '_') + '_Retainer_Agreement.pdf'\n  },\n  binary: $input.item.binary\n};\n"
+        "jsCode": "// Prepare email data\nconst body = $('Webhook - Validated Data').item.json.body;\nconst clioDocUrl = $json.clio_document_url || '';\n\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\nlet injurySummary;\nif (body.num_injured > 0) {\n  injurySummary = 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.';\n} else {\n  injurySummary = 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n}\n\nreturn {\n  json: {\n    to_email: body.client_email || 'REDACTED@email.com',\n    subject: 'Retainer Agreement for Your Review – Richards & Law',\n    client_first_name: body.client_first_name,\n    client_full_name: body.client_full_name,\n    defendant_name: body.defendant_name,\n    accident_date_formatted: body.accident_date_formatted || body.accident_date,\n    accident_location: body.accident_location,\n    injury_summary: injurySummary,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    clio_document_url: clioDocUrl\n  }\n};\n"
       },
       "id": "REDACTED-UUID",
       "name": "Prepare Email Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1536,
-        304
+        1456,
+        288
       ]
     },
     {
       "parameters": {
         "sendTo": "={{ $json.to_email }}",
         "subject": "={{ $json.subject }}",
-        "message": "=Dear {{ $json.client_first_name }},\n\nWe are pleased to enclose your Retainer Agreement for the matter of {{ $json.client_full_name }} v. {{ $json.defendant_name }} (accident on {{ $json.accident_date_formatted }} at {{ $json.accident_location }}).\n\n{{ $json.injury_summary }}\n\nPlease review and sign the attached agreement. To schedule your {{ $json.consultation_type }}, please use the following link: {{ $json.booking_link }}\n\nBest regards,\nRichards & Law",
+        "message": "=Dear {{ $json.client_first_name }},\n\nWe are pleased to share your Retainer Agreement for the matter of {{ $json.client_full_name }} v. {{ $json.defendant_name }} (accident on {{ $json.accident_date_formatted }} at {{ $json.accident_location }}).\n\n{{ $json.injury_summary }}\n\nYour Retainer Agreement is ready for review. Please download it securely here:\n{{ $json.clio_document_url }}\n\nTo schedule your {{ $json.consultation_type }}, please use the following link: {{ $json.booking_link }}\n\nBest regards,\nRichards & Law\n",
         "options": {
-          "attachmentsUi": {
-            "attachmentsBinary": [
-              {}
-            ]
-          }
+          "appendAttribution": false
         }
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1776,
-        304
+        1648,
+        288
       ],
       "id": "REDACTED-UUID",
       "name": "Send a message",
@@ -249,8 +220,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        1984,
-        304
+        1888,
+        288
       ]
     },
     {
@@ -261,7 +232,7 @@
         "genericAuthType": "REDACTED",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $('Webhook - Validated Data').item.json.body.client_full_name }}\",\n    \"description\": \"SOL deadline for {{ $('Webhook - Validated Data').item.json.body.client_full_name }} v. {{ $('Webhook - Validated Data').item.json.body.defendant_name }}. Accident: {{ $('Webhook - Validated Data').item.json.body.accident_date }}.\",\n    \"start_at\": \"{{ $('Webhook - Validated Data').item.json.body.sol_date }}T00:00:00Z\",\n    \"end_at\": \"{{ $('Webhook - Validated Data').item.json.body.sol_date }}T01:00:00Z\",\n    \"matter\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.calendar_id }} }\n  }\n}",
+        "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $('Webhook - Validated Data').item.json.body.client_full_name }}\",\n    \"description\": \"SOL deadline for {{ $('Webhook - Validated Data').item.json.body.client_full_name }} v. {{ $('Webhook - Validated Data').item.json.body.defendant_name }}. Accident: {{ $('Webhook - Validated Data').item.json.body.accident_date }}.\",\n    \"start_at\": \"={{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T09:00:00Z'; })() }}\",\n    \"end_at\": \"={{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T10:00:00Z'; })() }}\",\n    \"matter\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.calendar_id }} }\n  }\n}\n",
         "options": {}
       },
       "id": "REDACTED-UUID",
@@ -298,6 +269,101 @@
       "credentials": {
         "_redacted": true
       }
+    },
+    {
+      "parameters": {
+        "url": "=https://eu.app.clio.com/api/v4/document_automations/{{ $('Clio - Generate Retainer').item.json.data.id }}.json?fields=id,state,documents",
+        "authentication": "REDACTED",
+        "genericAuthType": "REDACTED",
+        "options": {}
+      },
+      "id": "REDACTED-UUID",
+      "name": "Clio - Get Automation Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1424,
+        432
+      ],
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1072,
+        304
+      ],
+      "id": "REDACTED-UUID",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "REDACTED-UUID",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1600,
+        432
+      ],
+      "id": "REDACTED-UUID",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "id": "REDACTED-UUID",
+      "name": "Wait - Document Generation1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1840,
+        560
+      ],
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Build Clio document link instead of downloading binary\nconst docId = $('Clio - Get Automation Status').item.json.data.documents[0].id;\nconst matterId = $('Webhook - Validated Data').item.json.body.matter_id;\nreturn {\n  json: {\n    ...($input.item.json),\n    clio_document_id: docId,\n    clio_document_url: `https://eu.app.clio.com/nc/#/matters/${matterId}/documents`\n  }\n};\n"
+      },
+      "id": "REDACTED-UUID",
+      "name": "Download PDF from S3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        288
+      ]
     }
   ],
   "connections": {
@@ -349,7 +415,7 @@
       "main": [
         [
           {
-            "node": "Clio - Get Retainer PDF",
+            "node": "Clio - Get Automation Status",
             "type": "main",
             "index": 0
           }
@@ -372,17 +438,6 @@
         [
           {
             "node": "Clio - Calendar Entry (SOL)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Clio - Get Retainer PDF": {
-      "main": [
-        [
-          {
-            "node": "Prepare Email Data",
             "type": "main",
             "index": 0
           }
@@ -426,7 +481,76 @@
       "main": [
         [
           {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clio - Get Automation Status": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Download PDF from S3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "Wait - Document Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Wait - Document Generation1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait - Document Generation1": {
+      "main": [
+        [
+          {
+            "node": "Clio - Get Automation Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF from S3": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email Data",
             "type": "main",
             "index": 0
           }
@@ -462,8 +586,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-02T15:52:10.000Z",
-    "createdAt": "2026-03-02T15:52:07.975Z",
+    "updatedAt": "2026-03-02T16:59:36.000Z",
+    "createdAt": "2026-03-02T16:59:34.887Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "REDACTED-POSSIBLE-SECRET",
     "nodes": [
@@ -509,7 +633,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "// Parse Gemini response\nconst response = $input.item.json;\nlet content;\ntry {\n  content = response.candidates[0].content.parts[0].text;\n} catch (e) {\n  return { json: { error: 'Failed to read Gemini response', raw: JSON.stringify(response).substring(0, 500) } };\n}\n\nlet extracted;\ntry {\n  let jsonStr = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  extracted = JSON.parse(jsonStr);\n} catch (e) {\n  return { json: { error: 'Failed to parse JSON', raw: content } };\n}\n\n// Seasonal booking link\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\n// Accident summary\nconst accidentSummary = extracted.num_injured > 0\n  ? 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.'\n  : 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n\n// SOL date (8 years from accident)\nlet solDate = '';\nif (extracted.accident_date) {\n  const d = new Date(extracted.accident_date);\n  if (!isNaN(d.getTime())) {\n    d.setFullYear(d.getFullYear() + 8);\n    solDate = d.toISOString().split('T')[0];\n  }\n}\n\n// Resolve nested accident_location\nconst accidentLocation = (typeof extracted.accident_location === 'object' && extracted.accident_location !== null)\n  ? (extracted.accident_location.full_location || JSON.stringify(extracted.accident_location))\n  : (extracted.accident_location || '');\n\n// Plate number\nconst clientPlate = (extracted.vehicle1 && extracted.vehicle1.plate_number)\n  ? extracted.vehicle1.plate_number\n  : (extracted.client_plate || '');\n\n// Client name\nconst clientFirstName = extracted.client_first_name || (extracted.vehicle1_driver && extracted.vehicle1_driver.first_name) || '';\nconst clientLastName = extracted.client_last_name || (extracted.vehicle1_driver && extracted.vehicle1_driver.last_name) || '';\n\n// Defendant name\nconst defendantName = extracted.defendant_name || '';\n\nreturn {\n  json: {\n    client_first_name: clientFirstName,\n    client_last_name: clientLastName,\n    client_full_name: (clientFirstName + ' ' + clientLastName).trim(),\n    defendant_name: defendantName,\n    accident_date: extracted.accident_date || '',\n    accident_date_formatted: extracted.accident_date || '',\n    accident_location: accidentLocation,\n    client_plate: clientPlate,\n    client_pronoun: extracted.client_pronoun || 'they',\n    sol_date: solDate,\n    has_injuries: (extracted.num_injured || 0) > 0,\n    num_injured: extracted.num_injured || 0,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    accident_summary: accidentSummary,\n    accident_description: extracted.accident_description || '',\n    _raw_extraction: extracted\n  }\n};\n"
+          "jsCode": "// Parse Gemini response\nconst response = $input.item.json;\nlet content;\ntry {\n  content = response.candidates[0].content.parts[0].text;\n} catch (e) {\n  return { json: { error: 'Failed to read Gemini response', raw: JSON.stringify(response).substring(0, 500) } };\n}\n\nlet extracted;\ntry {\n  let jsonStr = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  extracted = JSON.parse(jsonStr);\n} catch (e) {\n  return { json: { error: 'Failed to parse JSON', raw: content } };\n}\n\n// Seasonal booking link\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\n// Accident summary\nconst accidentSummary = extracted.num_injured > 0\n  ? 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.'\n  : 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n\n// SOL date (3 years from accident)\nlet solDate = '';\nif (extracted.accident_date) {\n  const d = new Date(extracted.accident_date);\n  if (!isNaN(d.getTime())) {\n    d.setFullYear(d.getFullYear() + 3);\n    solDate = d.toISOString().split('T')[0];\n  }\n}\n\n// Resolve nested accident_location\nconst accidentLocation = (typeof extracted.accident_location === 'object' && extracted.accident_location !== null)\n  ? (extracted.accident_location.full_location || JSON.stringify(extracted.accident_location))\n  : (extracted.accident_location || '');\n\n// Plate number\nconst clientPlate = (extracted.vehicle1 && extracted.vehicle1.plate_number)\n  ? extracted.vehicle1.plate_number\n  : (extracted.client_plate || '');\n\n// Client name\nconst clientFirstName = extracted.client_first_name || '';\nconst clientLastName = extracted.client_last_name || '';\n\n// Defendant name\nconst defendantName = extracted.defendant_name || '';\n\nreturn {\n  json: {\n    client_first_name: clientFirstName,\n    client_last_name: clientLastName,\n    client_full_name: (clientFirstName + ' ' + clientLastName).trim(),\n    defendant_name: defendantName,\n    accident_date: extracted.accident_date || '',\n    accident_date_formatted: extracted.accident_date || '',\n    accident_location: accidentLocation,\n    client_plate: clientPlate,\n    client_pronoun: extracted.client_pronoun || 'they',\n    sol_date: solDate,\n    has_injuries: (extracted.num_injured || 0) > 0,\n    num_injured: extracted.num_injured || 0,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    accident_summary: accidentSummary,\n    accident_description: extracted.accident_description || '',\n    _raw_extraction: extracted\n  }\n};\n"
         },
         "id": "parse-response",
         "name": "Parse LLM Response",
@@ -574,8 +698,8 @@
         "type": "n8n-nodes-base.wait",
         "typeVersion": 1.1,
         "position": [
-          1088,
-          304
+          1248,
+          432
         ],
         "webhookId": {
           "_redacted": true
@@ -625,61 +749,32 @@
       },
       {
         "parameters": {
-          "url": "=https://eu.app.clio.com/api/v4/documents/{{ $('Clio - Generate Retainer').item.json.data.document.id }}/download",
-          "authentication": "REDACTED",
-          "genericAuthType": "REDACTED",
-          "options": {
-            "response": {
-              "response": {
-                "responseFormat": "file"
-              }
-            }
-          }
-        },
-        "id": "REDACTED-UUID",
-        "name": "Clio - Get Retainer PDF",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          1296,
-          304
-        ],
-        "credentials": {
-          "_redacted": true
-        }
-      },
-      {
-        "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "// Prepare email data\nconst body = $('Webhook - Validated Data').item.json.body;\n\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\nlet injurySummary;\nif (body.num_injured > 0) {\n  injurySummary = 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.';\n} else {\n  injurySummary = 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n}\n\nreturn {\n  json: {\n    to_email: body.client_email || 'REDACTED@email.com',\n    subject: 'Retainer Agreement for Your Review – Richards & Law',\n    client_first_name: body.client_first_name,\n    client_full_name: body.client_full_name,\n    defendant_name: body.defendant_name,\n    accident_date_formatted: body.accident_date_formatted || body.accident_date,\n    accident_location: body.accident_location,\n    injury_summary: injurySummary,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    retainer_filename: body.client_full_name.replace(/\\s+/g, '_') + '_Retainer_Agreement.pdf'\n  },\n  binary: $input.item.binary\n};\n"
+          "jsCode": "// Prepare email data\nconst body = $('Webhook - Validated Data').item.json.body;\nconst clioDocUrl = $json.clio_document_url || '';\n\nconst currentMonth = new Date().getMonth() + 1;\nlet bookingLink, consultationType;\nif (currentMonth >= 3 && currentMonth <= 8) {\n  bookingLink = 'https://calendly.com/swans-santiago-p/summer-spring';\n  consultationType = 'in-office consultation';\n} else {\n  bookingLink = 'https://calendly.com/swans-santiago-p/winter-autumn';\n  consultationType = 'virtual consultation';\n}\n\nlet injurySummary;\nif (body.num_injured > 0) {\n  injurySummary = 'Based on the police report, injuries were sustained in the accident. Your health and well-being are our top priority, and we want to ensure you receive proper compensation for any medical expenses and pain and suffering.';\n} else {\n  injurySummary = 'Fortunately, no injuries were reported in the accident. However, you may still be entitled to compensation for property damage and other related expenses.';\n}\n\nreturn {\n  json: {\n    to_email: body.client_email || 'REDACTED@email.com',\n    subject: 'Retainer Agreement for Your Review – Richards & Law',\n    client_first_name: body.client_first_name,\n    client_full_name: body.client_full_name,\n    defendant_name: body.defendant_name,\n    accident_date_formatted: body.accident_date_formatted || body.accident_date,\n    accident_location: body.accident_location,\n    injury_summary: injurySummary,\n    booking_link: bookingLink,\n    consultation_type: consultationType,\n    clio_document_url: clioDocUrl\n  }\n};\n"
         },
         "id": "REDACTED-UUID",
         "name": "Prepare Email Data",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          1536,
-          304
+          1456,
+          288
         ]
       },
       {
         "parameters": {
           "sendTo": "={{ $json.to_email }}",
           "subject": "={{ $json.subject }}",
-          "message": "=Dear {{ $json.client_first_name }},\n\nWe are pleased to enclose your Retainer Agreement for the matter of {{ $json.client_full_name }} v. {{ $json.defendant_name }} (accident on {{ $json.accident_date_formatted }} at {{ $json.accident_location }}).\n\n{{ $json.injury_summary }}\n\nPlease review and sign the attached agreement. To schedule your {{ $json.consultation_type }}, please use the following link: {{ $json.booking_link }}\n\nBest regards,\nRichards & Law",
+          "message": "=Dear {{ $json.client_first_name }},\n\nWe are pleased to share your Retainer Agreement for the matter of {{ $json.client_full_name }} v. {{ $json.defendant_name }} (accident on {{ $json.accident_date_formatted }} at {{ $json.accident_location }}).\n\n{{ $json.injury_summary }}\n\nYour Retainer Agreement is ready for review. Please download it securely here:\n{{ $json.clio_document_url }}\n\nTo schedule your {{ $json.consultation_type }}, please use the following link: {{ $json.booking_link }}\n\nBest regards,\nRichards & Law\n",
           "options": {
-            "attachmentsUi": {
-              "attachmentsBinary": [
-                {}
-              ]
-            }
+            "appendAttribution": false
           }
         },
         "type": "n8n-nodes-base.gmail",
         "typeVersion": 2.2,
         "position": [
-          1776,
-          304
+          1648,
+          288
         ],
         "id": "REDACTED-UUID",
         "name": "Send a message",
@@ -710,8 +805,8 @@
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.1,
         "position": [
-          1984,
-          304
+          1888,
+          288
         ]
       },
       {
@@ -722,7 +817,7 @@
           "genericAuthType": "REDACTED",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $('Webhook - Validated Data').item.json.body.client_full_name }}\",\n    \"description\": \"SOL deadline for {{ $('Webhook - Validated Data').item.json.body.client_full_name }} v. {{ $('Webhook - Validated Data').item.json.body.defendant_name }}. Accident: {{ $('Webhook - Validated Data').item.json.body.accident_date }}.\",\n    \"start_at\": \"{{ $('Webhook - Validated Data').item.json.body.sol_date }}T00:00:00Z\",\n    \"end_at\": \"{{ $('Webhook - Validated Data').item.json.body.sol_date }}T01:00:00Z\",\n    \"matter\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.calendar_id }} }\n  }\n}",
+          "jsonBody": "={\n  \"data\": {\n    \"summary\": \"Statute of Limitations - {{ $('Webhook - Validated Data').item.json.body.client_full_name }}\",\n    \"description\": \"SOL deadline for {{ $('Webhook - Validated Data').item.json.body.client_full_name }} v. {{ $('Webhook - Validated Data').item.json.body.defendant_name }}. Accident: {{ $('Webhook - Validated Data').item.json.body.accident_date }}.\",\n    \"start_at\": \"={{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T09:00:00Z'; })() }}\",\n    \"end_at\": \"={{ (() => { const d = new Date($('Webhook - Validated Data').item.json.body.accident_date); d.setFullYear(d.getFullYear() + 3); return d.toISOString().split('T')[0] + 'T10:00:00Z'; })() }}\",\n    \"matter\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.matter_id }} },\n    \"calendar_owner\": { \"id\": {{ $('Webhook - Validated Data').item.json.body.calendar_id }} }\n  }\n}\n",
           "options": {}
         },
         "id": "REDACTED-UUID",
@@ -759,6 +854,101 @@
         "credentials": {
           "_redacted": true
         }
+      },
+      {
+        "parameters": {
+          "url": "=https://eu.app.clio.com/api/v4/document_automations/{{ $('Clio - Generate Retainer').item.json.data.id }}.json?fields=id,state,documents",
+          "authentication": "REDACTED",
+          "genericAuthType": "REDACTED",
+          "options": {}
+        },
+        "id": "REDACTED-UUID",
+        "name": "Clio - Get Automation Status",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1424,
+          432
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1072,
+          304
+        ],
+        "id": "REDACTED-UUID",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "REDACTED-UUID",
+                "leftValue": "={{ $json.data.state }}",
+                "rightValue": "completed",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1600,
+          432
+        ],
+        "id": "REDACTED-UUID",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "amount": 1
+        },
+        "id": "REDACTED-UUID",
+        "name": "Wait - Document Generation1",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          1840,
+          560
+        ],
+        "webhookId": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "// Build Clio document link instead of downloading binary\nconst docId = $('Clio - Get Automation Status').item.json.data.documents[0].id;\nconst matterId = $('Webhook - Validated Data').item.json.body.matter_id;\nreturn {\n  json: {\n    ...($input.item.json),\n    clio_document_id: docId,\n    clio_document_url: `https://eu.app.clio.com/nc/#/matters/${matterId}/documents`\n  }\n};\n"
+        },
+        "id": "REDACTED-UUID",
+        "name": "Download PDF from S3",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1264,
+          288
+        ]
       }
     ],
     "connections": {
@@ -810,7 +1000,7 @@
         "main": [
           [
             {
-              "node": "Clio - Get Retainer PDF",
+              "node": "Clio - Get Automation Status",
               "type": "main",
               "index": 0
             }
@@ -833,17 +1023,6 @@
           [
             {
               "node": "Clio - Calendar Entry (SOL)",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Clio - Get Retainer PDF": {
-        "main": [
-          [
-            {
-              "node": "Prepare Email Data",
               "type": "main",
               "index": 0
             }
@@ -887,7 +1066,76 @@
         "main": [
           [
             {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clio - Get Automation Status": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "Download PDF from S3",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
               "node": "Wait - Document Generation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Wait - Document Generation1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait - Document Generation1": {
+        "main": [
+          [
+            {
+              "node": "Clio - Get Automation Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download PDF from S3": {
+        "main": [
+          [
+            {
+              "node": "Prepare Email Data",
               "type": "main",
               "index": 0
             }
@@ -896,13 +1144,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": "Version 4403b03a",
+    "name": "Version 8d37ac74",
     "description": "",
     "autosaved": true
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-03-02T16:00:16.364Z"
+    "timestamp": "2026-03-02T17:00:16.364Z"
   }
 }
