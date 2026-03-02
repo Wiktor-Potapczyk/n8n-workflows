@@ -1,0 +1,120 @@
+{
+  "updatedAt": "2026-03-02T15:00:27.598Z",
+  "createdAt": "2026-03-02T15:00:27.598Z",
+  "id": "aXJapMtFmfZo5mEs",
+  "name": "Clio Custom Fields Helper",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "clio-fields-helper",
+        "httpMethod": "GET",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "REDACTED-POSSIBLE-SECRET",
+        "authentication": "REDACTED",
+        "genericAuthType": "REDACTED",
+        "options": {}
+      },
+      "id": "clio-get-fields",
+      "name": "Get Custom Fields",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Custom Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Custom Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-02T15:00:27.600Z",
+      "createdAt": "2026-03-02T15:00:27.600Z",
+      "role": "workflow:owner",
+      "workflowId": "aXJapMtFmfZo5mEs",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-03-02T16:00:22.644Z"
+  }
+}
