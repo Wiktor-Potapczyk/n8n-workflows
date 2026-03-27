@@ -1,0 +1,262 @@
+{
+  "updatedAt": "2026-03-27T13:21:58.063Z",
+  "createdAt": "2026-03-27T13:19:44.438Z",
+  "id": "XyUNlIpsulr3CJnC",
+  "name": "Invoice Automation v1",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "schedule-trigger",
+      "name": "Weekly Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": 1,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "gmail-fetch",
+      "name": "Gmail - Fetch Invoices",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "invoice"
+          ]
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    },
+    {
+      "id": "filter-attachments",
+      "name": "Filter - Has Attachments",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "has-binary",
+              "leftValue": "={{ Object.keys($binary || {}).length }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "normalize-attachments",
+      "name": "Code - Normalize Attachments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Split each email into one item per valid attachment (PDF/JPG/PNG)\nconst results = [];\nconst validMimes = ['application/pdf', 'image/jpeg', 'image/png'];\n\nfor (const item of $input.all()) {\n  const binaryData = item.binary || {};\n  const binaryKeys = Object.keys(binaryData);\n  \n  for (const key of binaryKeys) {\n    const bin = binaryData[key];\n    if (!bin || !bin.mimeType) continue;\n    \n    if (validMimes.includes(bin.mimeType)) {\n      results.push({\n        json: {\n          message_id: item.json.id || item.json.messageId || '',\n          email_from: typeof item.json.from === 'string' ? item.json.from : JSON.stringify(item.json.from || ''),\n          email_subject: item.json.subject || '',\n          email_date: item.json.date || item.json.internalDate || '',\n          attachment_filename: bin.fileName || 'unnamed',\n          mime_type: bin.mimeType,\n          binary_key: key\n        },\n        binary: {\n          attachment: bin\n        }\n      });\n    }\n  }\n}\n\nif (results.length === 0) {\n  results.push({ json: { _empty: true, message: 'No valid attachments found' } });\n}\n\nreturn results;"
+      }
+    },
+    {
+      "id": "filter-empty",
+      "name": "Filter - Valid Items Only",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "not-empty",
+              "leftValue": "={{ $json._empty }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEqual"
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "error-trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        400
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "error-notify",
+      "name": "Gmail - Error Notification",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        400
+      ],
+      "parameters": {
+        "sendTo": "REDACTED@email.com",
+        "subject": "=[Invoice Automation] Execution Failed",
+        "emailType": "text",
+        "message": "=Workflow: Invoice Automation v1\nExecution ID: {{ $json.execution.id }}\nError: {{ $json.execution.error.message }}\nTimestamp: {{ $now.toISO() }}\n\nCheck: https://n8n.srv1311875.hstgr.cloud",
+        "options": {}
+      },
+      "credentials": {
+        "_redacted": true
+      }
+    }
+  ],
+  "connections": {
+    "Weekly Trigger": {
+      "main": [
+        [
+          {
+            "node": "Gmail - Fetch Invoices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail - Fetch Invoices": {
+      "main": [
+        [
+          {
+            "node": "Filter - Has Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter - Has Attachments": {
+      "main": [
+        [
+          {
+            "node": "Code - Normalize Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Normalize Attachments": {
+      "main": [
+        [
+          {
+            "node": "Filter - Valid Items Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Gmail - Error Notification",
+            "type": "0",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Warsaw",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "XyUNlIpsulr3CJnC"
+  },
+  "staticData": null,
+  "meta": {
+    "_redacted": true
+  },
+  "pinData": {
+    "_redacted": true
+  },
+  "versionId": "REDACTED-UUID",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-27T13:19:44.442Z",
+      "createdAt": "2026-03-27T13:19:44.442Z",
+      "role": "workflow:owner",
+      "workflowId": "XyUNlIpsulr3CJnC",
+      "projectId": {
+        "_redacted": true
+      }
+    }
+  ],
+  "activeVersion": null,
+  "tags": [],
+  "_sanitized": {
+    "note": "Sanitized for public sharing",
+    "timestamp": "2026-03-27T14:00:19.259Z"
+  }
+}
