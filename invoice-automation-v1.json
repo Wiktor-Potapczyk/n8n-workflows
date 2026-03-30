@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-03-29T16:09:15.892Z",
+  "updatedAt": "2026-03-30T09:15:11.094Z",
   "createdAt": "2026-03-27T13:19:44.438Z",
   "id": "XyUNlIpsulr3CJnC",
   "name": "Invoice Automation v1",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -494,8 +494,8 @@
     },
     {
       "parameters": {
-        "jsCode": "// Map LLM output fields for Drive rename and Sheets logging\nconst llm = $json.output || $json;\nlet orig;\ntry {\n  orig = $('Code - Derive Month & Filename').item;\n} catch(e) {\n  orig = { json: $json, binary: $binary };\n}\n\n// Sanitize for filename\nlet sellerSafe = (llm.seller_name || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);\nlet invoiceSafe = (llm.invoice_number || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);\n\nconst datePrefix = orig.json.date_prefix || new Date().toISOString().split('T')[0];\nconst ext = (orig.json.attachment_filename || 'file.pdf').split('.').pop();\nconst finalFilename = datePrefix + '_' + sellerSafe + '_' + invoiceSafe + '.' + ext;\n\nreturn {\n  json: {\n    message_id: orig.json.message_id,\n    email_from: orig.json.email_from,\n    email_subject: orig.json.email_subject,\n    email_date: orig.json.email_date,\n    attachment_filename: orig.json.attachment_filename,\n    month_folder: orig.json.month_folder,\n    invoice_number: llm.invoice_number || '',\n    issue_date: llm.issue_date || '',\n    seller_name: llm.seller_name || '',\n    net_amount: llm.net_amount || '',\n    vat_amount: llm.vat_amount || '',\n    gross_amount: llm.gross_amount || '',\n    currency: llm.currency || '',\n    category: llm.category || '',\n    confidence_score: llm.confidence_score || 0,\n    final_filename: finalFilename\n  },\n  binary: orig.binary\n};",
-        "mode": "runOnceForEachItem"
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Map LLM output fields for Drive rename and Sheets logging\nconst llm = $json.output || $json;\nlet orig;\ntry {\n  orig = $('Code - Derive Month & Filename').item;\n} catch(e) {\n  orig = { json: $json, binary: $binary };\n}\n\n// Sanitize for filename\nlet sellerSafe = (llm.seller_name || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);\nlet invoiceSafe = (llm.invoice_number || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);\n\nconst datePrefix = orig.json.date_prefix || new Date().toISOString().split('T')[0];\nconst ext = (orig.json.attachment_filename || 'file.pdf').split('.').pop();\nconst finalFilename = datePrefix + '_' + sellerSafe + '_' + invoiceSafe + '.' + ext;\n\nreturn {\n  json: {\n    message_id: orig.json.message_id,\n    email_from: orig.json.email_from,\n    email_subject: orig.json.email_subject,\n    email_date: orig.json.email_date,\n    attachment_filename: orig.json.attachment_filename,\n    month_folder: orig.json.month_folder,\n    invoice_number: llm.invoice_number || '',\n    issue_date: llm.issue_date || '',\n    seller_name: llm.seller_name || '',\n    net_amount: llm.net_amount || '',\n    vat_amount: llm.vat_amount || '',\n    gross_amount: llm.gross_amount || '',\n    currency: llm.currency || '',\n    category: llm.category || '',\n    confidence_score: llm.confidence_score || 0,\n    final_filename: finalFilename\n  },\n  binary: orig.binary\n};"
       },
       "id": "map-fields",
       "name": "Code - Map LLM Fields",
@@ -714,7 +714,11 @@
     "availableInMCP": false,
     "errorWorkflow": "XyUNlIpsulr3CJnC"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Weekly Trigger": {
+      "recurrenceRules": []
+    }
+  },
   "meta": {
     "_redacted": true
   },
@@ -722,8 +726,8 @@
     "_redacted": true
   },
   "versionId": "REDACTED-UUID",
-  "activeVersionId": null,
-  "triggerCount": 0,
+  "activeVersionId": "REDACTED-UUID",
+  "triggerCount": 1,
   "shared": [
     {
       "updatedAt": "2026-03-27T13:19:44.442Z",
@@ -735,10 +739,718 @@
       }
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2026-03-30T09:15:05.000Z",
+    "createdAt": "2026-03-29T16:09:15.893Z",
+    "versionId": "REDACTED-UUID",
+    "workflowId": "XyUNlIpsulr3CJnC",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "weeks"
+              }
+            ]
+          }
+        },
+        "id": "schedule-trigger",
+        "name": "Weekly Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -16,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "returnAll": true,
+          "simple": false,
+          "filters": {
+            "labelIds": [
+              "Label_1278949546134025598"
+            ]
+          },
+          "options": {
+            "downloadAttachments": true
+          }
+        },
+        "id": "gmail-fetch",
+        "name": "Gmail - Fetch Invoices",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          208,
+          -128
+        ],
+        "webhookId": {
+          "_redacted": true
+        },
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2,
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "has-binary",
+                "leftValue": "={{ Object.keys($binary || {}).length }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "filter-attachments",
+        "name": "Filter - Has Attachments",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          432,
+          -128
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Split each email into one item per valid attachment (PDF only)\n// Skip receipts - keep only invoices\nconst results = [];\n// v1: PDF only. Image support (JPG/PNG) deferred — needs vision LLM path.\nconst validMimes = ['application/pdf'];\n\nfor (const item of $input.all()) {\n  const binaryData = item.binary || {};\n  const binaryKeys = Object.keys(binaryData);\n  \n  for (const key of binaryKeys) {\n    const bin = binaryData[key];\n    if (!bin || !bin.mimeType) continue;\n    \n    if (validMimes.includes(bin.mimeType)) {\n      // Skip receipts by filename pattern\n      const fname = (bin.fileName || '').toLowerCase();\n      if (fname.startsWith('receipt') || fname.includes('receipt-')) {\n        continue;\n      }\n      \n      results.push({\n        json: {\n          message_id: item.json.id || item.json.messageId || '',\n          email_from: typeof item.json.from === 'string' ? item.json.from : JSON.stringify(item.json.from || ''),\n          email_subject: item.json.subject || '',\n          email_date: item.json.date || item.json.internalDate || '',\n          attachment_filename: bin.fileName || 'unnamed',\n          mime_type: bin.mimeType,\n          binary_key: key\n        },\n        binary: {\n          attachment: bin\n        }\n      });\n    }\n  }\n}\n\nif (results.length === 0) {\n  results.push({ json: { _empty: true, message: 'No valid attachments found' } });\n}\n\nreturn results;"
+        },
+        "id": "normalize-attachments",
+        "name": "Code - Normalize Attachments",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          656,
+          -128
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2,
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "not-empty",
+                "leftValue": "={{ $json._empty }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notExists"
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "filter-empty",
+        "name": "Filter - Valid Items Only",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          880,
+          -128
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "error-trigger",
+        "name": "Error Trigger",
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1,
+        "position": [
+          -16,
+          112
+        ]
+      },
+      {
+        "parameters": {
+          "sendTo": "REDACTED@email.com",
+          "subject": "Invoice Automation - Execution Failed",
+          "emailType": "text",
+          "message": "=Workflow: Invoice Automation v1\nExecution ID: {{ $json.execution.id }}\nError: {{ $json.execution.error.message }}\nTimestamp: {{ $now.toISO() }}\n\nCheck: https://n8n.srv1311875.hstgr.cloud",
+          "options": {}
+        },
+        "id": "error-notify",
+        "name": "Gmail - Error Notification",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          208,
+          112
+        ],
+        "webhookId": {
+          "_redacted": true
+        },
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Derive month folder name and pre-LLM filename from email metadata\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const emailDate = item.json.email_date;\n  let dateObj;\n  \n  // Parse email date\n  if (emailDate) {\n    dateObj = new Date(emailDate);\n  } else {\n    dateObj = new Date();\n  }\n  \n  const year = dateObj.getFullYear();\n  const month = String(dateObj.getMonth() + 1).padStart(2, '0');\n  const day = String(dateObj.getDate()).padStart(2, '0');\n  \n  const monthFolder = `${year}-${month}`;\n  const datePrefix = `${year}-${month}-${day}`;\n  \n  // Sanitize sender name for filename\n  let sender = item.json.email_from || 'unknown';\n  // Extract name/email from \"Name <email>\" format\n  const nameMatch = sender.match(/^([^<]+)/);\n  if (nameMatch) {\n    sender = nameMatch[1].trim();\n  }\n  sender = sender.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);\n  \n  // Short message ID for uniqueness\n  const msgIdShort = (item.json.message_id || 'unknown').substring(0, 8);\n  \n  // Get file extension from original filename\n  const origName = item.json.attachment_filename || 'file';\n  const ext = origName.includes('.') ? origName.split('.').pop() : 'pdf';\n  \n  const preLlmFilename = `${datePrefix}_${sender}_${msgIdShort}.${ext}`;\n  \n  results.push({\n    json: {\n      ...item.json,\n      month_folder: monthFolder,\n      pre_llm_filename: preLlmFilename,\n      date_prefix: datePrefix\n    },\n    binary: item.binary\n  });\n}\n\nreturn results;"
+        },
+        "id": "derive-month",
+        "name": "Code - Derive Month & Filename",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1328,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "REDACTED-POSSIBLE-SECRET"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": {
+              "_redacted": true
+            },
+            "cachedResultUrl": {
+              "_redacted": true
+            }
+          },
+          "options": {}
+        },
+        "id": "sheets-read",
+        "name": "Sheets - Read Log",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          880,
+          -320
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "message_id",
+                "field2": "message_id"
+              }
+            ]
+          },
+          "joinMode": "keepNonMatches",
+          "outputDataFrom": "input2",
+          "options": {}
+        },
+        "id": "merge-dedup",
+        "name": "Merge - Dedup",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1104,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "inputDataFieldName": "attachment",
+          "name": "={{ $json.final_filename }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "REDACTED-POSSIBLE-SECRET",
+            "mode": "list",
+            "cachedResultName": {
+              "_redacted": true
+            },
+            "cachedResultUrl": {
+              "_redacted": true
+            }
+          },
+          "options": {}
+        },
+        "id": "drive-upload",
+        "name": "Drive - Upload File",
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          2352,
+          -224
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "REDACTED-POSSIBLE-SECRET",
+            "mode": "list",
+            "cachedResultName": {
+              "_redacted": true
+            },
+            "cachedResultUrl": {
+              "_redacted": true
+            }
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": {
+              "_redacted": true
+            },
+            "cachedResultUrl": {
+              "_redacted": true
+            }
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Invoice Number": "={{ $json.invoice_number }}",
+              "Issue Date": "={{ $json.issue_date }}",
+              "Seller Name": "={{ $json.seller_name }}",
+              "Net Amount": "={{ $json.net_amount }}",
+              "VAT Amount": "={{ $json.vat_amount }}",
+              "Gross Amount": "={{ $json.gross_amount }}",
+              "Currency": "={{ $json.currency }}",
+              "Category": "={{ $json.category }}",
+              "Drive Link": "={{ $json.webViewLink }}",
+              "message_id": "={{ $json.message_id }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Invoice Number",
+                "displayName": "Invoice Number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Issue Date",
+                "displayName": "Issue Date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Seller Name",
+                "displayName": "Seller Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Net Amount",
+                "displayName": "Net Amount",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "VAT Amount",
+                "displayName": "VAT Amount",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Gross Amount",
+                "displayName": "Gross Amount",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Currency",
+                "displayName": "Currency",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Category",
+                "displayName": "Category",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Drive Link",
+                "displayName": "Drive Link",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Uploaded to E-Księgowość?",
+                "displayName": "Uploaded to E-Księgowość?",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "message_id",
+                "displayName": "message_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "sheets-append",
+        "name": "Sheets - Append Row",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          2800,
+          -224
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "operation": "pdf",
+          "binaryPropertyName": "attachment",
+          "options": {}
+        },
+        "id": "extract-pdf",
+        "name": "Extract from File",
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 1,
+        "position": [
+          1552,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=You are an invoice data extraction assistant for G-Tech Wiktor Potapczyk / G-Tech WP (the buyer on all invoices).\n\nExtract the following fields from the invoice text provided below. Always identify the SELLER as the company issuing the invoice - NOT G-Tech.\n\nRules:\n- invoice_number: the invoice/receipt number as printed on the document\n- issue_date: in ISO 8601 format (YYYY-MM-DD)\n- seller_name: the company that ISSUED the invoice (not G-Tech)\n- net_amount: net amount before tax (numeric)\n- vat_amount: VAT/tax amount (0 if no tax)\n- gross_amount: total amount including tax (numeric)\n- currency: ISO 4217 code (PLN, USD, EUR, etc.)\n- category: one of Software, Hardware, Services, Subscriptions, Hosting, Office, Transport, Other\n- confidence_score: 0.0-1.0 how confident you are\n\nIf a field cannot be determined, use null.\nHandle Polish invoices (faktura VAT, rachunek) as well as English invoices.\nFor Polish amounts: comma is decimal separator, space is thousands separator.\n\nINVOICE TEXT:\n{{ JSON.stringify($json) }}",
+          "hasOutputParser": true,
+          "batching": {}
+        },
+        "id": "llm-chain",
+        "name": "LLM - Extract Invoice Data",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.7,
+        "position": [
+          1776,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "options": {
+            "temperature": 0
+          }
+        },
+        "id": "deepseek-model",
+        "name": "DeepSeek Chat Model",
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 1,
+        "position": [
+          1776,
+          -32
+        ],
+        "credentials": {
+          "_redacted": true
+        }
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"invoice_number\": \"FV/2026/03/001\",\n  \"issue_date\": \"2026-03-27\",\n  \"seller_name\": \"Anthropic PBC\",\n  \"net_amount\": 10.0,\n  \"vat_amount\": 2.3,\n  \"gross_amount\": 12.3,\n  \"currency\": \"USD\",\n  \"category\": \"Software\",\n  \"confidence_score\": 0.95\n}"
+        },
+        "id": "output-parser",
+        "name": "Output Parser",
+        "type": "REDACTED-POSSIBLE-SECRET",
+        "typeVersion": 1.3,
+        "position": [
+          1920,
+          -32
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Map LLM output fields for Drive rename and Sheets logging\nconst llm = $json.output || $json;\nlet orig;\ntry {\n  orig = $('Code - Derive Month & Filename').item;\n} catch(e) {\n  orig = { json: $json, binary: $binary };\n}\n\n// Sanitize for filename\nlet sellerSafe = (llm.seller_name || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);\nlet invoiceSafe = (llm.invoice_number || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);\n\nconst datePrefix = orig.json.date_prefix || new Date().toISOString().split('T')[0];\nconst ext = (orig.json.attachment_filename || 'file.pdf').split('.').pop();\nconst finalFilename = datePrefix + '_' + sellerSafe + '_' + invoiceSafe + '.' + ext;\n\nreturn {\n  json: {\n    message_id: orig.json.message_id,\n    email_from: orig.json.email_from,\n    email_subject: orig.json.email_subject,\n    email_date: orig.json.email_date,\n    attachment_filename: orig.json.attachment_filename,\n    month_folder: orig.json.month_folder,\n    invoice_number: llm.invoice_number || '',\n    issue_date: llm.issue_date || '',\n    seller_name: llm.seller_name || '',\n    net_amount: llm.net_amount || '',\n    vat_amount: llm.vat_amount || '',\n    gross_amount: llm.gross_amount || '',\n    currency: llm.currency || '',\n    category: llm.category || '',\n    confidence_score: llm.confidence_score || 0,\n    final_filename: finalFilename\n  },\n  binary: orig.binary\n};",
+          "mode": "runOnceForEachItem"
+        },
+        "id": "map-fields",
+        "name": "Code - Map LLM Fields",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2128,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "// Combine LLM-extracted fields with Drive upload output\n// Drive Upload replaces $json with file metadata - restore LLM fields\nconst driveOutput = $json;\nlet llmFields;\ntry {\n  llmFields = $('Code - Map LLM Fields').item.json;\n} catch(e) {\n  llmFields = {};\n}\n\nreturn {\n  json: {\n    message_id: llmFields.message_id || '',\n    invoice_number: llmFields.invoice_number || '',\n    issue_date: llmFields.issue_date || '',\n    seller_name: llmFields.seller_name || '',\n    net_amount: llmFields.net_amount || '',\n    vat_amount: llmFields.vat_amount || '',\n    gross_amount: llmFields.gross_amount || '',\n    currency: llmFields.currency || '',\n    category: llmFields.category || '',\n    confidence_score: llmFields.confidence_score || 0,\n    webViewLink: driveOutput.webViewLink || '',\n    drive_file_id: driveOutput.id || '',\n    drive_file_name: driveOutput.name || ''\n  }\n};"
+        },
+        "id": "merge-drive-output",
+        "name": "Code - Merge Drive Output",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2576,
+          -224
+        ]
+      }
+    ],
+    "connections": {
+      "Weekly Trigger": {
+        "main": [
+          [
+            {
+              "node": "Gmail - Fetch Invoices",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Sheets - Read Log",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gmail - Fetch Invoices": {
+        "main": [
+          [
+            {
+              "node": "Filter - Has Attachments",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter - Has Attachments": {
+        "main": [
+          [
+            {
+              "node": "Code - Normalize Attachments",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - Normalize Attachments": {
+        "main": [
+          [
+            {
+              "node": "Filter - Valid Items Only",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Trigger": {
+        "main": [
+          [
+            {
+              "node": "Gmail - Error Notification",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter - Valid Items Only": {
+        "main": [
+          [
+            {
+              "node": "Merge - Dedup",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Sheets - Read Log": {
+        "main": [
+          [
+            {
+              "node": "Merge - Dedup",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge - Dedup": {
+        "main": [
+          [
+            {
+              "node": "Code - Derive Month & Filename",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - Derive Month & Filename": {
+        "main": [
+          [
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Drive - Upload File": {
+        "main": [
+          [
+            {
+              "node": "Code - Merge Drive Output",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "LLM - Extract Invoice Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "LLM - Extract Invoice Data": {
+        "main": [
+          [
+            {
+              "node": "Code - Map LLM Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - Map LLM Fields": {
+        "main": [
+          [
+            {
+              "node": "Drive - Upload File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "LLM - Extract Invoice Data",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "LLM - Extract Invoice Data",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - Merge Drive Output": {
+        "main": [
+          [
+            {
+              "node": "Sheets - Append Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "REDACTED",
+    "name": "Version 95e4ecdc",
+    "description": "",
+    "autosaved": false
+  },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-03-29T17:00:19.207Z"
+    "timestamp": "2026-03-30T10:00:19.631Z"
   }
 }
