@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-30T09:15:11.094Z",
+  "updatedAt": "2026-04-24T22:17:17.723Z",
   "createdAt": "2026-03-27T13:19:44.438Z",
   "id": "XyUNlIpsulr3CJnC",
   "name": "Invoice Automation v1",
@@ -27,6 +27,7 @@
     },
     {
       "parameters": {
+        "authentication": "REDACTED",
         "operation": "getAll",
         "returnAll": true,
         "simple": false,
@@ -146,6 +147,7 @@
     },
     {
       "parameters": {
+        "authentication": "REDACTED",
         "sendTo": "REDACTED@email.com",
         "subject": "Invoice Automation - Execution Failed",
         "emailType": "text",
@@ -182,6 +184,7 @@
     },
     {
       "parameters": {
+        "authentication": "REDACTED",
         "documentId": {
           "__rl": true,
           "mode": "list",
@@ -239,6 +242,7 @@
     },
     {
       "parameters": {
+        "authentication": "REDACTED",
         "inputDataFieldName": "attachment",
         "name": "={{ $json.final_filename }}",
         "driveId": {
@@ -273,6 +277,7 @@
     },
     {
       "parameters": {
+        "authentication": "REDACTED",
         "operation": "append",
         "documentId": {
           "__rl": true,
@@ -740,8 +745,8 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-30T09:15:05.000Z",
-    "createdAt": "2026-03-29T16:09:15.893Z",
+    "updatedAt": "2026-04-24T22:15:46.000Z",
+    "createdAt": "2026-04-24T22:15:43.943Z",
     "versionId": "REDACTED-UUID",
     "workflowId": "XyUNlIpsulr3CJnC",
     "nodes": [
@@ -766,6 +771,7 @@
       },
       {
         "parameters": {
+          "authentication": "REDACTED",
           "operation": "getAll",
           "returnAll": true,
           "simple": false,
@@ -885,6 +891,7 @@
       },
       {
         "parameters": {
+          "authentication": "REDACTED",
           "sendTo": "REDACTED@email.com",
           "subject": "Invoice Automation - Execution Failed",
           "emailType": "text",
@@ -921,6 +928,7 @@
       },
       {
         "parameters": {
+          "authentication": "REDACTED",
           "documentId": {
             "__rl": true,
             "mode": "list",
@@ -978,6 +986,7 @@
       },
       {
         "parameters": {
+          "authentication": "REDACTED",
           "inputDataFieldName": "attachment",
           "name": "={{ $json.final_filename }}",
           "driveId": {
@@ -1012,6 +1021,7 @@
       },
       {
         "parameters": {
+          "authentication": "REDACTED",
           "operation": "append",
           "documentId": {
             "__rl": true,
@@ -1233,8 +1243,8 @@
       },
       {
         "parameters": {
-          "jsCode": "// Map LLM output fields for Drive rename and Sheets logging\nconst llm = $json.output || $json;\nlet orig;\ntry {\n  orig = $('Code - Derive Month & Filename').item;\n} catch(e) {\n  orig = { json: $json, binary: $binary };\n}\n\n// Sanitize for filename\nlet sellerSafe = (llm.seller_name || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);\nlet invoiceSafe = (llm.invoice_number || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);\n\nconst datePrefix = orig.json.date_prefix || new Date().toISOString().split('T')[0];\nconst ext = (orig.json.attachment_filename || 'file.pdf').split('.').pop();\nconst finalFilename = datePrefix + '_' + sellerSafe + '_' + invoiceSafe + '.' + ext;\n\nreturn {\n  json: {\n    message_id: orig.json.message_id,\n    email_from: orig.json.email_from,\n    email_subject: orig.json.email_subject,\n    email_date: orig.json.email_date,\n    attachment_filename: orig.json.attachment_filename,\n    month_folder: orig.json.month_folder,\n    invoice_number: llm.invoice_number || '',\n    issue_date: llm.issue_date || '',\n    seller_name: llm.seller_name || '',\n    net_amount: llm.net_amount || '',\n    vat_amount: llm.vat_amount || '',\n    gross_amount: llm.gross_amount || '',\n    currency: llm.currency || '',\n    category: llm.category || '',\n    confidence_score: llm.confidence_score || 0,\n    final_filename: finalFilename\n  },\n  binary: orig.binary\n};",
-          "mode": "runOnceForEachItem"
+          "mode": "runOnceForEachItem",
+          "jsCode": "// Map LLM output fields for Drive rename and Sheets logging\nconst llm = $json.output || $json;\nlet orig;\ntry {\n  orig = $('Code - Derive Month & Filename').item;\n} catch(e) {\n  orig = { json: $json, binary: $binary };\n}\n\n// Sanitize for filename\nlet sellerSafe = (llm.seller_name || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);\nlet invoiceSafe = (llm.invoice_number || 'unknown').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);\n\nconst datePrefix = orig.json.date_prefix || new Date().toISOString().split('T')[0];\nconst ext = (orig.json.attachment_filename || 'file.pdf').split('.').pop();\nconst finalFilename = datePrefix + '_' + sellerSafe + '_' + invoiceSafe + '.' + ext;\n\nreturn {\n  json: {\n    message_id: orig.json.message_id,\n    email_from: orig.json.email_from,\n    email_subject: orig.json.email_subject,\n    email_date: orig.json.email_date,\n    attachment_filename: orig.json.attachment_filename,\n    month_folder: orig.json.month_folder,\n    invoice_number: llm.invoice_number || '',\n    issue_date: llm.issue_date || '',\n    seller_name: llm.seller_name || '',\n    net_amount: llm.net_amount || '',\n    vat_amount: llm.vat_amount || '',\n    gross_amount: llm.gross_amount || '',\n    currency: llm.currency || '',\n    category: llm.category || '',\n    confidence_score: llm.confidence_score || 0,\n    final_filename: finalFilename\n  },\n  binary: orig.binary\n};"
         },
         "id": "map-fields",
         "name": "Code - Map LLM Fields",
@@ -1444,13 +1454,13 @@
       }
     },
     "authors": "REDACTED",
-    "name": "Version 95e4ecdc",
+    "name": "Version 5fabce63",
     "description": "",
-    "autosaved": false
+    "autosaved": true
   },
   "tags": [],
   "_sanitized": {
     "note": "Sanitized for public sharing",
-    "timestamp": "2026-03-30T10:00:19.631Z"
+    "timestamp": "2026-04-24T23:00:19.766Z"
   }
 }
